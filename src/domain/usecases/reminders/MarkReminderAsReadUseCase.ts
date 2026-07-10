@@ -11,13 +11,12 @@ export class MarkReminderAsReadUseCase {
   async execute(reminderId: string): Promise<Reminder> {
     const reminder = await this.reminderRepository.markAsRead(reminderId);
 
-    // Create history event
     await this.historyRepository.createHistoryEvent({
       userId: reminder.userId,
-      taskId: reminder.taskId,
+      ...(reminder.taskId ? { taskId: reminder.taskId } : {}),
       eventType: "reminder_marked",
       title: reminder.title,
-      description: `Lembrete marcado como lido: ${reminder.title}`,
+      description: `Lembrete marcado como concluído: ${reminder.title}`,
       createdAt: new Date(),
     });
 

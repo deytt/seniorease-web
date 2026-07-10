@@ -1,13 +1,16 @@
 import { FirebaseReminderRepository } from "@/infrastructure/firebase/FirebaseReminderRepository";
 import { GetRemindersUseCase } from "@/domain/usecases/reminders/GetRemindersUseCase";
 import { CreateReminderUseCase } from "@/domain/usecases/reminders/CreateReminderUseCase";
+import { UpdateReminderUseCase } from "@/domain/usecases/reminders/UpdateReminderUseCase";
+import { DeleteReminderUseCase } from "@/domain/usecases/reminders/DeleteReminderUseCase";
 import { MarkReminderAsReadUseCase } from "@/domain/usecases/reminders/MarkReminderAsReadUseCase";
 import { getHistoryDi } from "@/lib/di/historyDi";
 
-// Singleton instances
 let reminderRepository: FirebaseReminderRepository | null = null;
 let getRemindersUseCase: GetRemindersUseCase | null = null;
 let createReminderUseCase: CreateReminderUseCase | null = null;
+let updateReminderUseCase: UpdateReminderUseCase | null = null;
+let deleteReminderUseCase: DeleteReminderUseCase | null = null;
 let markReminderAsReadUseCase: MarkReminderAsReadUseCase | null = null;
 
 export function getReminderRepository(): FirebaseReminderRepository {
@@ -31,6 +34,20 @@ export function getCreateReminderUseCase(): CreateReminderUseCase {
   return createReminderUseCase;
 }
 
+export function getUpdateReminderUseCase(): UpdateReminderUseCase {
+  if (!updateReminderUseCase) {
+    updateReminderUseCase = new UpdateReminderUseCase(getReminderRepository());
+  }
+  return updateReminderUseCase;
+}
+
+export function getDeleteReminderUseCase(): DeleteReminderUseCase {
+  if (!deleteReminderUseCase) {
+    deleteReminderUseCase = new DeleteReminderUseCase(getReminderRepository());
+  }
+  return deleteReminderUseCase;
+}
+
 export function getMarkReminderAsReadUseCase(): MarkReminderAsReadUseCase {
   if (!markReminderAsReadUseCase) {
     const { historyRepository } = getHistoryDi();
@@ -42,12 +59,13 @@ export function getMarkReminderAsReadUseCase(): MarkReminderAsReadUseCase {
   return markReminderAsReadUseCase;
 }
 
-// Factory function for DI container
 export function getRemindersDi() {
   return {
     reminderRepository: getReminderRepository(),
     getRemindersUseCase: getGetRemindersUseCase(),
     createReminderUseCase: getCreateReminderUseCase(),
+    updateReminderUseCase: getUpdateReminderUseCase(),
+    deleteReminderUseCase: getDeleteReminderUseCase(),
     markReminderAsReadUseCase: getMarkReminderAsReadUseCase(),
   };
 }

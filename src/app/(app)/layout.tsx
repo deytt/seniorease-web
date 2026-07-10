@@ -6,17 +6,22 @@ import { onAuthStateChanged } from "firebase/auth";
 
 import { auth } from "@/infrastructure/firebase/config";
 import { Navigation } from "@/presentation/components/layout/Navigation";
+import { cn } from "@/lib/utils";
+
+const SIDEBAR_EXPANDED_MIN_WIDTH = 1280;
 
 /**
- * Guard de rota do grupo (app) — systemPatterns.md: "Rota protegida
- * (redirect se não autenticado)". Agora com navegação responsiva (sidebar desktop + hamburger mobile).
+ * Guard de rota do grupo (app) + shell responsivo.
+ * - < lg: header mobile
+ * - lg–xl: sidebar colapsada por padrão (pode expandir e empurra o conteúdo)
+ * - ≥ 1280px: sidebar expandida por padrão
  */
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [status, setStatus] = useState<"checking" | "authenticated">(
     "checking",
   );
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -29,6 +34,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
     return unsubscribe;
   }, [router]);
+
+  useEffect(() => {
+    const media = window.matchMedia(
+      `(max-width: ${SIDEBAR_EXPANDED_MIN_WIDTH - 1}px)`,
+    );
+    const sync = () => setSidebarCollapsed(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
 
   if (status === "checking") {
     return (
@@ -43,17 +58,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen w-full bg-background">
-      {/* Navigation */}
+    <div className="min-h-screen w-full overflow-x-hidden bg-[#f8fafc]">
       <Navigation onCollapsedChange={setSidebarCollapsed} />
 
-      {/* Main content — shifts based on sidebar state */}
       <main
-        className={`transition-all duration-300 pt-16 md:pt-0 min-h-screen ${
-          sidebarCollapsed ? "md:ml-[68px]" : "md:ml-64"
-        }`}
+        className={cn(
+          "min-h-screen min-w-0 pt-16 transition-all duration-300 lg:pt-0",
+          sidebarCollapsed ? "lg:ml-[68px]" : "lg:ml-64",
+        )}
       >
-        <div className="px-6 py-6">{children}</div>
+        <div className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-6">
+          {children}
+        </div>
       </main>
     </div>
   );
