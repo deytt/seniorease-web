@@ -62,10 +62,19 @@ export class FirebaseHistoryRepository implements IHistoryRepository {
   async createHistoryEvent(
     event: Omit<HistoryEvent, "id">,
   ): Promise<HistoryEvent> {
-    const docRef = await addDoc(collection(db, this.collectionName), {
-      ...event,
-      createdAt: Timestamp.fromDate(event.createdAt),
-    });
+    // Firestore rejeita `undefined` — omitir campos opcionais vazios (ex.: taskId).
+    const payload = Object.fromEntries(
+      Object.entries({
+        userId: event.userId,
+        taskId: event.taskId,
+        eventType: event.eventType,
+        title: event.title,
+        description: event.description,
+        createdAt: Timestamp.fromDate(event.createdAt),
+      }).filter(([, value]) => value !== undefined),
+    );
+
+    const docRef = await addDoc(collection(db, this.collectionName), payload);
 
     return {
       id: docRef.id,

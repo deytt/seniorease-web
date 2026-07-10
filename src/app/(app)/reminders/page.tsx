@@ -1,25 +1,52 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useAuthContext } from "@/presentation/providers/AuthProvider";
 import { useRouter } from "next/navigation";
+import { Bell, Plus } from "lucide-react";
+import { toast } from "sonner";
+import { useAuthContext } from "@/presentation/providers/AuthProvider";
+import { usePreferences } from "@/presentation/hooks/usePreferences";
 import { getRemindersDi } from "@/lib/di/remindersDi";
 import { Button } from "@/presentation/components/ui/button";
-import { Pill, Users, Activity, Bell, Plus } from "lucide-react";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/presentation/components/ui/dialog";
 import { Reminder } from "@/domain/entities/Reminder";
-
-type FilterKey = "today" | "medication" | "appointments" | "recurring";
+import { ReminderCard } from "@/presentation/components/reminders/reminderCard";
+import {
+  ReminderFilterPills,
+  matchesReminderFilter,
+  useReminderListFilter,
+} from "@/presentation/components/reminders/reminderFilterPills";
+import { isReminderToday } from "@/presentation/components/reminders/reminderVisuals";
 
 export default function RemindersPage() {
   const { user, loading: authLoading } = useAuthContext();
+  const { preferences } = usePreferences();
   const router = useRouter();
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [activeFilter, setActiveFilter] = useState<FilterKey>("today");
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [reminderToDelete, setReminderToDelete] = useState<Reminder | null>(
+    null,
+  );
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const { reminderRepository, markReminderAsReadUseCase } = getRemindersDi();
+  const { filter, setFilter } = useReminderListFilter({ kind: "all" });
+
+  const isBasicMode = preferences.interfaceMode === "basic";
+  const {
+    getRemindersUseCase,
+    markReminderAsReadUseCase,
+    deleteReminderUseCase,
+  } = getRemindersDi();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -29,232 +56,229 @@ export default function RemindersPage() {
 
   useEffect(() => {
     if (!user?.id) return;
+
     const loadReminders = async () => {
       try {
         setLoading(true);
-        const data = await reminderRepository.getReminders(user.id);
+        const data = await getRemindersUseCase.execute(user.id);
         setReminders(data);
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Erro ao carregar lembretes",
-        );
+        console.error("Erro ao carregar lembretes:", err);
+        toast.error("Não foi possível carregar os lembretes. Tente novamente.");
       } finally {
         setLoading(false);
       }
     };
-    loadReminders();
+
+    void loadReminders();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
+  const filteredReminders = useMemo(
+    () =>
+      reminders.filter((reminder) =>
+        matchesReminderFilter(reminder, filter, isReminderToday),
+      ),
+    [reminders, filter],
+  );
+
+  const pendingTodayCount = useMemo(
+    () =>
+      reminders.filter((r) => !r.isRead && isReminderToday(r.scheduledAt))
+        .length,
+    [reminders],
+  );
+
   const handleMarkAsRead = async (reminderId: string) => {
     try {
+      setBusyId(reminderId);
       await markReminderAsReadUseCase.execute(reminderId);
       setReminders((prev) =>
         prev.map((r) => (r.id === reminderId ? { ...r, isRead: true } : r)),
       );
+      toast.success("Lembrete marcado como concluído!");
     } catch (err) {
-      console.error("Erro ao marcar como lido:", err);
+      console.error("Erro ao marcar como concluído:", err);
+      toast.error("Não foi possível marcar o lembrete. Tente novamente.");
+    } finally {
+      setBusyId(null);
     }
   };
 
-  const getAmPm = (date: Date | string) => {
-    const d = typeof date === "string" ? new Date(date) : date;
-    return d.getHours() < 12 ? "AM" : "PM";
+  const handleEdit = (reminder: Reminder) => {
+    router.push(`/reminders/${reminder.id}/edit`);
   };
 
-  const getTimeDisplay = (date: Date | string) => {
-    const d = typeof date === "string" ? new Date(date) : date;
-    const hours = d.getHours() % 12 || 12;
-    const minutes = String(d.getMinutes()).padStart(2, "0");
-    return `${hours}:${minutes}`;
-  };
+  const handleConfirmDelete = async () => {
+    if (!reminderToDelete) return;
 
-  // Infer icon from title keywords
-  const getReminderIcon = (title: string) => {
-    const lower = title.toLowerCase();
-    if (
-      lower.includes("medic") ||
-      lower.includes("comprim") ||
-      lower.includes("remédio")
-    ) {
-      return {
-        Icon: Pill,
-        bg: "bg-red-100 dark:bg-red-900/30",
-        color: "text-red-500",
-      };
+    try {
+      setIsDeleting(true);
+      await deleteReminderUseCase.execute(reminderToDelete.id);
+      setReminders((prev) =>
+        prev.filter((r) => r.id !== reminderToDelete.id),
+      );
+      toast.success("Lembrete excluído com sucesso!");
+      setReminderToDelete(null);
+    } catch (err) {
+      console.error("Erro ao excluir lembrete:", err);
+      toast.error("Não foi possível excluir o lembrete. Tente novamente.");
+    } finally {
+      setIsDeleting(false);
     }
-    if (
-      lower.includes("família") ||
-      lower.includes("família") ||
-      lower.includes("video") ||
-      lower.includes("ligação")
-    ) {
-      return {
-        Icon: Users,
-        bg: "bg-blue-100 dark:bg-blue-900/30",
-        color: "text-blue-500",
-      };
-    }
-    return {
-      Icon: Activity,
-      bg: "bg-green-100 dark:bg-green-900/30",
-      color: "text-green-500",
-    };
   };
-
-  const pendingCount = reminders.filter((r) => !r.isRead).length;
-
-  const filterPills: { key: FilterKey; label: string }[] = [
-    { key: "today", label: "Hoje" },
-    { key: "medication", label: "Medicação" },
-    { key: "appointments", label: "Consultas" },
-    { key: "recurring", label: "Recorrentes" },
-  ];
 
   if (authLoading || loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="flex min-h-[60vh] items-center justify-center">
         <p className="text-muted-foreground">Carregando lembretes...</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto pb-20">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-2">
-        <div>
-          <h1 className="text-3xl font-bold">Central de Lembretes</h1>
-          {pendingCount > 0 && (
-            <p className="text-sm text-muted-foreground mt-1">
-              {pendingCount}{" "}
-              {pendingCount === 1 ? "lembrete restante" : "lembretes restantes"}{" "}
-              hoje
-            </p>
-          )}
-        </div>
-        <Button asChild size="sm">
-          <Link href="/reminders/create">
-            <Plus className="size-4 mr-1" />
-            Novo Lembrete
-          </Link>
-        </Button>
-      </div>
-
-      {/* Filter Pills */}
-      <div className="flex flex-wrap gap-2 mb-6 mt-4">
-        {filterPills.map(({ key, label }) => (
-          <button
-            key={key}
-            onClick={() => setActiveFilter(key)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
-              activeFilter === key
-                ? "bg-primary text-primary-foreground border-primary"
-                : "bg-background text-muted-foreground border-input hover:border-primary/50 hover:text-foreground"
-            }`}
+    <div className="pb-16">
+      <div className="mx-auto w-full max-w-5xl">
+        <Dialog
+          open={Boolean(reminderToDelete)}
+          onOpenChange={(open) => {
+            if (!open && !isDeleting) setReminderToDelete(null);
+          }}
+        >
+          <DialogContent
+            showCloseButton={false}
+            className="gap-5 rounded-2xl border border-[#e2e8f0] bg-white p-6 shadow-[0px_8px_24px_rgba(0,0,0,0.12)] sm:max-w-md"
           >
-            {label}
-          </button>
-        ))}
-      </div>
+            <DialogHeader className="gap-3 text-left">
+              <DialogTitle className="font-sans text-xl font-bold normal-case tracking-normal text-[#0f172a]">
+                Excluir lembrete?
+              </DialogTitle>
+              <DialogDescription className="text-base leading-relaxed text-[#64748b]">
+                Tem certeza que deseja excluir o lembrete &quot;
+                {reminderToDelete?.title}&quot;? Esta ação não pode ser
+                desfeita.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="gap-3 sm:justify-end">
+              <DialogClose asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="min-h-11 cursor-pointer rounded-[14px] border-[#e2e8f0]"
+                  disabled={isDeleting}
+                >
+                  Cancelar
+                </Button>
+              </DialogClose>
+              <Button
+                type="button"
+                variant="destructive"
+                className="min-h-11 cursor-pointer rounded-[14px] bg-destructive text-white hover:bg-destructive/90 hover:text-white"
+                disabled={isDeleting}
+                onClick={handleConfirmDelete}
+              >
+                {isDeleting ? "Excluindo..." : "Excluir"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-      {/* Error */}
-      {error && (
-        <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-4 mb-4">
-          <p className="text-sm text-destructive">{error}</p>
-        </div>
-      )}
-
-      {/* Empty State */}
-      {reminders.length === 0 ? (
-        <div className="rounded-xl border bg-muted/30 p-10 text-center">
-          <Bell className="size-10 mx-auto mb-3 text-muted-foreground" />
-          <p className="font-semibold mb-1">Nenhum lembrete ainda</p>
-          <p className="text-sm text-muted-foreground mb-4">
-            Crie seu primeiro lembrete para receber notificações.
-          </p>
-          <Button asChild variant="outline" size="sm">
+        <div className="mb-2 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold text-[#0f172a] sm:text-3xl">
+              Central de Lembretes
+            </h1>
+            <p className="mt-1 text-base text-[#64748b]">
+              {pendingTodayCount === 0
+                ? "Nenhum lembrete pendente para hoje"
+                : pendingTodayCount === 1
+                  ? "1 lembrete restante hoje"
+                  : `${pendingTodayCount} lembretes restantes hoje`}
+            </p>
+          </div>
+          <Button
+            asChild
+            size="sm"
+            className="min-h-11 w-full shrink-0 cursor-pointer rounded-[14px] sm:w-auto"
+          >
             <Link href="/reminders/create">
-              <Plus className="size-4 mr-1" />
-              Criar Lembrete
+              <Plus className="size-4" aria-hidden />
+              Novo Lembrete
             </Link>
           </Button>
         </div>
-      ) : (
-        /* Reminder Timeline List */
-        <div className="space-y-3">
-          {reminders
-            .slice()
-            .sort(
-              (a, b) =>
-                new Date(a.scheduledAt).getTime() -
-                new Date(b.scheduledAt).getTime(),
-            )
-            .map((reminder) => {
-              const { Icon, bg, color } = getReminderIcon(reminder.title);
-              const isCompleted = reminder.isRead;
-              return (
-                <div
-                  key={reminder.id}
-                  className={`flex items-center gap-4 bg-card border rounded-xl px-5 py-4 transition-all ${
-                    isCompleted ? "opacity-50" : ""
-                  }`}
-                >
-                  {/* Time */}
-                  <div className="flex-shrink-0 w-20 text-right">
-                    <div
-                      className={`text-2xl font-bold leading-none ${isCompleted ? "text-muted-foreground" : ""}`}
-                    >
-                      {getTimeDisplay(reminder.scheduledAt)}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-0.5">
-                      {getAmPm(reminder.scheduledAt)}
-                    </div>
-                  </div>
 
-                  {/* Icon */}
-                  <div
-                    className={`flex-shrink-0 h-10 w-10 rounded-full ${bg} flex items-center justify-center`}
-                  >
-                    <Icon className={`size-5 ${color}`} />
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <p
-                      className={`font-semibold text-sm ${isCompleted ? "line-through text-muted-foreground" : ""}`}
-                    >
-                      {reminder.title}
-                    </p>
-                    {reminder.message && (
-                      <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
-                        {reminder.message}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Action */}
-                  <div className="flex-shrink-0 flex items-center gap-2">
-                    {isCompleted ? (
-                      <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                        Concluído ✓
-                      </span>
-                    ) : (
-                      <Button
-                        size="sm"
-                        className="bg-emerald-500 hover:bg-emerald-600 text-white border-0"
-                        onClick={() => handleMarkAsRead(reminder.id)}
-                      >
-                        Marcar Feito
-                      </Button>
-                    )}
-                    <Bell className="size-4 text-muted-foreground" />
-                  </div>
-                </div>
-              );
-            })}
+        <div className="mb-6 mt-4">
+          <ReminderFilterPills
+            value={filter}
+            onChange={setFilter}
+            isBasicMode={isBasicMode}
+          />
         </div>
-      )}
+
+        {filteredReminders.length === 0 ? (
+          <div className="rounded-2xl border border-[#e2e8f0] bg-white p-10 text-center shadow-[0px_1px_1.5px_rgba(0,0,0,0.1),0px_1px_1px_rgba(0,0,0,0.1)]">
+            <Bell
+              className="mx-auto mb-3 size-10 text-muted-foreground"
+              aria-hidden
+            />
+            <p className="mb-1 font-semibold text-[#0f172a]">
+              {reminders.length === 0
+                ? "Nenhum lembrete ainda"
+                : "Nenhum lembrete neste filtro"}
+            </p>
+            <p className="mb-4 text-sm text-[#64748b]">
+              {reminders.length === 0
+                ? "Crie seu primeiro lembrete para receber avisos no horário certo."
+                : "Tente outro filtro para ver mais lembretes."}
+            </p>
+            {reminders.length === 0 ? (
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="cursor-pointer rounded-[14px]"
+              >
+                <Link href="/reminders/create">
+                  <Plus className="size-4" aria-hidden />
+                  Criar Lembrete
+                </Link>
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="cursor-pointer rounded-[14px]"
+                onClick={() => setFilter({ kind: "all" })}
+              >
+                Ver todos
+              </Button>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filteredReminders.map((reminder) => (
+              <div
+                key={reminder.id}
+                className={
+                  busyId === reminder.id
+                    ? "pointer-events-none opacity-70"
+                    : undefined
+                }
+              >
+                <ReminderCard
+                  reminder={reminder}
+                  onMarkDone={handleMarkAsRead}
+                  onEdit={handleEdit}
+                  onDelete={setReminderToDelete}
+                  showDate={filter.kind !== "today"}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

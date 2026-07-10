@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
@@ -26,6 +26,7 @@ import {
   DialogClose,
 } from "@/presentation/components/ui/dialog";
 import { Button } from "@/presentation/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const navigationItems = [
   { label: "Dashboard", href: "/dashboard", icon: Home },
@@ -35,17 +36,34 @@ const navigationItems = [
   { label: "Perfil", href: "/profile", icon: User },
 ];
 
+/** Abaixo disso a sidebar inicia colapsada para não comprimir o conteúdo. */
+const SIDEBAR_EXPANDED_MIN_WIDTH = 1280;
+
 interface NavigationProps {
   onCollapsedChange?: (collapsed: boolean) => void;
 }
 
 export function Navigation({ onCollapsedChange }: NavigationProps) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const pathname = usePathname();
   const { signOut: signOutFn } = useAuthContext();
+
+  useEffect(() => {
+    const media = window.matchMedia(
+      `(max-width: ${SIDEBAR_EXPANDED_MIN_WIDTH - 1}px)`,
+    );
+    const sync = () => {
+      const shouldCollapse = media.matches;
+      setIsCollapsed(shouldCollapse);
+      onCollapsedChange?.(shouldCollapse);
+    };
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, [onCollapsedChange]);
 
   const handleSignOut = async () => {
     try {
@@ -67,24 +85,31 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
 
   return (
     <>
-      {/* Modal de confirmação de logout */}
       <Dialog open={isSignOutDialogOpen} onOpenChange={setIsSignOutDialogOpen}>
-        <DialogContent>
+        <DialogContent className="rounded-2xl border border-[#e2e8f0]">
           <DialogHeader>
-            <DialogTitle>Sair da conta?</DialogTitle>
+            <DialogTitle className="font-sans text-xl font-bold normal-case tracking-normal">
+              Sair da conta?
+            </DialogTitle>
             <DialogDescription>
               Você será desconectado do SeniorEase. Deseja continuar?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="outline" disabled={isSigningOut}>
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-[14px]"
+                disabled={isSigningOut}
+              >
                 Cancelar
               </Button>
             </DialogClose>
             <Button
               type="button"
               variant="destructive"
+              className="rounded-[14px] text-white"
               disabled={isSigningOut}
               onClick={handleSignOut}
             >
@@ -94,18 +119,20 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Mobile Header */}
-      <header className="md:hidden fixed top-0 left-0 right-0 z-40 bg-slate-900 border-b border-slate-700">
+      {/* Mobile / tablet header — até lg */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-slate-900 border-b border-slate-700">
         <div className="flex items-center justify-between px-4 py-3">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+          <Link href="/dashboard" className="flex items-center gap-2 min-w-0">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
               <span className="font-bold text-sm">SE</span>
             </div>
-            <span className="font-bold text-white text-lg">SeniorEase</span>
+            <span className="font-bold text-white text-lg truncate">
+              SeniorEase
+            </span>
           </Link>
           <button
             onClick={() => setIsMobileOpen(!isMobileOpen)}
-            className="p-3 min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+            className="flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-lg p-3 text-slate-300 hover:bg-slate-700 hover:text-white"
             aria-label={isMobileOpen ? "Fechar menu" : "Abrir menu"}
             aria-expanded={isMobileOpen}
             aria-controls="mobile-nav"
@@ -119,8 +146,11 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
         </div>
 
         {isMobileOpen && (
-          <nav id="mobile-nav" className="border-t border-slate-700 bg-slate-900">
-            <div className="px-3 py-3 space-y-1">
+          <nav
+            id="mobile-nav"
+            className="max-h-[calc(100vh-3.5rem)] overflow-y-auto border-t border-slate-700 bg-slate-900"
+          >
+            <div className="space-y-1 px-3 py-3">
               {navigationItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname?.startsWith(item.href);
@@ -129,22 +159,23 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
                     key={item.href}
                     href={item.href}
                     onClick={() => setIsMobileOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
+                    className={cn(
+                      "flex min-h-11 items-center gap-3 rounded-xl px-4 py-3 transition-colors",
                       isActive
-                        ? "bg-primary text-white font-semibold"
-                        : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                    }`}
+                        ? "bg-primary font-semibold text-white"
+                        : "text-slate-300 hover:bg-slate-800 hover:text-white",
+                    )}
                   >
-                    <Icon className="size-5 flex-shrink-0" />
+                    <Icon className="size-5 shrink-0" />
                     <span className="text-base">{item.label}</span>
                   </Link>
                 );
               })}
               <button
                 onClick={() => setIsSignOutDialogOpen(true)}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                className="flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-xl px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white"
               >
-                <LogOut className="size-5 flex-shrink-0" />
+                <LogOut className="size-5 shrink-0" />
                 <span className="text-base">Sair</span>
               </button>
             </div>
@@ -152,27 +183,31 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
         )}
       </header>
 
-      {/* Desktop Sidebar */}
+      {/* Desktop sidebar — a partir de lg */}
       <aside
-        className={`hidden md:flex flex-col fixed left-0 top-0 h-screen bg-slate-900 border-r border-slate-700 z-40 transition-all duration-300 ${
-          isCollapsed ? "w-[68px]" : "w-64"
-        }`}
+        className={cn(
+          "fixed left-0 top-0 z-40 hidden h-screen flex-col overflow-hidden border-r border-slate-700 bg-slate-900 transition-all duration-300 lg:flex",
+          isCollapsed ? "w-[68px]" : "w-64",
+        )}
       >
-        {/* Logo + Collapse Toggle */}
         <div
-          className={`flex items-center border-b border-slate-700 h-16 flex-shrink-0 ${
-            isCollapsed ? "justify-center px-0" : "px-4 gap-3"
-          }`}
+          className={cn(
+            "flex h-16 shrink-0 items-center border-b border-slate-700",
+            isCollapsed ? "justify-center px-0" : "gap-3 px-4",
+          )}
         >
           <Link
             href="/dashboard"
-            className={`flex items-center gap-3 min-w-0 ${isCollapsed ? "" : "flex-1"}`}
+            className={cn(
+              "flex min-w-0 items-center gap-3",
+              !isCollapsed && "flex-1",
+            )}
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white flex-shrink-0">
-              <span className="font-bold text-sm">SE</span>
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-white">
+              <span className="text-sm font-bold">SE</span>
             </div>
             {!isCollapsed && (
-              <span className="font-bold text-white text-base truncate">
+              <span className="truncate text-base font-bold text-white">
                 SeniorEase
               </span>
             )}
@@ -180,7 +215,7 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
           {!isCollapsed && (
             <button
               onClick={() => handleCollapse(true)}
-              className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors flex-shrink-0"
+              className="shrink-0 cursor-pointer rounded-lg p-1.5 text-slate-400 hover:bg-slate-700 hover:text-white"
               aria-label="Recolher menu"
             >
               <ChevronLeft className="size-4" />
@@ -189,10 +224,10 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
         </div>
 
         {isCollapsed && (
-          <div className="flex justify-center py-2 border-b border-slate-700">
+          <div className="flex justify-center border-b border-slate-700 py-2">
             <button
               onClick={() => handleCollapse(false)}
-              className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+              className="cursor-pointer rounded-lg p-1.5 text-slate-400 hover:bg-slate-700 hover:text-white"
               aria-label="Expandir menu"
             >
               <ChevronRight className="size-4" />
@@ -200,9 +235,8 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
           </div>
         )}
 
-        {/* Nav Items */}
         <nav className="flex-1 overflow-y-auto py-4">
-          <div className={`space-y-1 ${isCollapsed ? "px-2" : "px-3"}`}>
+          <div className={cn("space-y-1", isCollapsed ? "px-2" : "px-3")}>
             {navigationItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname?.startsWith(item.href);
@@ -211,15 +245,15 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
                   key={item.href}
                   href={item.href}
                   title={isCollapsed ? item.label : undefined}
-                  className={`flex items-center gap-3 rounded-xl transition-colors ${
-                    isCollapsed ? "justify-center px-0 py-3" : "px-3 py-3"
-                  } ${
+                  className={cn(
+                    "flex items-center gap-3 rounded-xl transition-colors",
+                    isCollapsed ? "justify-center px-0 py-3" : "px-3 py-3",
                     isActive
-                      ? "bg-primary text-white font-semibold"
-                      : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                  }`}
+                      ? "bg-primary font-semibold text-white"
+                      : "text-slate-300 hover:bg-slate-800 hover:text-white",
+                  )}
                 >
-                  <Icon className="size-5 flex-shrink-0" />
+                  <Icon className="size-5 shrink-0" />
                   {!isCollapsed && (
                     <span className="text-sm font-medium">{item.label}</span>
                   )}
@@ -229,21 +263,24 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
           </div>
         </nav>
 
-        {/* Sign Out */}
         <div
-          className={`border-t border-slate-700 py-4 flex-shrink-0 ${
-            isCollapsed ? "px-2" : "px-3"
-          }`}
+          className={cn(
+            "shrink-0 border-t border-slate-700 py-4",
+            isCollapsed ? "px-2" : "px-3",
+          )}
         >
           <button
             onClick={() => setIsSignOutDialogOpen(true)}
             title={isCollapsed ? "Sair" : undefined}
-            className={`w-full flex items-center gap-3 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition-colors ${
-              isCollapsed ? "justify-center px-0 py-3" : "px-3 py-3"
-            }`}
+            className={cn(
+              "flex w-full cursor-pointer items-center gap-3 rounded-xl text-slate-300 transition-colors hover:bg-slate-800 hover:text-white",
+              isCollapsed ? "justify-center px-0 py-3" : "px-3 py-3",
+            )}
           >
-            <LogOut className="size-5 flex-shrink-0" />
-            {!isCollapsed && <span className="text-sm font-medium">Sair</span>}
+            <LogOut className="size-5 shrink-0" />
+            {!isCollapsed && (
+              <span className="text-sm font-medium">Sair</span>
+            )}
           </button>
         </div>
       </aside>

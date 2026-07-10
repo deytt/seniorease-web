@@ -2,32 +2,25 @@ import { Reminder } from "../../entities/Reminder";
 import type { ReminderCategory } from "../../entities/ReminderCategory";
 import { IReminderRepository } from "../../repositories/IReminderRepository";
 
-export interface CreateReminderInput {
-  userId: string;
-  taskId?: string;
+export interface UpdateReminderInput {
+  id: string;
   title: string;
   message: string;
   category: ReminderCategory;
   scheduledAt: Date;
+  taskId?: string;
 }
 
-export class CreateReminderUseCase {
+export class UpdateReminderUseCase {
   constructor(private reminderRepository: IReminderRepository) {}
 
-  async execute(input: CreateReminderInput): Promise<Reminder> {
-    const now = new Date();
-    const reminder: Omit<Reminder, "id"> = {
-      userId: input.userId,
-      taskId: input.taskId,
+  async execute(input: UpdateReminderInput): Promise<Reminder> {
+    return this.reminderRepository.updateReminder(input.id, {
       title: input.title.trim(),
       message: input.message.trim(),
       category: input.category,
       scheduledAt: input.scheduledAt,
-      isRead: false,
-      notified: false,
-      createdAt: now,
-    };
-
-    return this.reminderRepository.createReminder(reminder);
+      ...(input.taskId !== undefined ? { taskId: input.taskId } : {}),
+    });
   }
 }
