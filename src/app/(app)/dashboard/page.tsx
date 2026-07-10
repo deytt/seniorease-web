@@ -214,7 +214,17 @@ export default function DashboardPage() {
                         className="h-7 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
                         asChild
                       >
-                        <Link href={`/tasks/${task.id}`}>Iniciar</Link>
+                        <Link
+                          href={
+                            task.steps && task.steps.length > 0
+                              ? `/tasks/${task.id}/guided`
+                              : `/tasks/${task.id}`
+                          }
+                        >
+                          {task.steps && task.steps.length > 0
+                            ? "Modo Guiado"
+                            : "Iniciar"}
+                        </Link>
                       </Button>
                     </div>
                   ))}

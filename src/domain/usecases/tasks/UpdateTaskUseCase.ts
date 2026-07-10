@@ -1,4 +1,5 @@
-import { Task } from "../../entities/Task";
+import { Task, TaskStatus } from "../../entities/Task";
+import type { TaskStep } from "../../entities/TaskStep";
 import { ITaskRepository } from "../../repositories/ITaskRepository";
 
 export interface UpdateTaskInput {
@@ -6,6 +7,8 @@ export interface UpdateTaskInput {
   title?: string;
   description?: string;
   dueDate?: Date;
+  steps?: TaskStep[];
+  status?: TaskStatus;
 }
 
 export class UpdateTaskUseCase {
@@ -18,6 +21,8 @@ export class UpdateTaskUseCase {
     if (input.description !== undefined)
       updates.description = input.description;
     if (input.dueDate !== undefined) updates.dueDate = input.dueDate;
+    if (input.steps !== undefined) updates.steps = input.steps;
+    if (input.status !== undefined) updates.status = input.status;
 
     return this.taskRepository.updateTask(input.taskId, updates);
   }

@@ -15,6 +15,12 @@ import {
 } from "firebase/firestore";
 import { db } from "./config";
 
+function stripUndefined<T extends Record<string, unknown>>(data: T): Partial<T> {
+  return Object.fromEntries(
+    Object.entries(data).filter(([, value]) => value !== undefined),
+  ) as Partial<T>;
+}
+
 export class FirebaseTaskRepository implements ITaskRepository {
   private collectionName = "tasks";
 
@@ -39,10 +45,13 @@ export class FirebaseTaskRepository implements ITaskRepository {
   }
 
   async createTask(task: Omit<Task, "id" | "createdAt">): Promise<Task> {
-    const docRef = await addDoc(collection(db, this.collectionName), {
-      ...task,
-      createdAt: serverTimestamp(),
-    });
+    const docRef = await addDoc(
+      collection(db, this.collectionName),
+      stripUndefined({
+        ...task,
+        createdAt: serverTimestamp(),
+      }),
+    );
 
     return {
       ...task,
@@ -53,7 +62,7 @@ export class FirebaseTaskRepository implements ITaskRepository {
 
   async updateTask(taskId: string, task: Partial<Task>): Promise<Task> {
     const docRef = doc(db, this.collectionName, taskId);
-    await updateDoc(docRef, { ...task });
+    await updateDoc(docRef, stripUndefined({ ...task }));
 
     const updated = await getDoc(docRef);
     return this.mapDocumentToTask(updated);

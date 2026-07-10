@@ -223,13 +223,17 @@ export default function TaskListPage() {
 
         {/* Actions */}
         <div className="flex-shrink-0 flex items-center gap-2">
-          <Button
-            asChild
-            size="sm"
-            className="bg-emerald-500 hover:bg-emerald-600 text-white border-0"
-          >
-            <Link href={`/tasks/${task.id}/guided`}>Guiado</Link>
-          </Button>
+          {!isCompleted &&
+            task.steps &&
+            task.steps.length > 0 && (
+              <Button
+                asChild
+                size="sm"
+                className="border-0 bg-secondary text-secondary-foreground hover:bg-secondary/90"
+              >
+                <Link href={`/tasks/${task.id}/guided`}>Modo Guiado</Link>
+              </Button>
+            )}
           <Button asChild size="sm" variant="outline">
             <Link href={`/tasks/${task.id}`}>Detalhes</Link>
           </Button>
