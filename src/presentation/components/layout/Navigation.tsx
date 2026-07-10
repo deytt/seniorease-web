@@ -9,6 +9,7 @@ import {
   X,
   Home,
   CheckSquare2,
+  ListOrdered,
   Bell,
   User,
   History,
@@ -31,10 +32,35 @@ import { cn } from "@/lib/utils";
 const navigationItems = [
   { label: "Dashboard", href: "/dashboard", icon: Home },
   { label: "Tarefas", href: "/tasks", icon: CheckSquare2 },
+  {
+    label: "Modo Guiado",
+    href: "/tasks/guided",
+    icon: ListOrdered,
+    match: (pathname: string) =>
+      pathname === "/tasks/guided" || /\/tasks\/[^/]+\/guided$/.test(pathname),
+  },
   { label: "Lembretes", href: "/reminders", icon: Bell },
   { label: "Histórico", href: "/history", icon: History },
   { label: "Perfil", href: "/profile", icon: User },
 ];
+
+function isNavItemActive(
+  pathname: string | null,
+  item: (typeof navigationItems)[number],
+): boolean {
+  if (!pathname) return false;
+  if ("match" in item && item.match) {
+    return item.match(pathname);
+  }
+  if (item.href === "/tasks") {
+    return (
+      pathname === "/tasks" ||
+      pathname === "/tasks/create" ||
+      (pathname.startsWith("/tasks/") && !pathname.endsWith("/guided"))
+    );
+  }
+  return pathname === item.href || pathname.startsWith(`${item.href}/`);
+}
 
 /** Abaixo disso a sidebar inicia colapsada para não comprimir o conteúdo. */
 const SIDEBAR_EXPANDED_MIN_WIDTH = 1280;
@@ -153,7 +179,7 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
             <div className="space-y-1 px-3 py-3">
               {navigationItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname?.startsWith(item.href);
+                const isActive = isNavItemActive(pathname, item);
                 return (
                   <Link
                     key={item.href}
@@ -239,7 +265,7 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
           <div className={cn("space-y-1", isCollapsed ? "px-2" : "px-3")}>
             {navigationItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname?.startsWith(item.href);
+              const isActive = isNavItemActive(pathname, item);
               return (
                 <Link
                   key={item.href}
