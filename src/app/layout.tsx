@@ -12,6 +12,7 @@ import { TooltipProvider } from "@/presentation/components/ui/tooltip";
 import { PreferencesProvider } from "@/presentation/providers/PreferencesProvider";
 import { AuthProvider } from "@/presentation/providers/AuthProvider";
 import { FCMProvider } from "@/presentation/providers/FCMProvider";
+import { Toaster } from "@/presentation/components/ui/sonner";
 
 const playfairDisplayHeading = Playfair_Display({
   subsets: ["latin"],
@@ -65,7 +66,10 @@ export default function RootLayout({
         <body className="min-h-full flex flex-col">
           <FCMProvider />
           <AuthProvider>
-            <PreferencesProvider>{children}</PreferencesProvider>
+            <PreferencesProvider>
+              {children}
+              <Toaster />
+            </PreferencesProvider>
           </AuthProvider>
         </body>
       </TooltipProvider>
