@@ -1,17 +1,24 @@
 import { FirebaseHistoryRepository } from "@/infrastructure/firebase/FirebaseHistoryRepository";
+import { MockHistoryRepository } from "@/infrastructure/mock/MockHistoryRepository";
 import { GetHistoryEventsUseCase } from "@/domain/usecases/history/GetHistoryEventsUseCase";
 import { GetStatsUseCase } from "@/domain/usecases/history/GetStatsUseCase";
 import { CreateHistoryEventUseCase } from "@/domain/usecases/history/CreateHistoryEventUseCase";
+import type { IHistoryRepository } from "@/domain/repositories/IHistoryRepository";
+
+const isDummyFirebaseKey =
+  process.env.NEXT_PUBLIC_FIREBASE_API_KEY?.includes("Dummy");
 
 // Singleton instances
-let historyRepository: FirebaseHistoryRepository | null = null;
+let historyRepository: IHistoryRepository | null = null;
 let getHistoryEventsUseCase: GetHistoryEventsUseCase | null = null;
 let getStatsUseCase: GetStatsUseCase | null = null;
 let createHistoryEventUseCase: CreateHistoryEventUseCase | null = null;
 
-export function getHistoryRepository(): FirebaseHistoryRepository {
+export function getHistoryRepository(): IHistoryRepository {
   if (!historyRepository) {
-    historyRepository = new FirebaseHistoryRepository();
+    historyRepository = isDummyFirebaseKey
+      ? new MockHistoryRepository()
+      : new FirebaseHistoryRepository();
   }
   return historyRepository;
 }

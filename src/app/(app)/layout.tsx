@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { onAuthStateChanged } from "firebase/auth";
+import type { User } from "@/domain/entities/User";
 
-import { auth } from "@/infrastructure/firebase/config";
 import { Navigation } from "@/presentation/components/layout/Navigation";
 import { cn } from "@/lib/utils";
+import { getGetCurrentUserUseCase } from "@/lib/di/authDi";
 
 const SIDEBAR_EXPANDED_MIN_WIDTH = 1280;
 
@@ -15,6 +15,7 @@ const SIDEBAR_EXPANDED_MIN_WIDTH = 1280;
  * - < lg: header mobile
  * - lg–xl: sidebar colapsada por padrão (pode expandir e empurra o conteúdo)
  * - ≥ 1280px: sidebar expandida por padrão
+ * Usa o repositório de autenticação (Firebase em produção, Mock em desenvolvimento).
  */
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -24,15 +25,24 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        router.replace("/login");
-        return;
-      }
-      setStatus("authenticated");
-    });
+    const checkAuth = async () => {
+      try {
+        const getCurrentUserUseCase = getGetCurrentUserUseCase();
+        const user: User | null = await getCurrentUserUseCase.execute();
 
-    return unsubscribe;
+        if (!user) {
+          router.replace("/login");
+          return;
+        }
+
+        setStatus("authenticated");
+      } catch (err) {
+        console.error("Erro ao verificar autenticação:", err);
+        router.replace("/login");
+      }
+    };
+
+    checkAuth();
   }, [router]);
 
   useEffect(() => {

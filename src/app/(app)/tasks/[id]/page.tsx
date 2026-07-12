@@ -160,7 +160,7 @@ export default function TaskDetailsPage({
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground">Carregando atividade...</p>
+        <p className="text-muted-foreground">Carregando tarefa...</p>
       </div>
     );
   }
@@ -169,10 +169,10 @@ export default function TaskDetailsPage({
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4">
         <p className="text-lg text-muted-foreground">
-          {error || "Atividade não encontrada"}
+          {error || "Tarefa não encontrada"}
         </p>
         <Button asChild variant="outline">
-          <Link href="/tasks">Voltar para Minhas Atividades</Link>
+          <Link href="/tasks">Voltar para Minhas Tarefas</Link>
         </Button>
       </div>
     );
@@ -185,23 +185,29 @@ export default function TaskDetailsPage({
     <div className="max-w-6xl mx-auto px-4 py-6 pb-20">
       {/* Modal de confirmação de exclusão */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
+        <DialogContent showCloseButton={false}>
           <DialogHeader>
-            <DialogTitle>Excluir atividade?</DialogTitle>
+            <DialogTitle>Excluir tarefa?</DialogTitle>
             <DialogDescription>
-              Tem certeza que deseja excluir a atividade &quot;{task?.title}&quot;?
-              Esta ação não pode ser desfeita.
+              Tem certeza de que deseja excluir esta tarefa?
+              <br />
+              Essa ação não pode ser desfeita.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" variant="outline" disabled={isDeleting}>
-                Cancelar
-              </Button>
-            </DialogClose>
+          <DialogFooter className="flex-col gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={isDeleting}
+              onClick={() => setIsDeleteDialogOpen(false)}
+            >
+              Cancelar
+            </Button>
             <Button
               type="button"
               variant="destructive"
+              className="w-full"
               disabled={isDeleting}
               onClick={handleDelete}
             >
@@ -215,7 +221,7 @@ export default function TaskDetailsPage({
       <Link href="/tasks">
         <Button variant="ghost" size="sm" className="mb-6">
           <ChevronLeft className="size-4 mr-2" />
-          Voltar para Atividades
+          Voltar para Tarefas
         </Button>
       </Link>
 
@@ -255,7 +261,7 @@ export default function TaskDetailsPage({
                     variant="ghost"
                     size="sm"
                     className="text-muted-foreground hover:text-destructive"
-                    aria-label="Excluir atividade"
+                    aria-label="Excluir tarefa"
                     onClick={() => setIsDeleteDialogOpen(true)}
                   >
                     <Trash2 className="size-5" />
@@ -366,7 +372,7 @@ export default function TaskDetailsPage({
                 </div>
 
                 {/* Action Buttons */}
-                <div className="grid grid-cols-2 gap-3 pt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-4">
                   {task.steps &&
                     task.steps.length > 0 &&
                     task.status !== "completed" && (
@@ -403,7 +409,7 @@ export default function TaskDetailsPage({
               <h3 className="font-semibold text-base">Notas da Tarefa</h3>
               <textarea
                 defaultValue={task.description || ""}
-                placeholder="Adicionar notas sobre esta atividade..."
+                placeholder="Adicionar notas sobre esta tarefa..."
                 readOnly
                 className="w-full h-24 p-3 border rounded-lg bg-muted/50 text-sm resize-none"
               />

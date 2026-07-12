@@ -22,13 +22,13 @@ export default function CreateTaskPage() {
       <Link href="/tasks">
         <Button variant="ghost" size="sm" className="mb-6">
           <ChevronLeft className="size-4 mr-2" />
-          Voltar para Atividades
+          Voltar para Tarefas
         </Button>
       </Link>
 
       {/* Title and Instructions */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Nova Atividade</h1>
+        <h1 className="text-3xl font-bold mb-2">Nova Tarefa</h1>
         <p className="text-muted-foreground">
           Preencha os detalhes abaixo. Todos os campos marcados com * são
           obrigatórios.
@@ -41,16 +41,6 @@ export default function CreateTaskPage() {
           <CreateTaskForm formRef={formRef} />
         </CardContent>
       </Card>
-
-      {/* Mobile Action Buttons */}
-      <div className="flex gap-3 md:hidden mt-6">
-        <Button variant="outline" className="flex-1" asChild>
-          <Link href="/tasks">Cancelar</Link>
-        </Button>
-        <Button size="lg" onClick={handleSave} className="flex-1">
-          Criar Atividade
-        </Button>
-      </div>
     </div>
   );
 }

@@ -48,6 +48,8 @@ export function useAuth() {
       setSignInState({ isLoading: true, error: null });
       try {
         await signInUseCase.execute({ email, password });
+        // Reset loading state before redirect to avoid button being stuck
+        setSignInState({ isLoading: false, error: null });
         router.push("/dashboard");
       } catch (err) {
         setSignInState({ isLoading: false, error: toMessage(err) });
@@ -60,9 +62,17 @@ export function useAuth() {
     setGoogleSignInState({ isLoading: true, error: null });
     try {
       await signInWithGoogleUseCase.execute();
+      // Reset loading state before redirect to avoid button being stuck
+      setGoogleSignInState({ isLoading: false, error: null });
       router.push("/dashboard");
     } catch (err) {
-      setGoogleSignInState({ isLoading: false, error: toMessage(err) });
+      const message = toMessage(err);
+      // Ignore the canceled popup message
+      if (message.includes("cancelou")) {
+        setGoogleSignInState({ isLoading: false, error: null });
+      } else {
+        setGoogleSignInState({ isLoading: false, error: message });
+      }
     }
   }, [router]);
 

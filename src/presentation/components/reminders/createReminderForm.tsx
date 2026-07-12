@@ -34,13 +34,7 @@ const reminderFormSchema = z.object({
     .trim()
     .min(3, "A mensagem deve ter pelo menos 3 caracteres.")
     .max(200, "A mensagem pode ter no máximo 200 caracteres."),
-  category: z.enum([
-    "medication",
-    "appointment",
-    "hydration",
-    "meal",
-    "bills",
-  ]),
+  category: z.enum(["medication", "appointment", "hydration", "meal", "bills"]),
   scheduledAt: z
     .string()
     .min(1, "Informe a data e a hora.")
@@ -52,10 +46,7 @@ const reminderFormSchema = z.object({
 
 type ReminderFormValues = z.infer<typeof reminderFormSchema>;
 
-const BASIC_MODE_CATEGORIES: ReminderCategory[] = [
-  "medication",
-  "appointment",
-];
+const BASIC_MODE_CATEGORIES: ReminderCategory[] = ["medication", "appointment"];
 
 export function toDatetimeLocalValue(date: Date): string {
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -274,7 +265,7 @@ export function CreateReminderForm({
       <Button
         type="submit"
         className="w-full cursor-pointer rounded-[14px]"
-        size="lg"
+        size="sm"
         disabled={isSubmitting}
         aria-busy={isSubmitting}
       >

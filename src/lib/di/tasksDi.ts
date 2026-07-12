@@ -1,4 +1,5 @@
 import { FirebaseTaskRepository } from "@/infrastructure/firebase/FirebaseTaskRepository";
+import { MockTaskRepository } from "@/infrastructure/mock/MockTaskRepository";
 import { GetTasksUseCase } from "@/domain/usecases/tasks/GetTasksUseCase";
 import { GetTaskByIdUseCase } from "@/domain/usecases/tasks/GetTaskByIdUseCase";
 import { CreateTaskUseCase } from "@/domain/usecases/tasks/CreateTaskUseCase";
@@ -7,9 +8,13 @@ import { DeleteTaskUseCase } from "@/domain/usecases/tasks/DeleteTaskUseCase";
 import { AdvanceGuidedTaskStepUseCase } from "@/domain/usecases/tasks/AdvanceGuidedTaskStepUseCase";
 import { CompleteTaskUseCase } from "@/domain/usecases/tasks/CompleteTaskUseCase";
 import { getHistoryDi } from "@/lib/di/historyDi";
+import type { ITaskRepository } from "@/domain/repositories/ITaskRepository";
+
+const isDummyFirebaseKey =
+  process.env.NEXT_PUBLIC_FIREBASE_API_KEY?.includes("Dummy");
 
 // Singleton instances
-let taskRepository: FirebaseTaskRepository | null = null;
+let taskRepository: ITaskRepository | null = null;
 let getTasksUseCase: GetTasksUseCase | null = null;
 let getTaskByIdUseCase: GetTaskByIdUseCase | null = null;
 let createTaskUseCase: CreateTaskUseCase | null = null;
@@ -18,9 +23,11 @@ let deleteTaskUseCase: DeleteTaskUseCase | null = null;
 let completeTaskUseCase: CompleteTaskUseCase | null = null;
 let advanceGuidedTaskStepUseCase: AdvanceGuidedTaskStepUseCase | null = null;
 
-export function getTaskRepository(): FirebaseTaskRepository {
+export function getTaskRepository(): ITaskRepository {
   if (!taskRepository) {
-    taskRepository = new FirebaseTaskRepository();
+    taskRepository = isDummyFirebaseKey
+      ? new MockTaskRepository()
+      : new FirebaseTaskRepository();
   }
   return taskRepository;
 }
