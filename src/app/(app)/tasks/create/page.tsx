@@ -10,12 +10,6 @@ import { CreateTaskForm } from "@/presentation/components/tasks/createTaskForm";
 export default function CreateTaskPage() {
   const formRef = useRef<HTMLFormElement>(null);
 
-  const handleSave = () => {
-    formRef.current?.dispatchEvent(
-      new Event("submit", { bubbles: true, cancelable: true }),
-    );
-  };
-
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 pb-20">
       {/* Header with Back Button */}

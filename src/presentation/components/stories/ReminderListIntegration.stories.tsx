@@ -60,8 +60,8 @@ const mockReminders: Reminder[] = [
     category: "medication",
     scheduledAt: new Date(Date.now() + 3600000), // 1 hora
     isRead: false,
+    notified: false,
     createdAt: new Date(),
-    taskId: null,
   },
   {
     id: "reminder-2",
@@ -71,8 +71,8 @@ const mockReminders: Reminder[] = [
     category: "hydration",
     scheduledAt: new Date(Date.now() + 7200000), // 2 horas
     isRead: false,
+    notified: false,
     createdAt: new Date(),
-    taskId: null,
   },
   {
     id: "reminder-3",
@@ -82,8 +82,8 @@ const mockReminders: Reminder[] = [
     category: "appointment",
     scheduledAt: new Date(Date.now() + 86400000), // amanhã
     isRead: false,
+    notified: false,
     createdAt: new Date(),
-    taskId: null,
   },
   {
     id: "reminder-4",
@@ -93,8 +93,8 @@ const mockReminders: Reminder[] = [
     category: "meal",
     scheduledAt: new Date(Date.now() + 10800000), // 3 horas
     isRead: false,
+    notified: false,
     createdAt: new Date(),
-    taskId: null,
   },
   {
     id: "reminder-5",
@@ -104,8 +104,8 @@ const mockReminders: Reminder[] = [
     category: "bills",
     scheduledAt: new Date(Date.now() + 432000000), // 5 dias
     isRead: true, // concluído
+    notified: false,
     createdAt: new Date(),
-    taskId: null,
   },
 ];
 

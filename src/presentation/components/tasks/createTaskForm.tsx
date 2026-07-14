@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/presentation/components/ui/button";
@@ -62,7 +62,7 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     formState: { errors, isSubmitting },
     reset,
   } = useForm<CreateTaskFormValues>({
@@ -76,8 +76,8 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
     },
   });
 
-  const titleValue = watch("title") ?? "";
-  const descriptionValue = watch("description") ?? "";
+  const titleValue = useWatch({ control, name: "title" }) ?? "";
+  const descriptionValue = useWatch({ control, name: "description" }) ?? "";
 
   const handleAddStep = () => {
     if (stepTitle.trim() && stepInstruction.trim()) {

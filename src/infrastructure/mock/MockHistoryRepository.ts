@@ -70,6 +70,7 @@ export class MockHistoryRepository implements IHistoryRepository {
     thisWeek: number;
     thisMonth: number;
   }> {
+    void daysBack;
     const events = await this.getHistoryEvents(userId);
     const now = new Date();
     const startOfWeek = new Date(now);

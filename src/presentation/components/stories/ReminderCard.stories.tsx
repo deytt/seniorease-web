@@ -66,7 +66,7 @@ const mockReminderPending: Reminder = {
   scheduledAt: new Date(Date.now() + 3600000), // 1 hora
   isRead: false,
   createdAt: new Date(),
-  taskId: null,
+  notified: false,
 };
 
 const mockReminderCompleted: Reminder = {

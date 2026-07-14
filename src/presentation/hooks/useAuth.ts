@@ -36,6 +36,7 @@ export function useAuth() {
   const [signUpState, setSignUpState] = useState<ActionState>(idleState);
   const [googleSignInState, setGoogleSignInState] =
     useState<ActionState>(idleState);
+  const [signOutState, setSignOutState] = useState<ActionState>(idleState);
   const [resetState, setResetState] = useState<
     ActionState & { success: boolean }
   >({
@@ -104,8 +105,15 @@ export function useAuth() {
   }, []);
 
   const signOut = useCallback(async () => {
-    await signOutUseCase.execute();
-    router.push("/login");
+    setSignOutState({ isLoading: true, error: null });
+    try {
+      await signOutUseCase.execute();
+      router.push("/login");
+      setSignOutState({ isLoading: false, error: null });
+    } catch (err) {
+      setSignOutState({ isLoading: false, error: toMessage(err) });
+      throw err;
+    }
   }, [router]);
 
   return {
@@ -127,5 +135,7 @@ export function useAuth() {
     resetSuccess: resetState.success,
 
     signOut,
+    isSigningOut: signOutState.isLoading,
+    signOutError: signOutState.error,
   };
 }

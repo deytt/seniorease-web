@@ -14,7 +14,6 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
 } from "@/presentation/components/ui/dialog";
 import { ChevronLeft, CheckCircle2, Play, Trash2, Clock } from "lucide-react";
 import { getTasksDi } from "@/lib/di/tasksDi";

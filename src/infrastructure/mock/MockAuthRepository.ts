@@ -1,6 +1,6 @@
-import { AuthRepository } from "@/domain/repositories/AuthRepository";
 import type { User } from "@/domain/entities/User";
 import type {
+  IAuthRepository,
   SignInCredentials,
   SignUpInput,
   UpdateUserInput,
@@ -13,24 +13,13 @@ const MOCK_USER_STORAGE_KEY = "mock_auth_user";
  * Simula um usuário logado sem depender de credenciais Firebase reais
  * Persiste dados em localStorage para manter a sessão entre recarregamentos
  */
-export class MockAuthRepository implements AuthRepository {
+export class MockAuthRepository implements IAuthRepository {
   private createMockUser(email: string, name?: string): User {
     return {
       id: "mock-user-" + Math.random().toString(36),
       email,
       name: name || email.split("@")[0],
-      photoUrl: null,
-      preferences: {
-        language: "pt-BR",
-        accessibility: {
-          fontSize: "medium",
-          highContrast: false,
-          reducedMotion: false,
-          textToSpeech: false,
-        },
-      },
       createdAt: new Date(),
-      updatedAt: new Date(),
     };
   }
 
@@ -97,6 +86,7 @@ export class MockAuthRepository implements AuthRepository {
   }
 
   async sendPasswordReset(email: string): Promise<void> {
+    void email;
     // Mock de reset de senha
   }
 
@@ -105,18 +95,7 @@ export class MockAuthRepository implements AuthRepository {
       id: userId,
       email: "user@example.com",
       name: input.name || "Mock User",
-      photoUrl: null,
-      preferences: {
-        language: "pt-BR",
-        accessibility: {
-          fontSize: "medium",
-          highContrast: false,
-          reducedMotion: false,
-          textToSpeech: false,
-        },
-      },
       createdAt: new Date(),
-      updatedAt: new Date(),
     };
   }
 }

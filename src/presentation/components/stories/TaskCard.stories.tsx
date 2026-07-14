@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import React from "react";
 import { Card } from "@/presentation/components/ui/card";
 import { Button } from "@/presentation/components/ui/button";
-import { CheckCircle2, AlertCircle, Clock } from "lucide-react";
+import { CheckCircle2, Clock } from "lucide-react";
 import { Badge } from "@/presentation/components/ui/badge";
 import type { Task, TaskPriority, TaskCategory } from "@/domain/entities/Task";
 

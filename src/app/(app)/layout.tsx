@@ -2,11 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { User } from "@/domain/entities/User";
 
 import { Navigation } from "@/presentation/components/layout/Navigation";
+import { useAuthContext } from "@/presentation/providers/AuthProvider";
 import { cn } from "@/lib/utils";
-import { getGetCurrentUserUseCase } from "@/lib/di/authDi";
 
 const SIDEBAR_EXPANDED_MIN_WIDTH = 1280;
 
@@ -19,31 +18,14 @@ const SIDEBAR_EXPANDED_MIN_WIDTH = 1280;
  */
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [status, setStatus] = useState<"checking" | "authenticated">(
-    "checking",
-  );
+  const { user, loading: authLoading } = useAuthContext();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const getCurrentUserUseCase = getGetCurrentUserUseCase();
-        const user: User | null = await getCurrentUserUseCase.execute();
-
-        if (!user) {
-          router.replace("/login");
-          return;
-        }
-
-        setStatus("authenticated");
-      } catch (err) {
-        console.error("Erro ao verificar autenticação:", err);
-        router.replace("/login");
-      }
-    };
-
-    checkAuth();
-  }, [router]);
+    if (!authLoading && !user) {
+      router.replace("/login");
+    }
+  }, [authLoading, user, router]);
 
   useEffect(() => {
     const media = window.matchMedia(
@@ -55,7 +37,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     return () => media.removeEventListener("change", sync);
   }, []);
 
-  if (status === "checking") {
+  if (authLoading) {
     return (
       <div
         role="status"
@@ -65,6 +47,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <p className="text-lg text-muted-foreground">Carregando...</p>
       </div>
     );
+  }
+
+  if (!user) {
+    return null;
   }
 
   return (

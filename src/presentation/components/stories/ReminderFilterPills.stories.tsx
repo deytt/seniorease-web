@@ -50,6 +50,10 @@ type Story = StoryObj<typeof meta>;
  * Demonstra todos os filtros disponíveis em modo completo.
  */
 export const Default: Story = {
+  args: {
+    value: { kind: "all" },
+    onChange: () => {},
+  },
   render: () => {
     const [value, setValue] = useState<ReminderFilterSelection>({
       kind: "all",
@@ -78,6 +82,10 @@ export const Default: Story = {
  * Útil para interfaces simplificadas para usuários com menos experiência.
  */
 export const BasicMode: Story = {
+  args: {
+    value: { kind: "all" },
+    onChange: () => {},
+  },
   render: () => {
     const [value, setValue] = useState<ReminderFilterSelection>({
       kind: "all",
@@ -108,6 +116,10 @@ export const BasicMode: Story = {
  * Filtro "Hoje" ativo: demonstra como se vê quando esse filtro está selecionado.
  */
 export const TodayActive: Story = {
+  args: {
+    value: { kind: "today" },
+    onChange: () => {},
+  },
   render: () => {
     const [value, setValue] = useState<ReminderFilterSelection>({
       kind: "today",
@@ -116,7 +128,7 @@ export const TodayActive: Story = {
     return (
       <div className="space-y-4 w-full max-w-md">
         <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 p-2 rounded">
-          ℹ️ Filtro "Hoje" está ativo
+          ℹ️ Filtro &quot;Hoje&quot; está ativo
         </p>
         <ReminderFilterPills value={value} onChange={setValue} />
       </div>
@@ -128,6 +140,10 @@ export const TodayActive: Story = {
  * Filtro por categoria ativo: exemplo com categoria "medication".
  */
 export const CategoryActive: Story = {
+  args: {
+    value: { kind: "category", category: "medication" },
+    onChange: () => {},
+  },
   render: () => {
     const [value, setValue] = useState<ReminderFilterSelection>({
       kind: "category",
@@ -137,7 +153,7 @@ export const CategoryActive: Story = {
     return (
       <div className="space-y-4 w-full max-w-md">
         <p className="text-sm text-blue-700 bg-blue-50 border border-blue-200 p-2 rounded">
-          ✅ Filtro por categoria "Medicação" está ativo
+          ✅ Filtro por categoria &quot;Medicação&quot; está ativo
         </p>
         <ReminderFilterPills value={value} onChange={setValue} />
       </div>
@@ -150,6 +166,10 @@ export const CategoryActive: Story = {
  * Redimensione a janela para ver o comportamento.
  */
 export const Responsive: Story = {
+  args: {
+    value: { kind: "all" },
+    onChange: () => {},
+  },
   render: () => {
     const [value, setValue] = useState<ReminderFilterSelection>({
       kind: "all",
