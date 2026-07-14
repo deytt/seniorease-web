@@ -140,8 +140,8 @@ export default function DashboardPage() {
               </div>
               <p className="text-lg font-medium leading-relaxed mb-5 max-w-lg">
                 &ldquo;Você completou {completedTasks.length} tarefa
-                {completedTasks.length !== 1 ? "s" : ""} ontem &mdash; que maravilha!
-                Continue com o ótimo trabalho hoje.&rdquo;
+                {completedTasks.length !== 1 ? "s " : " "}ontem &mdash; que
+                maravilha! Continue com o ótimo trabalho hoje.&rdquo;
               </p>
               <div className="flex gap-6">
                 <div>
@@ -371,7 +371,9 @@ export default function DashboardPage() {
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Interface</span>
                   <span className="font-medium">
-                    {preferences.interfaceMode === "basic" ? "Básica" : "Avançada"}
+                    {preferences.interfaceMode === "basic"
+                      ? "Básica"
+                      : "Avançada"}
                   </span>
                 </div>
               </div>

@@ -1,4 +1,5 @@
 import { FirebaseAuthRepository } from "@/infrastructure/firebase/FirebaseAuthRepository";
+import { MockAuthRepository } from "@/infrastructure/mock/MockAuthRepository";
 import { SignInUseCase } from "@/domain/usecases/auth/SignInUseCase";
 import { SignUpUseCase } from "@/domain/usecases/auth/SignUpUseCase";
 import { SignOutUseCase } from "@/domain/usecases/auth/SignOutUseCase";
@@ -12,8 +13,15 @@ import { UpdateUserUseCase } from "@/domain/usecases/auth/UpdateUserUseCase";
  * Se o projeto crescer, isto pode virar um container real (ex: tsyringe),
  * mas o ponto importante já está garantido: Presentation nunca instancia
  * Firebase diretamente, apenas consome os casos de uso do Domain.
+ *
+ * Em desenvolvimento local, usa MockAuthRepository para não depender de credenciais Firebase.
+ * Detecta credenciais dummy do .env.local
  */
-const authRepository = new FirebaseAuthRepository();
+const isDummyFirebaseKey =
+  process.env.NEXT_PUBLIC_FIREBASE_API_KEY?.includes("Dummy");
+const authRepository = isDummyFirebaseKey
+  ? new MockAuthRepository()
+  : new FirebaseAuthRepository();
 
 export const signInUseCase = new SignInUseCase(authRepository);
 export const signUpUseCase = new SignUpUseCase(authRepository);

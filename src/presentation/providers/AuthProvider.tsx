@@ -36,7 +36,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fcmInitRef = useRef<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, () => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      void firebaseUser;
       void (async () => {
         try {
           const currentUser = await getGetCurrentUserUseCase().execute();

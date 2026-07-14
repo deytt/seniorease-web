@@ -97,11 +97,7 @@ function GuidedTaskStepper({
               aria-current={isActive ? "step" : undefined}
               aria-label={`Passo ${index + 1}${isCompleted ? ", concluído" : ""}`}
             >
-              {isCompleted ? (
-                <CompletedStepCheck />
-              ) : (
-                index + 1
-              )}
+              {isCompleted ? <CompletedStepCheck /> : index + 1}
             </button>
             {showConnector && (
               <div
@@ -191,7 +187,7 @@ export function GuidedTaskScreen({
                 Parabéns!
               </h2>
               <p className="mb-4 text-muted-foreground">
-                Você completou a atividade &quot;{task.title}&quot; com sucesso!
+                Você completou a tarefa &quot;{task.title}&quot; com sucesso!
               </p>
               <p className="text-sm text-muted-foreground">
                 Retornando ao painel...
@@ -271,7 +267,10 @@ export function GuidedTaskScreen({
               >
                 {currentStep?.isCompleted ? (
                   <span className="flex size-9 items-center justify-center rounded-full border-2 border-success sm:size-10">
-                    <Check className="size-4 text-success sm:size-5" strokeWidth={3} />
+                    <Check
+                      className="size-4 text-success sm:size-5"
+                      strokeWidth={3}
+                    />
                   </span>
                 ) : (
                   <span className="text-3xl font-black text-primary sm:text-4xl">
@@ -300,7 +299,10 @@ export function GuidedTaskScreen({
             className="mt-4 flex gap-3 rounded-xl border border-primary/20 bg-primary-light px-3 py-3 text-sm text-foreground sm:mt-6 sm:px-4"
             role="note"
           >
-            <Info className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
+            <Info
+              className="mt-0.5 size-5 shrink-0 text-primary"
+              aria-hidden="true"
+            />
             <p className="min-w-0 leading-relaxed">
               Ao tocar em <strong>Próximo Passo</strong>, você confirma que
               concluiu o passo atual. Passos já confirmados não podem ser
@@ -310,47 +312,50 @@ export function GuidedTaskScreen({
 
           <div className="sticky bottom-0 z-10 -mx-3 mt-4 border-t border-[#e2e8f0] bg-[#f8fafc]/95 px-3 py-4 backdrop-blur-sm supports-[padding:max(0px)]:pb-[max(1rem,env(safe-area-inset-bottom))] sm:static sm:mx-0 sm:mt-6 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
-            <button
-              type="button"
-              className={cn(
-                "inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-3 rounded-2xl border border-[#e2e8f0] bg-white px-4 py-4 text-base font-bold text-[#0f172a] transition-colors hover:bg-[#f8fafc] disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-[4.375rem] sm:px-6 sm:py-5 sm:text-lg",
-              )}
-              onClick={onPrevious}
-              disabled={currentStepIndex === 0 || isBusy}
-              aria-disabled={currentStepIndex === 0}
-            >
-              <ArrowLeft
-                className="size-5 shrink-0 text-[#0f172a] sm:size-6"
-                aria-hidden="true"
-              />
-              Passo Anterior
-            </button>
-
-            {isLastStep ? (
-              <Button
+              <button
                 type="button"
-                size="lg"
-                className="min-h-11 rounded-2xl bg-primary py-4 text-base font-bold text-primary-foreground hover:bg-primary/90 sm:min-h-[4.375rem] sm:py-5 sm:text-lg"
-                onClick={onComplete}
-                disabled={isBusy}
-              >
-                {isCompleting ? "Concluindo..." : "Concluir Tarefa"}
-                {!isCompleting && (
-                  <CheckCircle2 className="size-5 sm:size-6" aria-hidden="true" />
+                className={cn(
+                  "inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-3 rounded-2xl border border-[#e2e8f0] bg-white px-4 py-4 text-base font-bold text-[#0f172a] transition-colors hover:bg-[#f8fafc] disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-[4.375rem] sm:px-6 sm:py-5 sm:text-lg",
                 )}
-              </Button>
-            ) : (
-              <Button
-                type="button"
-                size="lg"
-                className="min-h-11 rounded-2xl bg-primary py-4 text-base font-bold text-primary-foreground hover:bg-primary/90 sm:min-h-[4.375rem] sm:py-5 sm:text-lg"
-                onClick={onNext}
-                disabled={isBusy}
+                onClick={onPrevious}
+                disabled={currentStepIndex === 0 || isBusy}
+                aria-disabled={currentStepIndex === 0}
               >
-                {isAdvancing ? "Salvando..." : "Próximo Passo"}
-                <ArrowRight className="size-5 sm:size-6" aria-hidden="true" />
-              </Button>
-            )}
+                <ArrowLeft
+                  className="size-5 shrink-0 text-[#0f172a] sm:size-6"
+                  aria-hidden="true"
+                />
+                Passo Anterior
+              </button>
+
+              {isLastStep ? (
+                <Button
+                  type="button"
+                  size="lg"
+                  className="min-h-11 rounded-2xl bg-primary py-4 text-base font-bold text-primary-foreground hover:bg-primary/90 sm:min-h-[4.375rem] sm:py-5 sm:text-lg"
+                  onClick={onComplete}
+                  disabled={isBusy}
+                >
+                  {isCompleting ? "Concluindo..." : "Concluir Tarefa"}
+                  {!isCompleting && (
+                    <CheckCircle2
+                      className="size-5 sm:size-6"
+                      aria-hidden="true"
+                    />
+                  )}
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  size="lg"
+                  className="min-h-11 rounded-2xl bg-primary py-4 text-base font-bold text-primary-foreground hover:bg-primary/90 sm:min-h-[4.375rem] sm:py-5 sm:text-lg"
+                  onClick={onNext}
+                  disabled={isBusy}
+                >
+                  {isAdvancing ? "Salvando..." : "Próximo Passo"}
+                  <ArrowRight className="size-5 sm:size-6" aria-hidden="true" />
+                </Button>
+              )}
             </div>
           </div>
         </>
