@@ -24,11 +24,14 @@ const buttonVariants = cva(
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        success: "bg-[#22c55e] text-white hover:bg-[#16a34a]",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-border bg-background hover:bg-accent hover:text-accent-foreground",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+          "border border-border bg-background text-foreground hover:bg-accent hover:text-accent-foreground",
+        // Figma (node 2:6901-2:6904): "Ghost" is a persistent light-blue pill,
+        // not a hover-only state — it must read as a button at rest, not just on hover.
+        ghost: "bg-primary/10 text-primary hover:bg-primary/15",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {

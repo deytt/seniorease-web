@@ -14,7 +14,8 @@ const Checkbox = React.forwardRef<
     ref={ref}
     className={cn(
       // 24px visual, mas a área clicável real vem do <label> que envolve o componente (min 44px)
-      "peer h-6 w-6 shrink-0 rounded-md border border-input bg-background text-primary-foreground",
+      // Figma (node 2:7569/2:7575): border-2 (2px) e rounded-[10px] — não rounded-md padrão.
+      "peer h-6 w-6 shrink-0 rounded-[10px] border-2 border-input bg-background text-primary-foreground",
       "transition-colors",
       "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
       "data-[state=checked]:border-primary data-[state=checked]:bg-primary",

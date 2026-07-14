@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/presentation/components/ui/button";
@@ -13,16 +13,28 @@ import { getTasksDi } from "@/lib/di/tasksDi";
 import { useState } from "react";
 
 const createTaskSchema = z.object({
-  title: z.string().min(3, "Título deve ter pelo menos 3 caracteres."),
+  title: z
+    .string()
+    .min(1, "Título da tarefa é obrigatório")
+    .max(30, "Título não pode ter mais de 30 caracteres"),
   description: z
     .string()
-    .min(10, "Descrição deve ter pelo menos 10 caracteres."),
-  dueDate: z.string().optional(),
-  priority: z.enum(["low", "medium", "high"]).optional(),
+    .max(100, "Descrição não pode ter mais de 100 caracteres")
+    .optional()
+    .or(z.literal("")),
+  dueDate: z
+    .string()
+    .min(1, "Defina a data e hora da tarefa")
+    .refine(
+      (val) => new Date(val) > new Date(),
+      "A data e hora não pode ser no passado",
+    ),
+  priority: z
+    .enum(["low", "medium", "high"])
+    .refine((val) => val !== null, "Prioridade é obrigatória"),
   category: z
     .enum(["medication", "health", "exercise", "social", "personal"])
-    .optional(),
-  reminderTime: z.string().optional(),
+    .refine((val) => val !== null, "Categoria é obrigatória"),
 });
 
 type CreateTaskFormValues = z.infer<typeof createTaskSchema>;
@@ -45,10 +57,12 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
   const [steps, setSteps] = useState<TaskStep[]>([]);
   const [stepTitle, setStepTitle] = useState("");
   const [stepInstruction, setStepInstruction] = useState("");
+  const [stepsError, setStepsError] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
     reset,
   } = useForm<CreateTaskFormValues>({
@@ -58,23 +72,27 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
       description: "",
       dueDate: "",
       priority: "medium",
-      category: "personal",
-      reminderTime: "",
+      category: "health",
     },
   });
 
+  const titleValue = useWatch({ control, name: "title" }) ?? "";
+  const descriptionValue = useWatch({ control, name: "description" }) ?? "";
+
   const handleAddStep = () => {
     if (stepTitle.trim() && stepInstruction.trim()) {
-      setSteps([
+      const newSteps = [
         ...steps,
         {
           order: steps.length,
           title: stepTitle,
           instruction: stepInstruction,
         },
-      ]);
+      ];
+      setSteps(newSteps);
       setStepTitle("");
       setStepInstruction("");
+      if (newSteps.length > 0) setStepsError(null);
     }
   };
 
@@ -85,16 +103,20 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
   async function onSubmit(values: CreateTaskFormValues) {
     if (!user) return;
 
+    if (steps.length === 0) {
+      setStepsError("Adicione pelo menos 1 passo à tarefa");
+      return;
+    }
+
     try {
       await createTaskUseCase.execute({
         userId: user.id,
         title: values.title,
-        description: values.description,
+        description: values.description ?? "",
         steps: steps,
-        dueDate: values.dueDate ? new Date(values.dueDate) : undefined,
+        dueDate: new Date(values.dueDate),
         priority: values.priority,
         category: values.category,
-        reminderTime: values.reminderTime,
       });
 
       reset();
@@ -112,13 +134,23 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
     <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Title */}
       <div className="space-y-2">
-        <Label htmlFor="title">Título da Atividade</Label>
+        <Label htmlFor="title">
+          Título da Tarefa <span className="text-destructive">*</span>
+        </Label>
         <Input
           id="title"
           placeholder="Ex: Fazer compras no mercado"
+          maxLength={30}
           {...register("title")}
           disabled={isSubmitting}
         />
+        <div className="flex justify-end">
+          <span
+            className={`text-xs ${titleValue.length >= 30 ? "text-destructive" : "text-muted-foreground"}`}
+          >
+            {titleValue.length}/30
+          </span>
+        </div>
         {errors.title && (
           <p className="text-sm text-destructive flex items-center gap-2">
             <AlertCircle className="size-4" />
@@ -132,12 +164,20 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
         <Label htmlFor="description">Descrição</Label>
         <textarea
           id="description"
-          placeholder="Descreva a atividade em detalhes..."
+          placeholder="Adicione mais detalhes..."
           className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-muted disabled:cursor-not-allowed"
-          rows={4}
+          rows={3}
+          maxLength={100}
           {...register("description")}
           disabled={isSubmitting}
         />
+        <div className="flex justify-end">
+          <span
+            className={`text-xs ${descriptionValue.length >= 100 ? "text-destructive" : "text-muted-foreground"}`}
+          >
+            {descriptionValue.length}/100
+          </span>
+        </div>
         {errors.description && (
           <p className="text-sm text-destructive flex items-center gap-2">
             <AlertCircle className="size-4" />
@@ -146,64 +186,86 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
         )}
       </div>
 
-      {/* Due Date */}
+      {/* Priority and Category - Same Line on Desktop */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Priority */}
+        <div className="space-y-2">
+          <Label htmlFor="priority">
+            Prioridade <span className="text-destructive">*</span>
+          </Label>
+          <select
+            id="priority"
+            className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-muted disabled:cursor-not-allowed"
+            {...register("priority")}
+            disabled={isSubmitting}
+          >
+            <option value="low">Baixa</option>
+            <option value="medium">Média</option>
+            <option value="high">Alta</option>
+          </select>
+          {errors.priority && (
+            <p className="text-sm text-destructive flex items-center gap-2">
+              <AlertCircle className="size-4" />
+              {errors.priority.message}
+            </p>
+          )}
+        </div>
+
+        {/* Category */}
+        <div className="space-y-2">
+          <Label htmlFor="category">
+            Categoria <span className="text-destructive">*</span>
+          </Label>
+          <select
+            id="category"
+            className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-muted disabled:cursor-not-allowed"
+            {...register("category")}
+            disabled={isSubmitting}
+          >
+            <option value="medication">Medicação</option>
+            <option value="health">Saúde</option>
+            <option value="exercise">Exercício</option>
+            <option value="social">Social</option>
+            <option value="personal">Pessoal</option>
+          </select>
+          {errors.category && (
+            <p className="text-sm text-destructive flex items-center gap-2">
+              <AlertCircle className="size-4" />
+              {errors.category.message}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Date and Time */}
       <div className="space-y-2">
-        <Label htmlFor="dueDate">Data de Vencimento (Opcional)</Label>
+        <Label htmlFor="dueDate">
+          Data e Hora <span className="text-destructive">*</span>
+        </Label>
         <Input
           id="dueDate"
-          type="date"
+          type="datetime-local"
           {...register("dueDate")}
           disabled={isSubmitting}
         />
-      </div>
-
-      {/* Priority */}
-      <div className="space-y-2">
-        <Label htmlFor="priority">Prioridade (Opcional)</Label>
-        <select
-          id="priority"
-          className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-muted disabled:cursor-not-allowed"
-          {...register("priority")}
-          disabled={isSubmitting}
-        >
-          <option value="low">Baixa</option>
-          <option value="medium">Média</option>
-          <option value="high">Alta</option>
-        </select>
-      </div>
-
-      {/* Category */}
-      <div className="space-y-2">
-        <Label htmlFor="category">Categoria (Opcional)</Label>
-        <select
-          id="category"
-          className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-muted disabled:cursor-not-allowed"
-          {...register("category")}
-          disabled={isSubmitting}
-        >
-          <option value="personal">Pessoal</option>
-          <option value="medication">Medicação</option>
-          <option value="health">Saúde</option>
-          <option value="exercise">Exercício</option>
-          <option value="social">Social</option>
-        </select>
-      </div>
-
-      {/* Reminder Time */}
-      <div className="space-y-2">
-        <Label htmlFor="reminderTime">Horário de Lembrete (Opcional)</Label>
-        <Input
-          id="reminderTime"
-          type="time"
-          placeholder="HH:mm"
-          {...register("reminderTime")}
-          disabled={isSubmitting}
-        />
+        {errors.dueDate && (
+          <p className="text-sm text-destructive flex items-center gap-2">
+            <AlertCircle className="size-4" />
+            {errors.dueDate.message}
+          </p>
+        )}
       </div>
 
       {/* Steps Section */}
       <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
-        <h3 className="font-semibold">Passos (Opcional)</h3>
+        <div>
+          <h3 className="font-semibold">
+            Passos da Tarefa <span className="text-destructive">*</span>
+          </h3>
+          <p className="text-xs text-muted-foreground mt-1">
+            Divida a tarefa em passos simples para o modo guiado.
+          </p>
+        </div>
 
         {/* Add Step Form */}
         <div className="space-y-3">
@@ -235,6 +297,13 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
             Adicionar Passo
           </Button>
         </div>
+
+        {stepsError && (
+          <p className="text-sm text-destructive flex items-center gap-2">
+            <AlertCircle className="size-4" />
+            {stepsError}
+          </p>
+        )}
 
         {/* Steps List */}
         {steps.length > 0 && (
@@ -268,26 +337,27 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
         )}
       </div>
 
-      {/* Submit Button */}
-      <Button
-        type="submit"
-        className="w-full"
-        size="lg"
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? "Criando..." : "Criar Atividade"}
-      </Button>
-
-      {/* Cancel Button */}
-      <Button
-        type="button"
-        variant="outline"
-        className="w-full"
-        onClick={() => router.back()}
-        disabled={isSubmitting}
-      >
-        Cancelar
-      </Button>
+      {/* Action Buttons */}
+      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="w-full cursor-pointer rounded-[14px]"
+          onClick={() => router.back()}
+          disabled={isSubmitting}
+        >
+          Cancelar
+        </Button>
+        <Button
+          type="submit"
+          size="sm"
+          className="w-full cursor-pointer rounded-[14px]"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Criando..." : "Criar Tarefa"}
+        </Button>
+      </div>
     </form>
   );
 }

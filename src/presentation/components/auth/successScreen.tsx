@@ -24,7 +24,7 @@ export function SuccessScreen({ userName }: SuccessScreenProps) {
         está pronta e tudo já foi configurado para você.
       </p>
 
-      <ul className="w-full rounded-2xl border border-border bg-secondary p-6 text-left">
+      <ul className="w-full rounded-2xl border border-border bg-muted p-6 text-left">
         {readyItems.map((item) => (
           <li
             key={item}

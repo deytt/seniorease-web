@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAuthContext } from "@/presentation/providers/AuthProvider";
+import { useAuth } from "@/presentation/hooks/useAuth";
 import {
   Menu,
   X,
@@ -73,9 +73,8 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
-  const [isSigningOut, setIsSigningOut] = useState(false);
   const pathname = usePathname();
-  const { signOut: signOutFn } = useAuthContext();
+  const { signOut, isSigningOut } = useAuth();
 
   useEffect(() => {
     const media = window.matchMedia(
@@ -93,12 +92,10 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
 
   const handleSignOut = async () => {
     try {
-      setIsSigningOut(true);
-      await signOutFn();
+      await signOut();
     } catch (err) {
       console.error(err);
     } finally {
-      setIsSigningOut(false);
       setIsSignOutDialogOpen(false);
       setIsMobileOpen(false);
     }
@@ -112,7 +109,10 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
   return (
     <>
       <Dialog open={isSignOutDialogOpen} onOpenChange={setIsSignOutDialogOpen}>
-        <DialogContent className="rounded-2xl border border-[#e2e8f0]">
+        <DialogContent
+          className="rounded-2xl border border-[#e2e8f0]"
+          showCloseButton={false}
+        >
           <DialogHeader>
             <DialogTitle className="font-sans text-xl font-bold normal-case tracking-normal">
               Sair da conta?
@@ -126,7 +126,7 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
               <Button
                 type="button"
                 variant="outline"
-                className="rounded-[14px]"
+                className="flex-1 rounded-[14px]"
                 disabled={isSigningOut}
               >
                 Cancelar
@@ -135,7 +135,7 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
             <Button
               type="button"
               variant="destructive"
-              className="rounded-[14px] text-white"
+              className="flex-1 rounded-[14px] text-white"
               disabled={isSigningOut}
               onClick={handleSignOut}
             >
@@ -304,9 +304,7 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
             )}
           >
             <LogOut className="size-5 shrink-0" />
-            {!isCollapsed && (
-              <span className="text-sm font-medium">Sair</span>
-            )}
+            {!isCollapsed && <span className="text-sm font-medium">Sair</span>}
           </button>
         </div>
       </aside>
