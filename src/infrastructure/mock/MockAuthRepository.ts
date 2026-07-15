@@ -20,6 +20,8 @@ export class MockAuthRepository implements IAuthRepository {
       email,
       name: name || email.split("@")[0],
       createdAt: new Date(),
+      usesPasswordAuth: true,
+      emailVerified: false,
     };
   }
 
@@ -96,6 +98,22 @@ export class MockAuthRepository implements IAuthRepository {
       email: "user@example.com",
       name: input.name || "Mock User",
       createdAt: new Date(),
+      usesPasswordAuth: true,
+      emailVerified: false,
     };
+  }
+
+  async changePassword(
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<void> {
+    void currentPassword;
+    void newPassword;
+  }
+
+  async sendEmailVerification(): Promise<void> {}
+
+  async reloadEmailVerification(): Promise<boolean> {
+    return false;
   }
 }
