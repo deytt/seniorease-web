@@ -3,10 +3,15 @@ import {
   createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
   sendPasswordResetEmail,
+  sendEmailVerification,
   updateProfile,
+  updatePassword,
+  reload,
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
   type User as FirebaseUser,
 } from "firebase/auth";
 import {
@@ -24,7 +29,59 @@ import type {
   SignUpInput,
   UpdateUserInput,
 } from "@/domain/repositories/IAuthRepository";
+import type { Address } from "@/domain/entities/Address";
 import type { User } from "@/domain/entities/User";
+import { usesPasswordAuth } from "@/infrastructure/firebase/authProviderUtils";
+
+function parseAddress(raw: unknown): Address | null {
+  if (!raw || typeof raw !== "object") return null;
+
+  const data = raw as Record<string, unknown>;
+  const address = {
+    neighborhood: String(data.neighborhood ?? ""),
+    street: String(data.street ?? ""),
+    number: String(data.number ?? ""),
+    zipCode: String(data.zipCode ?? ""),
+    city: String(data.city ?? ""),
+    state: String(data.state ?? ""),
+    country: String(data.country ?? "Brasil"),
+  };
+
+  const hasValue = Object.values(address).some((value) => value.trim().length > 0);
+  return hasValue ? address : null;
+}
+
+function toDomainUser(
+  id: string,
+  name: string,
+  email: string,
+  createdAt: Date = new Date(),
+  extras?: {
+    updatedAt?: Date | null;
+    emailVerified?: boolean;
+    phone?: string | null;
+    birthDate?: string | null;
+    cpf?: string | null;
+    photoUrl?: string | null;
+    address?: Address | null;
+    usesPasswordAuth?: boolean;
+  },
+): User {
+  return {
+    id,
+    name,
+    email,
+    createdAt,
+    updatedAt: extras?.updatedAt ?? null,
+    emailVerified: extras?.emailVerified ?? false,
+    phone: extras?.phone ?? null,
+    birthDate: extras?.birthDate ?? null,
+    cpf: extras?.cpf ?? null,
+    photoUrl: extras?.photoUrl ?? null,
+    address: extras?.address ?? null,
+    usesPasswordAuth: extras?.usesPasswordAuth,
+  };
+}
 
 /**
  * Traduz códigos de erro do Firebase para linguagem simples e humana,
@@ -44,13 +101,15 @@ function toFriendlyMessage(code: string): string {
       return "Escolha uma senha um pouco mais forte, com pelo menos 6 caracteres.";
     case "auth/invalid-email":
       return "Este e-mail não parece válido. Confira e tente novamente.";
+    case "auth/requires-recent-login":
+      return "Por segurança, saia e entre novamente antes de alterar a senha.";
+    case "auth/operation-not-allowed":
+      return "Esta conta não permite alterar a senha por aqui. Use o login com Google.";
+    case "auth/invalid-verification-code":
+      return "Código incorreto. Verifique o app autenticador e tente novamente.";
     default:
       return "Algo deu errado. Tente novamente em instantes.";
   }
-}
-
-function toDomainUser(id: string, name: string, email: string): User {
-  return { id, name, email, createdAt: new Date() };
 }
 
 export class FirebaseAuthRepository implements IAuthRepository {
@@ -61,6 +120,11 @@ export class FirebaseAuthRepository implements IAuthRepository {
         user.uid,
         user.displayName ?? "",
         user.email ?? email,
+        new Date(),
+        {
+          emailVerified: user.emailVerified,
+          usesPasswordAuth: usesPasswordAuth(user),
+        },
       );
     } catch (error) {
       throw new Error(toFriendlyMessage(this.extractCode(error)));
@@ -83,7 +147,9 @@ export class FirebaseAuthRepository implements IAuthRepository {
         createdAt: serverTimestamp(),
       });
 
-      return toDomainUser(user.uid, name, email);
+      return toDomainUser(user.uid, name, email, new Date(), {
+        usesPasswordAuth: usesPasswordAuth(user),
+      });
     } catch (error) {
       throw new Error(toFriendlyMessage(this.extractCode(error)));
     }
@@ -111,7 +177,10 @@ export class FirebaseAuthRepository implements IAuthRepository {
         });
       }
 
-      return toDomainUser(user.uid, user.displayName ?? "", user.email ?? "");
+      return toDomainUser(user.uid, user.displayName ?? "", user.email ?? "", new Date(), {
+        emailVerified: user.emailVerified,
+        usesPasswordAuth: usesPasswordAuth(user),
+      });
     } catch (error) {
       const errorCode = (error as { code?: string })?.code;
       if (errorCode === "auth/popup-closed-by-user") {
@@ -142,13 +211,35 @@ export class FirebaseAuthRepository implements IAuthRepository {
           }
 
           const snapshot = await getDoc(doc(db, "users", firebaseUser.uid));
-          const data = snapshot.data() as { name?: string } | undefined;
+          const data = snapshot.data() as
+            | {
+                name?: string;
+                phone?: string | null;
+                birthDate?: string | null;
+                cpf?: string | null;
+                photoUrl?: string | null;
+                address?: unknown;
+                createdAt?: { toDate: () => Date };
+                updatedAt?: { toDate: () => Date };
+              }
+            | undefined;
 
           resolve(
             toDomainUser(
               firebaseUser.uid,
               data?.name ?? firebaseUser.displayName ?? "",
               firebaseUser.email ?? "",
+              data?.createdAt?.toDate() ?? new Date(),
+              {
+                updatedAt: data?.updatedAt?.toDate() ?? null,
+                emailVerified: firebaseUser.emailVerified,
+                phone: data?.phone,
+                birthDate: data?.birthDate,
+                cpf: data?.cpf,
+                photoUrl: data?.photoUrl ?? firebaseUser.photoURL,
+                address: parseAddress(data?.address),
+                usesPasswordAuth: usesPasswordAuth(firebaseUser),
+              },
             ),
           );
         },
@@ -186,11 +277,73 @@ export class FirebaseAuthRepository implements IAuthRepository {
         userId,
         input.name ?? currentData.name,
         currentData.email,
+        currentData.createdAt?.toDate?.() ?? new Date(),
+        {
+          updatedAt: new Date(),
+          phone: input.phone ?? currentData.phone,
+          birthDate: currentData.birthDate,
+          cpf: input.cpf ?? currentData.cpf,
+          photoUrl: currentData.photoUrl,
+          address: parseAddress(currentData.address),
+          usesPasswordAuth: currentUser ? usesPasswordAuth(currentUser) : undefined,
+        },
       );
     } catch (error) {
       throw new Error(
         error instanceof Error ? error.message : "Erro ao atualizar perfil",
       );
+    }
+  }
+
+  async changePassword(
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<void> {
+    const currentUser = auth.currentUser;
+    if (!currentUser?.email) {
+      throw new Error("Sessão expirada. Entre novamente.");
+    }
+
+    try {
+      const credential = EmailAuthProvider.credential(
+        currentUser.email,
+        currentPassword,
+      );
+      await reauthenticateWithCredential(currentUser, credential);
+      await updatePassword(currentUser, newPassword);
+    } catch (error) {
+      throw new Error(toFriendlyMessage(this.extractCode(error)));
+    }
+  }
+
+  async sendEmailVerification(): Promise<void> {
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      throw new Error("Sessão expirada. Entre novamente.");
+    }
+
+    if (currentUser.emailVerified) {
+      return;
+    }
+
+    try {
+      await sendEmailVerification(currentUser);
+    } catch (error) {
+      throw new Error(toFriendlyMessage(this.extractCode(error)));
+    }
+  }
+
+  async reloadEmailVerification(): Promise<boolean> {
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      throw new Error("Sessão expirada. Entre novamente.");
+    }
+
+    try {
+      await reload(currentUser);
+      return currentUser.emailVerified;
+    } catch (error) {
+      throw new Error(toFriendlyMessage(this.extractCode(error)));
     }
   }
 }

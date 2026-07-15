@@ -13,6 +13,7 @@ import { PreferencesProvider } from "@/presentation/providers/PreferencesProvide
 import { AuthProvider } from "@/presentation/providers/AuthProvider";
 import { FCMProvider } from "@/presentation/providers/FCMProvider";
 import { Toaster } from "@/presentation/components/ui/sonner";
+import { ScrollLockFix } from "@/presentation/components/layout/ScrollLockFix";
 
 const playfairDisplayHeading = Playfair_Display({
   subsets: ["latin"],
@@ -64,6 +65,7 @@ export default function RootLayout({
     >
       <TooltipProvider delayDuration={300}>
         <body className="min-h-full flex flex-col">
+          <ScrollLockFix />
           <FCMProvider />
           <AuthProvider>
             <PreferencesProvider>

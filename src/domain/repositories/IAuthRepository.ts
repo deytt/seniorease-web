@@ -27,4 +27,7 @@ export interface IAuthRepository {
   sendPasswordReset(email: string): Promise<void>;
   getCurrentUser(): Promise<User | null>;
   updateUser(userId: string, input: UpdateUserInput): Promise<User>;
+  changePassword(currentPassword: string, newPassword: string): Promise<void>;
+  sendEmailVerification(): Promise<void>;
+  reloadEmailVerification(): Promise<boolean>;
 }

@@ -19,6 +19,7 @@ interface AuthContextType {
   loading: boolean;
   error: string | null;
   signOut: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -98,9 +99,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const refreshUser = async () => {
+    try {
+      const currentUser = await getGetCurrentUserUseCase().execute();
+      setUser(currentUser);
+      setError(null);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Erro ao atualizar dados do perfil",
+      );
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ user, loading, error, signOut: handleSignOut }}
+      value={{ user, loading, error, signOut: handleSignOut, refreshUser }}
     >
       {children}
     </AuthContext.Provider>

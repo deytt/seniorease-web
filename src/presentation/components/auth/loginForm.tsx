@@ -48,7 +48,6 @@ export function LoginForm() {
     defaultValues: { email: "", password: "", rememberMe: false },
   });
 
-  // Redirect to dashboard when user is authenticated
   useEffect(() => {
     if (user?.id) {
       router.push("/dashboard");

@@ -112,21 +112,24 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
   return (
     <>
       <Dialog open={isSignOutDialogOpen} onOpenChange={setIsSignOutDialogOpen}>
-        <DialogContent className="rounded-2xl border border-[#e2e8f0]">
-          <DialogHeader>
-            <DialogTitle className="font-sans text-xl font-bold normal-case tracking-normal">
+        <DialogContent
+          showCloseButton={false}
+          className="gap-5 rounded-2xl border border-[#e2e8f0] bg-white p-6 shadow-[0px_8px_24px_rgba(0,0,0,0.12)] sm:max-w-md"
+        >
+          <DialogHeader className="gap-3 text-left">
+            <DialogTitle className="font-sans text-xl font-bold normal-case tracking-normal text-[#0f172a]">
               Sair da conta?
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-base leading-relaxed text-[#64748b]">
               Você será desconectado do SeniorEase. Deseja continuar?
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="gap-3 sm:justify-end">
             <DialogClose asChild>
               <Button
                 type="button"
                 variant="outline"
-                className="rounded-[14px]"
+                className="min-h-11 cursor-pointer rounded-[14px] border-[#e2e8f0]"
                 disabled={isSigningOut}
               >
                 Cancelar
@@ -135,7 +138,7 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
             <Button
               type="button"
               variant="destructive"
-              className="rounded-[14px] text-white"
+              className="min-h-11 cursor-pointer rounded-[14px] bg-destructive text-white hover:bg-destructive/90 hover:text-white"
               disabled={isSigningOut}
               onClick={handleSignOut}
             >

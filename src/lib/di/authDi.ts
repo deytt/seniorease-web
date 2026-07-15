@@ -6,13 +6,10 @@ import { SendPasswordResetUseCase } from "@/domain/usecases/auth/SendPasswordRes
 import { SignInWithGoogleUseCase } from "@/domain/usecases/auth/SignInWithGoogleUseCase";
 import { GetCurrentUserUseCase } from "@/domain/usecases/auth/GetCurrentUserUseCase";
 import { UpdateUserUseCase } from "@/domain/usecases/auth/UpdateUserUseCase";
+import { ChangePasswordUseCase } from "@/domain/usecases/auth/ChangePasswordUseCase";
+import { SendEmailVerificationUseCase } from "@/domain/usecases/auth/SendEmailVerificationUseCase";
+import { ReloadEmailVerificationUseCase } from "@/domain/usecases/auth/ReloadEmailVerificationUseCase";
 
-/**
- * Injeção de dependência manual (suficiente para o escopo do Hackathon).
- * Se o projeto crescer, isto pode virar um container real (ex: tsyringe),
- * mas o ponto importante já está garantido: Presentation nunca instancia
- * Firebase diretamente, apenas consome os casos de uso do Domain.
- */
 const authRepository = new FirebaseAuthRepository();
 
 export const signInUseCase = new SignInUseCase(authRepository);
@@ -26,8 +23,13 @@ export const signInWithGoogleUseCase = new SignInWithGoogleUseCase(
 );
 export const getCurrentUserUseCase = new GetCurrentUserUseCase(authRepository);
 export const updateUserUseCase = new UpdateUserUseCase(authRepository);
+export const changePasswordUseCase = new ChangePasswordUseCase(authRepository);
+export const sendEmailVerificationUseCase = new SendEmailVerificationUseCase(
+  authRepository,
+);
+export const reloadEmailVerificationUseCase =
+  new ReloadEmailVerificationUseCase(authRepository);
 
-// Funções factory para DI
 export function getSignInUseCase() {
   return signInUseCase;
 }
@@ -54,4 +56,16 @@ export function getGetCurrentUserUseCase() {
 
 export function getUpdateUserUseCase() {
   return updateUserUseCase;
+}
+
+export function getChangePasswordUseCase() {
+  return changePasswordUseCase;
+}
+
+export function getSendEmailVerificationUseCase() {
+  return sendEmailVerificationUseCase;
+}
+
+export function getReloadEmailVerificationUseCase() {
+  return reloadEmailVerificationUseCase;
 }
