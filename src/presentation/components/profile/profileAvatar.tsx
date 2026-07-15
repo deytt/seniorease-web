@@ -19,18 +19,15 @@ interface ProfileAvatarProps {
 
 export function ProfileAvatar({ name, photoUrl, className }: ProfileAvatarProps) {
   const initials = getProfileInitials(name || "U");
-  const [isPhotoReady, setIsPhotoReady] = useState(
-    () => Boolean(photoUrl && loadedPhotoUrls.has(photoUrl)),
-  );
+  const [readyUrl, setReadyUrl] = useState<string | null>(null);
+
+  const resolvedPhotoUrl = photoUrl ?? null;
+  const isPhotoReady =
+    resolvedPhotoUrl !== null &&
+    (loadedPhotoUrls.has(resolvedPhotoUrl) || readyUrl === resolvedPhotoUrl);
 
   useEffect(() => {
-    if (!photoUrl) {
-      setIsPhotoReady(false);
-      return;
-    }
-
-    if (loadedPhotoUrls.has(photoUrl)) {
-      setIsPhotoReady(true);
+    if (!photoUrl || loadedPhotoUrls.has(photoUrl) || readyUrl === photoUrl) {
       return;
     }
 
@@ -42,18 +39,18 @@ export function ProfileAvatar({ name, photoUrl, className }: ProfileAvatarProps)
     image.onload = () => {
       if (cancelled) return;
       loadedPhotoUrls.add(photoUrl);
-      setIsPhotoReady(true);
+      setReadyUrl(photoUrl);
     };
 
     image.onerror = () => {
       if (cancelled) return;
-      setIsPhotoReady(false);
+      setReadyUrl(null);
     };
 
     return () => {
       cancelled = true;
     };
-  }, [photoUrl]);
+  }, [photoUrl, readyUrl]);
 
   return (
     <Avatar

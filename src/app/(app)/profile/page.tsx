@@ -19,8 +19,17 @@ export default function ProfilePage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const userId = user?.id ?? null;
   const [stats, setStats] = useState(EMPTY_STATS);
   const [statsLoading, setStatsLoading] = useState(false);
+  const [statsForUserId, setStatsForUserId] = useState<string | null>(null);
+
+  if (userId !== statsForUserId) {
+    const cachedStats = userId ? statsCache.get(userId) : undefined;
+    setStatsForUserId(userId);
+    setStats(cachedStats ?? EMPTY_STATS);
+    setStatsLoading(Boolean(userId) && !cachedStats);
+  }
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -29,36 +38,43 @@ export default function ProfilePage() {
   }, [authLoading, user, router]);
 
   useEffect(() => {
-    if (!user?.id) return;
+    if (!userId) return;
 
-    const cachedStats = statsCache.get(user.id);
-    if (cachedStats) {
-      setStats(cachedStats);
-    }
+    const cachedStats = statsCache.get(userId);
+    if (cachedStats) return;
+
+    let cancelled = false;
 
     const loadStats = async () => {
       try {
-        if (!cachedStats) {
-          setStatsLoading(true);
-        }
+        setStatsLoading(true);
 
         const { getStatsUseCase } = getHistoryDi();
-        const statsData = await getStatsUseCase.execute({ userId: user.id });
+        const statsData = await getStatsUseCase.execute({ userId });
         const nextStats = {
           totalCompleted: statsData.totalCompleted,
           streak: statsData.streak,
         };
-        statsCache.set(user.id, nextStats);
-        setStats(nextStats);
+        statsCache.set(userId, nextStats);
+
+        if (!cancelled) {
+          setStats(nextStats);
+        }
       } catch (err) {
         console.error("Erro ao carregar estatísticas do perfil:", err);
       } finally {
-        setStatsLoading(false);
+        if (!cancelled) {
+          setStatsLoading(false);
+        }
       }
     };
 
     void loadStats();
-  }, [user?.id]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
 
   const handlePhotoClick = () => {
     fileInputRef.current?.click();
