@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import {
   Geist,
   Geist_Mono,
-  Noto_Sans,
-  Playfair_Display,
   Inter,
 } from "next/font/google";
 import "./globals.css";
@@ -14,13 +12,6 @@ import { AuthProvider } from "@/presentation/providers/AuthProvider";
 import { FCMProvider } from "@/presentation/providers/FCMProvider";
 import { Toaster } from "@/presentation/components/ui/sonner";
 import { ScrollLockFix } from "@/presentation/components/layout/ScrollLockFix";
-
-const playfairDisplayHeading = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-heading",
-});
-
-const notoSans = Noto_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -59,8 +50,6 @@ export default function RootLayout({
         geistSans.variable,
         geistMono.variable,
         inter.variable,
-        notoSans.variable,
-        playfairDisplayHeading.variable,
       )}
     >
       <TooltipProvider delayDuration={300}>

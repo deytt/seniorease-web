@@ -17,6 +17,9 @@ const Card = React.forwardRef<
 ));
 Card.displayName = "Card";
 
+// NOTE: Figma (node 2:7232 etc.) specifies ~21px padding for cards; this
+// implementation uses p-8 (32px). Confirm with design whether the larger
+// padding is an intentional accessibility improvement before "fixing" it.
 const CardHeader = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>

@@ -1,28 +1,60 @@
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Slot } from "radix-ui"
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Slot } from "radix-ui";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
+/**
+ * Badge — Identificadores visuais de status, prioridade e categoria.
+ *
+ * ## Variantes de Status (pill com fundo colorido)
+ * - `default` → azul (info/social)
+ * - `success` → verde (Concluída)
+ * - `warning` → âmbar (Em andamento)
+ * - `destructive` → vermelho (Alta prioridade / Urgente)
+ * - `secondary` → verde-água (Saúde / Hidratação)
+ * - `purple` → roxo (Agendado)
+ * - `outline` → contorno (tags de categoria)
+ *
+ * ## Variantes de Contador (círculo sólido)
+ * - `counter` → azul primário
+ * - `counter-danger` → vermelho
+ * - `counter-success` → verde
+ * - `counter-secondary` → verde-água
+ *
+ * Referência Figma: SeniorEase Design System → Badges & Labels (node 2:7760)
+ */
 const badgeVariants = cva(
-  "group/badge inline-flex w-fit shrink-0 items-center justify-center gap-1.5 overflow-hidden rounded-none border-0 bg-transparent px-0 py-0 text-[0.625rem] font-semibold tracking-widest whitespace-nowrap uppercase transition-colors focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 has-data-[icon=inline-end]:pr-0 has-data-[icon=inline-start]:pl-0 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3!",
+  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 [&>svg]:pointer-events-none [&>svg]:size-3",
   {
     variants: {
       variant: {
-        default: "text-foreground [a]:hover:text-foreground/70",
-        secondary: "text-muted-foreground [a]:hover:text-foreground",
+        // Status badges — pill com fundo colorido claro (Figma node 2:7869-2:7883)
+        default: "rounded-full bg-[#eff6ff] text-[#2563eb] px-3 py-1 text-sm",
+        success: "rounded-full bg-[#f0fdf4] text-[#22c55e] px-3 py-1 text-sm",
+        warning: "rounded-full bg-[#fffbeb] text-[#f59e0b] px-3 py-1 text-sm",
         destructive:
-          "text-destructive focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:text-destructive/70",
-        outline: "text-foreground [a]:hover:text-foreground/70",
-        ghost: "text-muted-foreground hover:text-foreground",
-        link: "text-foreground underline-offset-4 hover:underline",
+          "rounded-full bg-[#fef2f2] text-[#ef4444] px-3 py-1 text-sm",
+        secondary: "rounded-full bg-[#f0fdfa] text-[#14b8a6] px-3 py-1 text-sm",
+        purple: "rounded-full bg-[#f5f3ff] text-[#7c3aed] px-3 py-1 text-sm",
+        outline:
+          "rounded-full border border-border bg-transparent text-foreground px-3 py-1 text-sm",
+        // Counter badges — círculo sólido (Figma node 2:7894-2:7909)
+        counter:
+          "rounded-full size-6 bg-[#2563eb] text-white text-xs font-black",
+        "counter-danger":
+          "rounded-full size-6 bg-[#ef4444] text-white text-xs font-black",
+        "counter-success":
+          "rounded-full size-6 bg-[#22c55e] text-white text-xs font-black",
+        "counter-secondary":
+          "rounded-full size-6 bg-[#14b8a6] text-white text-xs font-black",
       },
     },
     defaultVariants: {
       variant: "default",
     },
-  }
-)
+  },
+);
 
 function Badge({
   className,
@@ -31,7 +63,7 @@ function Badge({
   ...props
 }: React.ComponentProps<"span"> &
   VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
-  const Comp = asChild ? Slot.Root : "span"
+  const Comp = asChild ? Slot.Root : "span";
 
   return (
     <Comp
@@ -40,7 +72,7 @@ function Badge({
       className={cn(badgeVariants({ variant }), className)}
       {...props}
     />
-  )
+  );
 }
 
-export { Badge, badgeVariants }
+export { Badge, badgeVariants };

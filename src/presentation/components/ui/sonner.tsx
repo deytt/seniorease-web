@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type CSSProperties } from "react";
+import { useTheme } from "next-themes";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 import {
   CircleCheckIcon,
@@ -15,8 +16,10 @@ type ToastPosition = NonNullable<ToasterProps["position"]>;
 /**
  * Toaster global — desktop: canto inferior direito;
  * mobile: canto inferior (centralizado).
+ * Usa richColors com CSS variables do design system (Figma).
  */
 const Toaster = ({ ...props }: ToasterProps) => {
+  const { theme = "system" } = useTheme();
   const [position, setPosition] = useState<ToastPosition>("bottom-right");
 
   useEffect(() => {
@@ -31,10 +34,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
 
   return (
     <Sonner
-      theme="light"
+      theme={theme as ToasterProps["theme"]}
+      richColors={true}
+      closeButton={true}
       className="toaster group"
       position={position}
-      richColors
       icons={{
         success: <CircleCheckIcon className="size-4" />,
         info: <InfoIcon className="size-4" />,
@@ -44,6 +48,18 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       style={
         {
+          "--success-bg": "var(--success-light)",
+          "--success-border": "var(--success)",
+          "--success-text": "var(--success-dark)",
+          "--error-bg": "var(--destructive-light)",
+          "--error-border": "var(--destructive)",
+          "--error-text": "var(--destructive-dark)",
+          "--warning-bg": "var(--warning-light)",
+          "--warning-border": "var(--warning)",
+          "--warning-text": "var(--foreground)",
+          "--info-bg": "var(--primary-light)",
+          "--info-border": "var(--info)",
+          "--info-text": "var(--primary-dark)",
           "--normal-bg": "var(--popover)",
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
@@ -61,3 +77,4 @@ const Toaster = ({ ...props }: ToasterProps) => {
 };
 
 export { Toaster };
+

@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { onAuthStateChanged } from "firebase/auth";
 
-import { auth } from "@/infrastructure/firebase/config";
 import { Navigation } from "@/presentation/components/layout/Navigation";
+import { useAuthContext } from "@/presentation/providers/AuthProvider";
 import { cn } from "@/lib/utils";
 
 const SIDEBAR_EXPANDED_MIN_WIDTH = 1280;
@@ -15,25 +14,18 @@ const SIDEBAR_EXPANDED_MIN_WIDTH = 1280;
  * - < lg: header mobile
  * - lg–xl: sidebar colapsada por padrão (pode expandir e empurra o conteúdo)
  * - ≥ 1280px: sidebar expandida por padrão
+ * Usa o repositório de autenticação (Firebase em produção, Mock em desenvolvimento).
  */
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [status, setStatus] = useState<"checking" | "authenticated">(
-    "checking",
-  );
+  const { user, loading: authLoading } = useAuthContext();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        router.replace("/login");
-        return;
-      }
-      setStatus("authenticated");
-    });
-
-    return unsubscribe;
-  }, [router]);
+    if (!authLoading && !user) {
+      router.replace("/login");
+    }
+  }, [authLoading, user, router]);
 
   useEffect(() => {
     const media = window.matchMedia(
@@ -45,7 +37,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     return () => media.removeEventListener("change", sync);
   }, []);
 
-  if (status === "checking") {
+  if (authLoading) {
     return (
       <div
         role="status"
@@ -55,6 +47,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <p className="text-lg text-muted-foreground">Carregando...</p>
       </div>
     );
+  }
+
+  if (!user) {
+    return null;
   }
 
   return (

@@ -5,6 +5,12 @@ import Link from "next/link";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
 import { Button } from "@/presentation/components/ui/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/presentation/components/ui/dialog";
+import {
   CheckCircle2,
   Clock,
   AlertCircle,
@@ -21,10 +27,20 @@ export default function TaskListPage() {
   const taskRepository = getTasksDi().taskRepository;
   const { tasks, loading, fetchTasks } = useTasks(taskRepository);
 
-  const [filterCategory, setFilterCategory] = useState<
-    "all" | "today" | TaskCategory
-  >("all");
+  const [filterToday, setFilterToday] = useState(false);
+  const [filterCategory, setFilterCategory] = useState<TaskCategory | null>(
+    null,
+  );
+  const [filterPriority, setFilterPriority] = useState<
+    "high" | "medium" | "low" | null
+  >(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  // Temporary filter state for modal
+  const [tempFilterToday, setTempFilterToday] = useState(filterToday);
+  const [tempFilterCategory, setTempFilterCategory] = useState(filterCategory);
+  const [tempFilterPriority, setTempFilterPriority] = useState(filterPriority);
 
   useEffect(() => {
     if (user?.id) {
@@ -36,8 +52,8 @@ export default function TaskListPage() {
   const filteredTasks = useMemo(() => {
     let result = tasks;
 
-    // Filter by category/date
-    if (filterCategory === "today") {
+    // Filter by today
+    if (filterToday) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       result = result.filter((t) => {
@@ -46,8 +62,16 @@ export default function TaskListPage() {
         taskDate.setHours(0, 0, 0, 0);
         return taskDate.getTime() === today.getTime();
       });
-    } else if (filterCategory !== "all") {
+    }
+
+    // Filter by category
+    if (filterCategory) {
       result = result.filter((t) => t.category === filterCategory);
+    }
+
+    // Filter by priority
+    if (filterPriority) {
+      result = result.filter((t) => t.priority === filterPriority);
     }
 
     // Filter by search
@@ -58,7 +82,7 @@ export default function TaskListPage() {
     }
 
     return result;
-  }, [tasks, filterCategory, searchQuery]);
+  }, [tasks, filterToday, filterCategory, filterPriority, searchQuery]);
 
   const stats = useMemo(() => {
     const today = new Date();
@@ -90,7 +114,7 @@ export default function TaskListPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground">Carregando atividades...</p>
+        <p className="text-muted-foreground">Carregando tarefas...</p>
       </div>
     );
   }
@@ -156,6 +180,17 @@ export default function TaskListPage() {
     });
   };
 
+  const getCategoryLabel = (category: TaskCategory): string => {
+    const map: Record<TaskCategory, string> = {
+      medication: "Medicação",
+      health: "Saúde",
+      exercise: "Exercício",
+      social: "Social",
+      personal: "Pessoal",
+    };
+    return map[category] || category;
+  };
+
   const TaskCard = ({ task }: { task: Task }) => {
     const priorityBadge = getPriorityBadge(task.priority);
     const categoryBadge = getCategoryBadge(task.category);
@@ -163,10 +198,10 @@ export default function TaskListPage() {
 
     return (
       <div
-        className={`flex items-center gap-4 bg-card border rounded-xl px-5 py-4 hover:shadow-sm transition-shadow ${isCompleted ? "opacity-70" : ""}`}
+        className={`flex flex-col md:flex-row md:items-center gap-4 bg-card border rounded-xl px-5 py-4 hover:shadow-sm transition-shadow ${isCompleted ? "opacity-70" : ""}`}
       >
         {/* Checkbox */}
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 flex md:block">
           {isCompleted ? (
             <CheckCircle2 className="size-6 text-primary" />
           ) : (
@@ -222,19 +257,22 @@ export default function TaskListPage() {
         </div>
 
         {/* Actions */}
-        <div className="flex-shrink-0 flex items-center gap-2">
-          {!isCompleted &&
-            task.steps &&
-            task.steps.length > 0 && (
-              <Button
-                asChild
-                size="sm"
-                className="border-0 bg-secondary text-secondary-foreground hover:bg-secondary/90"
-              >
-                <Link href={`/tasks/${task.id}/guided`}>Modo Guiado</Link>
-              </Button>
-            )}
-          <Button asChild size="sm" variant="outline">
+        <div className="w-full md:w-auto md:flex-shrink-0 flex flex-col md:flex-row md:items-center gap-2">
+          {!isCompleted && task.steps && task.steps.length > 0 && (
+            <Button
+              asChild
+              size="sm"
+              className="border-0 bg-secondary text-secondary-foreground hover:bg-secondary/90"
+            >
+              <Link href={`/tasks/${task.id}/guided`}>Modo Guiado</Link>
+            </Button>
+          )}
+          <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className="md:w-auto w-full"
+          >
             <Link href={`/tasks/${task.id}`}>Detalhes</Link>
           </Button>
         </div>
@@ -242,39 +280,171 @@ export default function TaskListPage() {
     );
   };
 
-  const filterPills = [
-    { key: "all", label: "Tudo" },
-    { key: "today", label: "Hoje" },
-    { key: "health", label: "Saúde" },
-    { key: "medication", label: "Medicação" },
-    { key: "social", label: "Social" },
-  ] as const;
-
   return (
     <div className="max-w-5xl mx-auto pb-20">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      {/* Filter Modal */}
+      <Dialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+        <DialogContent
+          className="max-h-[80vh] overflow-y-auto"
+          showCloseButton={false}
+        >
+          <DialogHeader className="flex flex-row items-center justify-between space-y-0">
+            <DialogTitle>Filtrar Tarefas</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-6">
+            {/* Data Section */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground">Data</h3>
+              <label className="flex items-center gap-3 p-3 rounded-lg border border-input hover:border-primary/50 cursor-pointer transition-colors">
+                <input
+                  type="checkbox"
+                  checked={tempFilterToday}
+                  onChange={(e) => setTempFilterToday(e.target.checked)}
+                  className="w-4 h-4 cursor-pointer"
+                />
+                <div className="flex-1">
+                  <div className="text-sm font-medium">Tarefas de Hoje</div>
+                  <div className="text-xs text-muted-foreground">
+                    Mostrar apenas tarefas agendadas para hoje
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            {/* Category Section */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground">
+                Categoria
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {(
+                  [
+                    "health",
+                    "medication",
+                    "social",
+                    "exercise",
+                    "personal",
+                  ] as TaskCategory[]
+                ).map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() =>
+                      setTempFilterCategory(
+                        tempFilterCategory === cat ? null : cat,
+                      )
+                    }
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                      tempFilterCategory === cat
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background text-muted-foreground border-input hover:border-primary/50"
+                    }`}
+                  >
+                    {getCategoryLabel(cat)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Priority Section */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-foreground">
+                Prioridade
+              </h3>
+              <div className="flex gap-2">
+                {(["high", "medium", "low"] as const).map((priority) => (
+                  <button
+                    key={priority}
+                    onClick={() =>
+                      setTempFilterPriority(
+                        tempFilterPriority === priority ? null : priority,
+                      )
+                    }
+                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                      tempFilterPriority === priority
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background text-muted-foreground border-input hover:border-primary/50"
+                    }`}
+                  >
+                    {priority === "high"
+                      ? "Alta"
+                      : priority === "medium"
+                        ? "Média"
+                        : "Baixa"}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="space-y-3 pt-4 border-t">
+            {(tempFilterToday || tempFilterCategory || tempFilterPriority) && (
+              <button
+                onClick={() => {
+                  setTempFilterToday(false);
+                  setTempFilterCategory(null);
+                  setTempFilterPriority(null);
+                }}
+                className="w-full text-sm font-medium text-primary hover:text-primary/80 transition-colors py-2"
+              >
+                Limpar Filtros
+              </button>
+            )}
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setIsFilterOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                className="flex-1"
+                onClick={() => {
+                  setFilterToday(tempFilterToday);
+                  setFilterCategory(tempFilterCategory);
+                  setFilterPriority(tempFilterPriority);
+                  setIsFilterOpen(false);
+                }}
+              >
+                {tempFilterToday || tempFilterCategory || tempFilterPriority
+                  ? "Aplicar Filtros"
+                  : "Mostrar Tudo"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Header - Responsive Layout */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold">Minhas Atividades</h1>
+          <h1 className="text-3xl font-bold">Minhas Tarefas</h1>
           {stats.scheduledToday > 0 && (
             <p className="text-sm text-muted-foreground mt-1">
               {stats.completedToday} de {stats.scheduledToday} concluídas hoje
             </p>
           )}
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex flex-col md:flex-row gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center gap-2"
+            className="flex items-center justify-center gap-2"
+            onClick={() => setIsFilterOpen(true)}
           >
             <Filter className="size-4" />
             Filtrar
           </Button>
-          <Button asChild size="sm">
+          <Button
+            asChild
+            size="sm"
+            className="flex items-center justify-center"
+          >
             <Link href="/tasks/create">
               <Plus className="size-4 mr-1" />
-              Nova Atividade
+              Nova Tarefa
             </Link>
           </Button>
         </div>
@@ -285,44 +455,65 @@ export default function TaskListPage() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
         <input
           type="text"
-          placeholder="Pesquisar atividades..."
+          placeholder="Pesquisar tarefas..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-input bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
         />
       </div>
 
-      {/* Category Pill Filters */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        {filterPills.map(({ key, label }) => (
+      {/* Active Filter Bar - only show when filter is applied */}
+      {(filterToday || filterCategory || filterPriority) && (
+        <div className="flex items-center gap-2 mb-6 p-3 bg-primary/10 rounded-lg border border-primary/20">
+          <span className="text-sm text-muted-foreground">Filtrando por:</span>
+          <div className="flex flex-wrap gap-2">
+            {filterToday && (
+              <span className="px-3 py-1 bg-primary text-primary-foreground text-sm font-medium rounded-full">
+                Hoje
+              </span>
+            )}
+            {filterCategory && (
+              <span className="px-3 py-1 bg-primary text-primary-foreground text-sm font-medium rounded-full">
+                {getCategoryLabel(filterCategory)}
+              </span>
+            )}
+            {filterPriority && (
+              <span className="px-3 py-1 bg-primary text-primary-foreground text-sm font-medium rounded-full">
+                {filterPriority === "high"
+                  ? "Alta"
+                  : filterPriority === "medium"
+                    ? "Média"
+                    : "Baixa"}
+              </span>
+            )}
+          </div>
           <button
-            key={key}
-            onClick={() => setFilterCategory(key)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
-              filterCategory === key
-                ? "bg-primary text-primary-foreground border-primary"
-                : "bg-background text-muted-foreground border-input hover:border-primary/50 hover:text-foreground"
-            }`}
+            onClick={() => {
+              setFilterToday(false);
+              setFilterCategory(null);
+              setFilterPriority(null);
+            }}
+            className="ml-auto text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            {label}
+            Remover filtro
           </button>
-        ))}
-      </div>
+        </div>
+      )}
 
       {/* Task List */}
       {filteredTasks.length === 0 ? (
         <div className="rounded-xl border bg-muted/30 p-10 text-center">
           <AlertCircle className="size-10 mx-auto mb-3 text-muted-foreground" />
-          <p className="font-semibold mb-1">Nenhuma atividade encontrada</p>
+          <p className="font-semibold mb-1">Nenhuma tarefa encontrada</p>
           <p className="text-sm text-muted-foreground mb-4">
             {searchQuery
               ? "Tente outros termos de busca."
-              : "Crie sua primeira atividade para começar."}
+              : "Crie sua primeira tarefa para começar."}
           </p>
           <Button asChild variant="outline" size="sm">
             <Link href="/tasks/create">
               <Plus className="size-4 mr-1" />
-              Nova Atividade
+              Nova Tarefa
             </Link>
           </Button>
         </div>

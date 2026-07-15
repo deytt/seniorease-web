@@ -28,7 +28,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
   const router = useRouter();
-  const { user } = useAuthContext();
+  const { user, loading } = useAuthContext();
   const {
     signIn,
     isSigningIn,
@@ -49,10 +49,10 @@ export function LoginForm() {
   });
 
   useEffect(() => {
-    if (user?.id) {
+    if (user?.id && !loading) {
       router.push("/dashboard");
     }
-  }, [user?.id, router]);
+  }, [user?.id, loading, router]);
 
   async function onSubmit(values: LoginFormValues) {
     await signIn(values.email, values.password);
