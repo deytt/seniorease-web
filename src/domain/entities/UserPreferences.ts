@@ -2,6 +2,18 @@ export type FontSize = "small" | "medium" | "large" | "extra_large";
 export type ContrastLevel = "default" | "high" | "maximum";
 export type Spacing = "compact" | "comfortable" | "spacious";
 export type InterfaceMode = "basic" | "advanced";
+export type NotificationOffset = "15m" | "30m" | "1h" | "6h" | "1d";
+
+export const NOTIFICATION_OFFSET_OPTIONS: {
+  value: NotificationOffset;
+  label: string;
+}[] = [
+  { value: "15m", label: "15 minutos antes" },
+  { value: "30m", label: "30 minutos antes" },
+  { value: "1h", label: "1 hora antes" },
+  { value: "6h", label: "6 horas antes" },
+  { value: "1d", label: "1 dia antes" },
+];
 
 /**
  * Espelha 1:1 o documento `preferences/{userId}` — ver firebaseSchema.md.
@@ -19,8 +31,10 @@ export interface UserPreferences {
   interfaceMode: InterfaceMode;
   audioFeedbackEnabled: boolean;
   largeTouchTargets: boolean;
-  remindersEnabled: boolean;
-  notificationTime: string | null;
+  tasksNotificationsEnabled: boolean;
+  taskNotificationOffset: NotificationOffset;
+  remindersNotificationsEnabled: boolean;
+  reminderNotificationOffset: NotificationOffset;
   updatedAt: Date | null;
 }
 
@@ -52,8 +66,10 @@ export function defaultPreferences(userId: string): UserPreferences {
     interfaceMode: "advanced",
     audioFeedbackEnabled: false,
     largeTouchTargets: false,
-    remindersEnabled: true,
-    notificationTime: null,
+    tasksNotificationsEnabled: true,
+    taskNotificationOffset: "30m",
+    remindersNotificationsEnabled: true,
+    reminderNotificationOffset: "30m",
     updatedAt: null,
   };
 }

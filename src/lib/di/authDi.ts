@@ -7,6 +7,9 @@ import { SendPasswordResetUseCase } from "@/domain/usecases/auth/SendPasswordRes
 import { SignInWithGoogleUseCase } from "@/domain/usecases/auth/SignInWithGoogleUseCase";
 import { GetCurrentUserUseCase } from "@/domain/usecases/auth/GetCurrentUserUseCase";
 import { UpdateUserUseCase } from "@/domain/usecases/auth/UpdateUserUseCase";
+import { ChangePasswordUseCase } from "@/domain/usecases/auth/ChangePasswordUseCase";
+import { SendEmailVerificationUseCase } from "@/domain/usecases/auth/SendEmailVerificationUseCase";
+import { ReloadEmailVerificationUseCase } from "@/domain/usecases/auth/ReloadEmailVerificationUseCase";
 
 /**
  * Injeção de dependência manual (suficiente para o escopo do Hackathon).
@@ -34,8 +37,13 @@ export const signInWithGoogleUseCase = new SignInWithGoogleUseCase(
 );
 export const getCurrentUserUseCase = new GetCurrentUserUseCase(authRepository);
 export const updateUserUseCase = new UpdateUserUseCase(authRepository);
+export const changePasswordUseCase = new ChangePasswordUseCase(authRepository);
+export const sendEmailVerificationUseCase = new SendEmailVerificationUseCase(
+  authRepository,
+);
+export const reloadEmailVerificationUseCase =
+  new ReloadEmailVerificationUseCase(authRepository);
 
-// Funções factory para DI
 export function getSignInUseCase() {
   return signInUseCase;
 }
@@ -62,4 +70,16 @@ export function getGetCurrentUserUseCase() {
 
 export function getUpdateUserUseCase() {
   return updateUserUseCase;
+}
+
+export function getChangePasswordUseCase() {
+  return changePasswordUseCase;
+}
+
+export function getSendEmailVerificationUseCase() {
+  return sendEmailVerificationUseCase;
+}
+
+export function getReloadEmailVerificationUseCase() {
+  return reloadEmailVerificationUseCase;
 }
