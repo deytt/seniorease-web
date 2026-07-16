@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
+import { usePreferencesStore } from "@/presentation/providers/PreferencesProvider";
 import { useRouter } from "next/navigation";
 import { Button } from "@/presentation/components/ui/button";
 import {
@@ -11,13 +12,28 @@ import {
   CardHeader,
   CardTitle,
 } from "@/presentation/components/ui/card";
-import { Camera, Lock, Shield, ChevronRight } from "lucide-react";
+import { Bell, Camera, Lock, Shield, ChevronRight } from "lucide-react";
+
+const NOTIFICATION_OFFSET_LABELS = {
+  "15m": "15 minutos antes",
+  "30m": "30 minutos antes",
+  "1h": "1 hora antes",
+  "6h": "6 horas antes",
+  "1d": "1 dia antes",
+} as const;
+
+function formatNotificationOffset(
+  value: keyof typeof NOTIFICATION_OFFSET_LABELS,
+): string {
+  return NOTIFICATION_OFFSET_LABELS[value] ?? "30 minutos antes";
+}
 
 export default function ProfilePage() {
   const { user, loading: authLoading } = useAuthContext();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const preferences = usePreferencesStore((state) => state.preferences);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -192,36 +208,58 @@ export default function ProfilePage() {
                 size="sm"
                 className="text-muted-foreground hover:text-blue-700 hover:bg-blue-50"
               >
-                <Link href="/acessibility">Editar</Link>
+                <Link href="/profile/notifications">Editar</Link>
               </Button>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
-                    Lembretes de Tarefas
+                    Avisos de Tarefas
                   </p>
-                  <p className="text-sm font-medium">Ativado</p>
+                  <p className="text-sm font-medium">
+                    {preferences.tasksNotificationsEnabled
+                      ? "Ativado"
+                      : "Desativado"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
-                    Alertas de Medicação
+                    Antecedência de Tarefas
                   </p>
-                  <p className="text-sm font-medium">Ativado</p>
+                  <p className="text-sm font-medium">
+                    {formatNotificationOffset(
+                      preferences.taskNotificationOffset,
+                    )}
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
-                    Check-in Familiar
+                    Avisos de Lembretes
                   </p>
-                  <p className="text-sm font-medium">—</p>
+                  <p className="text-sm font-medium">
+                    {preferences.remindersNotificationsEnabled
+                      ? "Ativado"
+                      : "Desativado"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
-                    Conquistas
+                    Antecedência de Lembretes
                   </p>
-                  <p className="text-sm font-medium">Ativado</p>
+                  <p className="text-sm font-medium">
+                    {formatNotificationOffset(
+                      preferences.reminderNotificationOffset,
+                    )}
+                  </p>
                 </div>
               </div>
+              <Button asChild variant="ghost" className="mt-6 w-full">
+                <Link href="/profile/notifications">
+                  <Bell className="size-4" />
+                  Configurar avisos
+                </Link>
+              </Button>
             </CardContent>
           </Card>
 

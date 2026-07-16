@@ -129,7 +129,7 @@ export default function GuidedTaskPage({
   if (loading) {
     return (
       <div
-        className="flex min-h-[60vh] items-center justify-center bg-[#f8fafc]"
+        className="flex min-h-[60vh] items-center justify-center bg-background"
         role="status"
         aria-live="polite"
       >
@@ -143,7 +143,7 @@ export default function GuidedTaskPage({
 
   if (error || !task) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center bg-[#f8fafc] p-4">
+      <div className="flex min-h-[60vh] items-center justify-center bg-background p-4">
         <Card className="w-full max-w-sm bg-card shadow-card">
           <CardContent className="p-6 text-center">
             <p className="mb-4 font-medium text-destructive">

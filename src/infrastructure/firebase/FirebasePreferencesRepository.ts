@@ -1,11 +1,34 @@
-import { doc, getDoc, setDoc, serverTimestamp, Timestamp } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp,
+  Timestamp,
+} from "firebase/firestore";
 
 import { db } from "@/infrastructure/firebase/config";
 import type { IPreferencesRepository } from "@/domain/repositories/IPreferencesRepository";
-import type { UserPreferences } from "@/domain/entities/UserPreferences";
+import type {
+  NotificationOffset,
+  UserPreferences,
+} from "@/domain/entities/UserPreferences";
 
 /** Nome da collection — ver firebaseSchema.md (`preferences/{userId}`). */
 const COLLECTION = "preferences";
+const NOTIFICATION_OFFSETS: NotificationOffset[] = [
+  "15m",
+  "30m",
+  "1h",
+  "6h",
+  "1d",
+];
+
+function parseNotificationOffset(value: unknown): NotificationOffset {
+  return typeof value === "string" &&
+    (NOTIFICATION_OFFSETS as string[]).includes(value)
+    ? (value as NotificationOffset)
+    : "30m";
+}
 
 export class FirebasePreferencesRepository implements IPreferencesRepository {
   async getPreferences(userId: string): Promise<UserPreferences | null> {
@@ -17,6 +40,9 @@ export class FirebasePreferencesRepository implements IPreferencesRepository {
 
     const data = snapshot.data();
 
+    const remindersNotificationsEnabled =
+      data.remindersNotificationsEnabled ?? data.remindersEnabled ?? true;
+
     return {
       userId,
       fontSize: data.fontSize ?? "medium",
@@ -26,7 +52,15 @@ export class FirebasePreferencesRepository implements IPreferencesRepository {
       interfaceMode: data.interfaceMode ?? "advanced",
       audioFeedbackEnabled: data.audioFeedbackEnabled ?? false,
       largeTouchTargets: data.largeTouchTargets ?? false,
-      remindersEnabled: data.remindersEnabled ?? true,
+      tasksNotificationsEnabled: data.tasksNotificationsEnabled ?? true,
+      taskNotificationOffset: parseNotificationOffset(
+        data.taskNotificationOffset,
+      ),
+      remindersNotificationsEnabled,
+      reminderNotificationOffset: parseNotificationOffset(
+        data.reminderNotificationOffset,
+      ),
+      remindersEnabled: remindersNotificationsEnabled,
       notificationTime: data.notificationTime ?? null,
       updatedAt:
         data.updatedAt instanceof Timestamp
@@ -48,7 +82,11 @@ export class FirebasePreferencesRepository implements IPreferencesRepository {
         interfaceMode: preferences.interfaceMode,
         audioFeedbackEnabled: preferences.audioFeedbackEnabled,
         largeTouchTargets: preferences.largeTouchTargets,
-        remindersEnabled: preferences.remindersEnabled,
+        tasksNotificationsEnabled: preferences.tasksNotificationsEnabled,
+        taskNotificationOffset: preferences.taskNotificationOffset,
+        remindersNotificationsEnabled: preferences.remindersNotificationsEnabled,
+        reminderNotificationOffset: preferences.reminderNotificationOffset,
+        remindersEnabled: preferences.remindersNotificationsEnabled,
         notificationTime: preferences.notificationTime,
         updatedAt: serverTimestamp(),
       },

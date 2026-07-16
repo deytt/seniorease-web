@@ -165,52 +165,69 @@
 }
 
 /* ==========================================================================
-   Alto Contraste — [data-contrast="high"]
-   Aplicado pelo PreferencesProvider (Módulo 1 — Painel de Personalização)
-   quando o usuário ativa "Alto Contraste" nas configurações de
-   acessibilidade. Reforça bordas e texto para além do WCAG AA mínimo.
+   Alto Contraste (light) — [data-contrast="high"]
+   Espelha AppColors.highContrast* do mobile (AppTheme.buildDynamic, isHighContrast).
+   Texto puro (#0F172A ≈ preto), bordas e inputs mais escuros para WCAG AA+.
    ========================================================================== */
 [data-contrast="high"] {
-  --foreground: #0f172a;
-  --border: #94a3b8;
-  --input: #94a3b8;
-  --muted-foreground: #334155;
-  --ring: #1d4ed8;
+  --foreground: #0f172a;       /* highContrastText ≈ preto */
+  --border: #475569;           /* slate600 — mais visível (mobile usa #000) */
+  --input: #475569;
+  --muted-foreground: #1e293b; /* texto auxiliar quase preto */
+  --ring: #1d4ed8;             /* primaryDark para foco */
   --focus: #1d4ed8;
 }
 
 /* ==========================================================================
-   Contraste Máximo — derivado automaticamente (ADR-009) quando
-   Modo Escuro + Alto Contraste estão ativos ao mesmo tempo.
-   Nunca é selecionável diretamente na UI.
+   Modo Escuro — .dark
+   Espelha AppColors.dark* do mobile (AppTheme._darkColorScheme).
+     darkBackground  #0F172A  →  --background
+     darkSurface     #1E293B  →  --card / --muted / --sidebar
+     darkBorder      #475569  →  --border / --input (mobile usa darkBorder)
+     darkTextPrimary #F8FAFC  →  --foreground
+     darkTextSecondary #CBD5E1 →  --muted-foreground
    ========================================================================== */
-.dark[data-contrast="maximum"] {
-  --background: #000000;
-  --foreground: #ffffff;
-  --card: #000000;
-  --card-foreground: #ffffff;
-  --border: #ffffff;
-  --input: #ffffff;
-  --muted: #1f2937;
-  --muted-foreground: #e5e7eb;
-  --primary: #60a5fa;
-  --primary-foreground: #000000;
-  --ring: #ffffff;
-  --focus: #ffffff;
+.dark {
+  --background: #0f172a;       /* darkBackground */
+  --foreground: #f8fafc;       /* darkTextPrimary */
+  --card: #1e293b;             /* darkSurface */
+  --card-foreground: #f8fafc;
+  --muted: #1e293b;            /* darkSurface */
+  --muted-foreground: #cbd5e1; /* darkTextSecondary (era #94a3b8 — muito escuro) */
+  --border: #475569;           /* darkBorder (era #334155 — muito escuro) */
+  --input: #475569;            /* darkBorder */
+  --sidebar: #1e293b;          /* darkSurface */
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-border: #475569;   /* darkBorder */
 }
 
-.dark {
-  --background: #0f172a;
-  --foreground: #f8fafc;
-  --card: #1e293b;
-  --card-foreground: #f8fafc;
-  --muted: #1e293b;
-  --muted-foreground: #94a3b8;
-  --border: #334155;
-  --input: #334155;
-  --sidebar: #1e293b;
-  --sidebar-foreground: #f1f5f9;
-  --sidebar-border: #334155;
+/* ==========================================================================
+   Contraste Máximo — .dark[data-contrast="maximum"]
+   Derivado automaticamente (ADR-009): dark + high → maximum.
+   Espelha AppColors.maximum* do mobile (isMaximum branch).
+     maximumBackground #000000  →  --background
+     maximumSurface    #111111  →  --card / --muted (era #000 e #1f2937)
+     maximumText       #FFFFFF  →  --foreground
+     maximumTextSecondary #DDDDDD → --muted-foreground
+     maximumButton     #FFFF00  →  --primary (amarelo — era azul #60a5fa)
+     maximumButtonText #000000  →  --primary-foreground
+     outline           #666666  →  --border / --input (era #fff — muito forte)
+   ========================================================================== */
+.dark[data-contrast="maximum"] {
+  --background: #000000;       /* maximumBackground */
+  --foreground: #ffffff;       /* maximumText */
+  --card: #111111;             /* maximumSurface (era #000000) */
+  --card-foreground: #ffffff;
+  --border: #666666;           /* mobile outline (era #ffffff — cegante) */
+  --input: #666666;
+  --muted: #111111;            /* maximumSurface (era #1f2937) */
+  --muted-foreground: #dddddd; /* maximumTextSecondary (era #e5e7eb) */
+  --primary: #ffff00;          /* maximumButton — amarelo do mobile (era #60a5fa) */
+  --primary-foreground: #000000; /* maximumButtonText */
+  --secondary: #ffff00;        /* alinha secondary também */
+  --secondary-foreground: #000000;
+  --ring: #ffff00;             /* foco visível em fundo preto */
+  --focus: #ffff00;
 }
 
 /* ==========================================================================
@@ -219,9 +236,138 @@
    ========================================================================== */
 .a11y-large-touch button,
 .a11y-large-touch [role="button"],
+.a11y-large-touch a[role="button"],
 .a11y-large-touch input,
-.a11y-large-touch select {
+.a11y-large-touch select,
+.a11y-large-touch textarea {
   min-height: 64px;
+}
+
+/* ==========================================================================
+   Espaçamento Adaptativo — data-spacing em <html>
+   compact = 0.85× | comfortable = 1× (padrão) | spacious = 1.5×
+   Afeta o espaço interno de cards, sections e formulários do app.
+   ========================================================================== */
+html[data-spacing="spacious"] .a11y-space-card {
+  padding: calc(1.5rem * 1.5) !important;
+}
+html[data-spacing="spacious"] .a11y-space-section {
+  gap: calc(1.5rem * 1.5) !important;
+}
+html[data-spacing="spacious"] .a11y-space-form {
+  gap: calc(1rem * 1.5) !important;
+}
+html[data-spacing="spacious"] .a11y-space-list {
+  gap: calc(0.75rem * 1.5) !important;
+}
+
+html[data-spacing="compact"] .a11y-space-card {
+  padding: calc(1rem * 0.85) !important;
+}
+html[data-spacing="compact"] .a11y-space-section {
+  gap: calc(1.5rem * 0.85) !important;
+}
+html[data-spacing="compact"] .a11y-space-form {
+  gap: calc(1rem * 0.85) !important;
+}
+html[data-spacing="compact"] .a11y-space-list {
+  gap: calc(0.75rem * 0.85) !important;
+}
+
+/* ==========================================================================
+   Modo de Interface — data-interface-mode em <html>
+   Elementos marcados com .advanced-only ficam ocultos no Modo Básico.
+   ========================================================================== */
+html[data-interface-mode="basic"] .advanced-only {
+  display: none !important;
+}
+
+/* ==========================================================================
+   Contraste Máximo — safety nets globais
+   Garante que fundos hard-coded não quebrem a legibilidade.
+   ========================================================================== */
+
+/* 1. bg-primary sólido → amarelo + texto preto.
+      Filhos diretos também ficam pretos (corrige ícone text-white no
+      CompletedStepCheck e ícones dentro de botões default). */
+.dark[data-contrast="maximum"] .bg-primary {
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+}
+.dark[data-contrast="maximum"] .bg-primary > * {
+  color: var(--primary-foreground) !important;
+}
+
+/* 2. bg-primary/N ficam quase invisíveis (verde-oliva) sobre fundo preto no
+      contraste máximo. Usa [class~="…"] (palavra exata) para NÃO capturar
+      hover:bg-primary/10 — só a classe base sem prefixo de estado.
+      Cobre: sino de notificações, ghost buttons, ícones de ação no dashboard,
+      barra de filtro ativa nas tarefas, botões de seleção de offset.
+      O seletor "> *" corrige o ícone filho (text-primary = amarelo sobre amarelo). */
+.dark[data-contrast="maximum"] [class~="bg-primary/5"],
+.dark[data-contrast="maximum"] [class~="bg-primary/10"],
+.dark[data-contrast="maximum"] [class~="bg-primary/15"],
+.dark[data-contrast="maximum"] [class~="bg-primary/20"] {
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+}
+.dark[data-contrast="maximum"] [class~="bg-primary/5"] > *,
+.dark[data-contrast="maximum"] [class~="bg-primary/10"] > *,
+.dark[data-contrast="maximum"] [class~="bg-primary/15"] > *,
+.dark[data-contrast="maximum"] [class~="bg-primary/20"] > * {
+  color: var(--primary-foreground) !important;
+}
+
+/* 3. bg-primary-light (#eff6ff ≈ branco) → amarelo sólido no contraste máximo.
+      Sem isso, text-primary (amarelo) sobre bg-primary-light (branco) é invisível.
+      Afeta: ícone ListOrdered na tela de Modo Guiado, número do passo atual,
+      caixa de dica (Info) dentro do GuidedTaskScreen. */
+.dark[data-contrast="maximum"] .bg-primary-light {
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+}
+.dark[data-contrast="maximum"] .bg-primary-light > * {
+  color: var(--primary-foreground) !important;
+}
+
+/* 2. bg-white e bg-[#f8fafc] hardcoded → trocam para --background (preto)
+      e o texto vira --foreground (branco).
+      Usa o seletor de atributo de palavra exata (~=) para class tokens Tailwind. */
+.dark[data-contrast="maximum"] [class~="bg-white"],
+.dark[data-contrast="maximum"] [class~="bg-\[#f8fafc\]"],
+.dark[data-contrast="maximum"] [class~="bg-\[#ffffff\]"] {
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
+  border-color: var(--border) !important;
+}
+
+/* 3. Bordas hardcoded (#e2e8f0) ficam visíveis no contraste máximo */
+.dark[data-contrast="maximum"] [class~="border-\[#e2e8f0\]"] {
+  border-color: var(--border) !important;
+}
+
+/* ==========================================================================
+   Skip Navigation — acessibilidade por teclado
+   Invisível por padrão, visível apenas ao receber foco (Tab).
+   ========================================================================== */
+.skip-nav {
+  position: absolute;
+  left: -9999px;
+  top: 1rem;
+  z-index: 9999;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.skip-nav:focus {
+  left: 1rem;
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
 }
 
 @layer base {

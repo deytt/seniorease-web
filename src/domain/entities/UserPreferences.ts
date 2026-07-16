@@ -2,6 +2,7 @@ export type FontSize = "small" | "medium" | "large" | "extra_large";
 export type ContrastLevel = "default" | "high" | "maximum";
 export type Spacing = "compact" | "comfortable" | "spacious";
 export type InterfaceMode = "basic" | "advanced";
+export type NotificationOffset = "15m" | "30m" | "1h" | "6h" | "1d";
 
 /**
  * Espelha 1:1 o documento `preferences/{userId}` — ver firebaseSchema.md.
@@ -19,7 +20,13 @@ export interface UserPreferences {
   interfaceMode: InterfaceMode;
   audioFeedbackEnabled: boolean;
   largeTouchTargets: boolean;
+  tasksNotificationsEnabled: boolean;
+  taskNotificationOffset: NotificationOffset;
+  remindersNotificationsEnabled: boolean;
+  reminderNotificationOffset: NotificationOffset;
+  /** @deprecated ADR-020 substituiu por `remindersNotificationsEnabled`. */
   remindersEnabled: boolean;
+  /** @deprecated ADR-020 substituiu por offsets separados de tarefa/lembrete. */
   notificationTime: string | null;
   updatedAt: Date | null;
 }
@@ -52,8 +59,39 @@ export function defaultPreferences(userId: string): UserPreferences {
     interfaceMode: "advanced",
     audioFeedbackEnabled: false,
     largeTouchTargets: false,
+    tasksNotificationsEnabled: true,
+    taskNotificationOffset: "30m",
+    remindersNotificationsEnabled: true,
+    reminderNotificationOffset: "30m",
     remindersEnabled: true,
     notificationTime: null,
     updatedAt: null,
+  };
+}
+
+export function normalizePreferences(
+  value: Partial<UserPreferences> | null | undefined,
+  userId: string,
+): UserPreferences {
+  const defaults = defaultPreferences(userId);
+  const remindersNotificationsEnabled =
+    value?.remindersNotificationsEnabled ??
+    value?.remindersEnabled ??
+    defaults.remindersNotificationsEnabled;
+
+  return {
+    ...defaults,
+    ...value,
+    userId: value?.userId ?? userId,
+    tasksNotificationsEnabled:
+      value?.tasksNotificationsEnabled ?? defaults.tasksNotificationsEnabled,
+    taskNotificationOffset:
+      value?.taskNotificationOffset ?? defaults.taskNotificationOffset,
+    remindersNotificationsEnabled,
+    reminderNotificationOffset:
+      value?.reminderNotificationOffset ?? defaults.reminderNotificationOffset,
+    remindersEnabled: remindersNotificationsEnabled,
+    notificationTime: value?.notificationTime ?? defaults.notificationTime,
+    updatedAt: value?.updatedAt ?? defaults.updatedAt,
   };
 }

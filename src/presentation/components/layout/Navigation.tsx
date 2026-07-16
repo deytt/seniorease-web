@@ -135,7 +135,7 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
             <Button
               type="button"
               variant="destructive"
-              className="flex-1 rounded-[14px] text-white"
+              className="flex-1 rounded-[14px]"
               disabled={isSigningOut}
               onClick={handleSignOut}
             >
@@ -187,19 +187,19 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
                     onClick={() => setIsMobileOpen(false)}
                     className={cn(
                       "flex min-h-11 items-center gap-3 rounded-xl px-4 py-3 transition-colors",
-                      isActive
-                        ? "bg-primary font-semibold text-white"
-                        : "text-slate-300 hover:bg-slate-800 hover:text-white",
-                    )}
-                  >
-                    <Icon className="size-5 shrink-0" />
-                    <span className="text-base">{item.label}</span>
-                  </Link>
-                );
-              })}
-              <button
-                onClick={() => setIsSignOutDialogOpen(true)}
-                className="flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-xl px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white"
+                    isActive
+                      ? "bg-primary font-semibold text-primary-foreground"
+                      : "text-slate-300 hover:bg-slate-800 hover:text-white",
+                  )}
+                >
+                  <Icon className="size-5 shrink-0" />
+                  <span className="text-base">{item.label}</span>
+                </Link>
+              );
+            })}
+            <button
+              onClick={() => setIsSignOutDialogOpen(true)}
+              className="flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-xl px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white"
               >
                 <LogOut className="size-5 shrink-0" />
                 <span className="text-base">Sair</span>
@@ -229,7 +229,7 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
               !isCollapsed && "flex-1",
             )}
           >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-white">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
               <span className="text-sm font-bold">SE</span>
             </div>
             {!isCollapsed && (
@@ -275,7 +275,7 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
                     "flex items-center gap-3 rounded-xl transition-colors",
                     isCollapsed ? "justify-center px-0 py-3" : "px-3 py-3",
                     isActive
-                      ? "bg-primary font-semibold text-white"
+                      ? "bg-primary font-semibold text-primary-foreground"
                       : "text-slate-300 hover:bg-slate-800 hover:text-white",
                   )}
                 >

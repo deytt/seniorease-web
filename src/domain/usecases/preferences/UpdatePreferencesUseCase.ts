@@ -21,6 +21,7 @@ export class UpdatePreferencesUseCase {
           : preferences.contrast === "maximum"
             ? "high" // usuário nunca escolhe "maximum" manualmente; se veio assim sem dark mode, rebaixa para "high"
             : preferences.contrast,
+      remindersEnabled: preferences.remindersNotificationsEnabled,
       updatedAt: new Date(),
     };
 

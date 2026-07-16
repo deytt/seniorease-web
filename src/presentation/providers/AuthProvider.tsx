@@ -69,11 +69,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const initFCM = async () => {
       try {
-        const { requestFCMToken, setupMessageListener } =
+        const { requestFCMToken, saveFCMToken, setupMessageListener } =
           await import("@/infrastructure/firebase/fcmService");
 
         const token = await requestFCMToken();
         if (token) {
+          await saveFCMToken(user.id, token);
           console.log("FCM Token obtained successfully");
         }
 

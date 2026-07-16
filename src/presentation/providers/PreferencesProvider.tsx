@@ -13,6 +13,7 @@ import {
 import {
   defaultPreferences,
   FONT_SCALE_MAP,
+  normalizePreferences,
   SPACING_SCALE_MAP,
   type UserPreferences,
 } from "@/domain/entities/UserPreferences";
@@ -32,8 +33,10 @@ interface PreferencesStore {
 
 export const usePreferencesStore = create<PreferencesStore>((set, get) => ({
   preferences:
-    localStorageCache.get<UserPreferences>(GUEST_CACHE_KEY) ??
-    defaultPreferences("guest"),
+    normalizePreferences(
+      localStorageCache.get<Partial<UserPreferences>>(GUEST_CACHE_KEY),
+      "guest",
+    ),
   userId: null,
   isLoaded: false,
   isSaving: false,
@@ -42,15 +45,19 @@ export const usePreferencesStore = create<PreferencesStore>((set, get) => ({
     set({ userId });
 
     if (!userId) {
-      const cached =
-        localStorageCache.get<UserPreferences>(GUEST_CACHE_KEY) ??
-        defaultPreferences("guest");
+      const cached = normalizePreferences(
+        localStorageCache.get<Partial<UserPreferences>>(GUEST_CACHE_KEY),
+        "guest",
+      );
       set({ preferences: cached, isLoaded: true });
       return;
     }
 
     const preferences = await getPreferencesUseCase.execute(userId);
-    set({ preferences, isLoaded: true });
+    set({
+      preferences: normalizePreferences(preferences, userId),
+      isLoaded: true,
+    });
   },
 
   update: async (patch) => {
@@ -89,7 +96,20 @@ function applyPreferencesToDocument(preferences: UserPreferences) {
 
   root.classList.toggle("dark", preferences.darkMode);
   root.classList.toggle("a11y-large-touch", preferences.largeTouchTargets);
-  root.dataset.contrast = preferences.contrast;
+
+  // Contraste: deriva "maximum" em runtime (dark + high = maximum, ADR-009)
+  const effectiveContrast =
+    preferences.darkMode && preferences.contrast === "high"
+      ? "maximum"
+      : preferences.contrast === "maximum" && !preferences.darkMode
+        ? "high"
+        : preferences.contrast;
+  root.dataset.contrast = effectiveContrast;
+
+  // Espaçamento: data-spacing no <html> para os seletores CSS de spacing scale
+  root.dataset.spacing = preferences.spacing;
+
+  // Modo de interface: data-interface-mode para .advanced-only visibility
   root.dataset.interfaceMode = preferences.interfaceMode;
 }
 

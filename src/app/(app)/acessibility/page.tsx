@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
 import { useAccessibility } from "@/presentation/hooks/useAccessibility";
@@ -15,29 +15,244 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/presentation/components/ui/dialog";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, HelpCircle, X, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+// ─── Guided Tour ─────────────────────────────────────────────────────────────
+
+const TOUR_STEPS = [
+  {
+    id: "font",
+    title: "Tamanho da letra",
+    description:
+      "Arraste o controle para deixar o texto maior ou menor, do jeito que você lê melhor.",
+  },
+  {
+    id: "mode",
+    title: "Modo de uso",
+    description:
+      "Escolha o Modo Básico para uma tela mais simples, ou Avançado para ver tudo.",
+  },
+  {
+    id: "spacing",
+    title: "Espaçamento",
+    description:
+      'Escolha quanto espaço quer entre os elementos. "Espaçoso" dá mais respiro à tela.',
+  },
+  {
+    id: "toggles",
+    title: "Ajustes rápidos",
+    description:
+      "Ligue ou desligue o modo escuro, alto contraste, sons e botões maiores.",
+  },
+] as const;
+
+// ─── Toggle Row ───────────────────────────────────────────────────────────────
+
+interface ToggleRowProps {
+  emoji: string;
+  label: string;
+  description?: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}
+
+function ToggleRow({
+  emoji,
+  label,
+  description,
+  checked,
+  onChange,
+}: ToggleRowProps) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors min-h-[56px] text-left"
+    >
+      <div className="flex items-center gap-3">
+        <span className="text-2xl" aria-hidden="true">
+          {emoji}
+        </span>
+        <div>
+          <p className="font-medium text-sm">{label}</p>
+          {description && (
+            <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
+          )}
+        </div>
+      </div>
+      <div
+        aria-hidden="true"
+        className={cn(
+          "relative w-12 h-6 rounded-full transition-colors flex-shrink-0 ml-3",
+          checked ? "bg-primary" : "bg-muted",
+        )}
+      >
+        <div
+          className={cn(
+            "absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-md transition-transform",
+            checked ? "translate-x-6" : "translate-x-0.5",
+          )}
+        />
+      </div>
+    </button>
+  );
+}
+
+// ─── Tour Spotlight ───────────────────────────────────────────────────────────
+
+interface TourSpotlightProps {
+  step: number;
+  total: number;
+  title: string;
+  description: string;
+  onNext: () => void;
+  onClose: () => void;
+  anchorRef: React.RefObject<HTMLElement | null>;
+}
+
+function TourSpotlight({
+  step,
+  total,
+  title,
+  description,
+  onNext,
+  onClose,
+  anchorRef,
+}: TourSpotlightProps) {
+  const [top, setTop] = useState(0);
+
+  useEffect(() => {
+    if (anchorRef.current) {
+      const rect = anchorRef.current.getBoundingClientRect();
+      setTop(rect.bottom + window.scrollY + 8);
+      anchorRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [anchorRef, step]);
+
+  const isLast = step === total - 1;
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Tour guiado — passo ${step + 1} de ${total}: ${title}`}
+      style={{ top }}
+      className={cn(
+        "fixed left-1/2 z-50 w-[calc(100vw-2rem)] max-w-sm -translate-x-1/2",
+        "rounded-2xl bg-card shadow-modal border border-border p-5",
+        "animate-in fade-in slide-in-from-top-2 duration-200",
+      )}
+    >
+      {/* Progresso */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex gap-1.5" aria-hidden="true">
+          {Array.from({ length: total }).map((_, i) => (
+            <div
+              key={i}
+              className={cn(
+                "h-1.5 rounded-full transition-all",
+                i === step ? "w-6 bg-primary" : "w-1.5 bg-muted",
+              )}
+            />
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Fechar tour guiado"
+          className="p-1 rounded-lg hover:bg-muted/60 transition-colors"
+        >
+          <X className="size-4 text-muted-foreground" aria-hidden="true" />
+        </button>
+      </div>
+
+      <p className="text-xs font-semibold text-primary mb-1 uppercase tracking-wide">
+        Passo {step + 1} de {total}
+      </p>
+      <h2 className="font-bold text-base text-foreground mb-1">{title}</h2>
+      <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+        {description}
+      </p>
+
+      <div className="flex gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="flex-1"
+          onClick={onClose}
+        >
+          Pular
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          className="flex-1"
+          onClick={onNext}
+        >
+          {isLast ? "Concluir" : "Próximo"}
+          {!isLast && (
+            <ChevronRight className="size-4 ml-1" aria-hidden="true" />
+          )}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function AccessibilityCenterPage() {
   const { preferences, isLoaded, isSaving, setField, resetToDefaults } =
     useAccessibility();
+
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [tourStep, setTourStep] = useState<number | null>(null);
+
+  const fontRef = useRef<HTMLDivElement>(null);
+  const modeRef = useRef<HTMLDivElement>(null);
+  const spacingRef = useRef<HTMLDivElement>(null);
+  const togglesRef = useRef<HTMLDivElement>(null);
+
+  const sectionRefs = [fontRef, modeRef, spacingRef, togglesRef];
 
   useEffect(() => {
     if (!isSaving && isLoaded) {
-      const timer = setTimeout(() => {
+      const t = setTimeout(() => {
         setIsSaved(true);
-        const resetTimer = setTimeout(() => setIsSaved(false), 2000);
-        return () => clearTimeout(resetTimer);
+        const r = setTimeout(() => setIsSaved(false), 2000);
+        return () => clearTimeout(r);
       }, 0);
-      return () => clearTimeout(timer);
+      return () => clearTimeout(t);
     }
   }, [isSaving, isLoaded]);
+
+  const fontSizeLabel =
+    preferences.fontSize === "small"
+      ? "Pequena (88%)"
+      : preferences.fontSize === "medium"
+        ? "Média (100%)"
+        : preferences.fontSize === "large"
+          ? "Grande (113%)"
+          : "Extra Grande (125%)";
+
+  const fontSizeValue =
+    preferences.fontSize === "small"
+      ? 0
+      : preferences.fontSize === "medium"
+        ? 1
+        : preferences.fontSize === "large"
+          ? 2
+          : 3;
 
   if (!isLoaded) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p role="status" className="text-lg text-muted-foreground">
+        <p role="status" aria-live="polite" className="text-lg text-muted-foreground">
           Carregando suas preferências...
         </p>
       </div>
@@ -46,56 +261,101 @@ export default function AccessibilityCenterPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Tour spotlight overlay */}
+      {tourStep !== null && (
+        <>
+          <div
+            aria-hidden="true"
+            className="fixed inset-0 z-40 bg-black/40"
+            onClick={() => setTourStep(null)}
+          />
+          <TourSpotlight
+            step={tourStep}
+            total={TOUR_STEPS.length}
+            title={TOUR_STEPS[tourStep].title}
+            description={TOUR_STEPS[tourStep].description}
+            anchorRef={sectionRefs[tourStep] as React.RefObject<HTMLElement>}
+            onNext={() => {
+              if (tourStep < TOUR_STEPS.length - 1) {
+                setTourStep(tourStep + 1);
+              } else {
+                setTourStep(null);
+              }
+            }}
+            onClose={() => setTourStep(null)}
+          />
+        </>
+      )}
+
       {/* Header */}
       <div className="border-b bg-card p-4 md:p-6">
         <div className="max-w-2xl mx-auto">
           <Link href="/dashboard">
-            <Button variant="ghost" size="sm" className="mb-4">
-              <ArrowLeft className="size-4 mr-2" />
+            <Button variant="ghost" size="sm" className="mb-4" aria-label="Voltar ao painel">
+              <ArrowLeft className="size-4 mr-2" aria-hidden="true" />
               Voltar
             </Button>
           </Link>
-          <h1 className="text-2xl md:text-3xl font-bold">
-            Configurações de Acessibilidade
-          </h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl md:text-3xl font-bold">
+              Configurações de Acessibilidade
+            </h1>
+            <button
+              type="button"
+              onClick={() => setTourStep(0)}
+              aria-label="Iniciar tour guiado de acessibilidade"
+              className="flex items-center gap-1.5 text-sm text-primary font-medium px-3 py-2 rounded-xl hover:bg-primary/10 transition-colors min-h-[44px]"
+            >
+              <HelpCircle className="size-4" aria-hidden="true" />
+              <span className="hidden sm:inline">Tour guiado</span>
+            </button>
+          </div>
+          <p className="text-sm text-muted-foreground mt-1">
+            Ajuste a aparência do app para facilitar o uso. As mudanças são salvas automaticamente.
+          </p>
         </div>
       </div>
 
       {/* Content */}
-      <div className="max-w-2xl mx-auto p-4 md:p-6 space-y-6">
-        {/* Font Size Section */}
-        <Card>
-          <CardContent className="pt-6">
+      <div
+        className="max-w-2xl mx-auto p-4 md:p-6 space-y-6 a11y-space-section"
+        role="main"
+        aria-label="Configurações de acessibilidade"
+      >
+        {/* 1 — Font Size */}
+        <Card
+          ref={fontRef}
+          className={cn(
+            "transition-all duration-200",
+            tourStep === 0 && "ring-2 ring-primary ring-offset-2 relative z-50",
+          )}
+        >
+          <CardContent className="pt-6 a11y-space-card">
             <div className="mb-4">
-              <label className="text-sm font-semibold text-foreground">
+              <label
+                htmlFor="font-size-slider"
+                className="text-sm font-semibold text-foreground"
+              >
                 Tamanho da Fonte
               </label>
-              <p className="text-xs text-muted-foreground mt-1">
-                Atual:{" "}
-                {preferences.fontSize === "small"
-                  ? "88%"
-                  : preferences.fontSize === "medium"
-                    ? "100%"
-                    : preferences.fontSize === "large"
-                      ? "113%"
-                      : "125%"}
+              <p
+                id="font-size-desc"
+                className="text-xs text-muted-foreground mt-1"
+              >
+                Atual: {fontSizeLabel}
               </p>
             </div>
 
             <div className="space-y-3">
               <input
+                id="font-size-slider"
                 type="range"
                 min="0"
                 max="3"
-                value={
-                  preferences.fontSize === "small"
-                    ? 0
-                    : preferences.fontSize === "medium"
-                      ? 1
-                      : preferences.fontSize === "large"
-                        ? 2
-                        : 3
-                }
+                step="1"
+                aria-describedby="font-size-desc"
+                aria-valuetext={fontSizeLabel}
+                value={fontSizeValue}
                 onChange={(e) => {
                   const sizes = [
                     "small",
@@ -107,219 +367,184 @@ export default function AccessibilityCenterPage() {
                 }}
                 className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
               />
-              <div className="flex justify-between text-xs text-muted-foreground">
+              <div
+                className="flex justify-between text-xs text-muted-foreground"
+                aria-hidden="true"
+              >
                 <span>Pequena</span>
+                <span>Média</span>
                 <span>Grande</span>
+                <span>Extra Grande</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Interface Mode Section */}
-        <Card>
-          <CardContent className="pt-6">
-            <label className="text-sm font-semibold text-foreground block mb-3">
-              Modo de Interface
-            </label>
-            <div className="flex gap-3">
-              {(["basic", "advanced"] as const).map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => setField("interfaceMode", mode)}
-                  className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
-                    preferences.interfaceMode === mode
-                      ? "bg-primary text-white"
-                      : "bg-muted text-muted-foreground hover:bg-muted/80"
-                  }`}
-                >
-                  {mode === "basic" ? "Básico" : "Avançado"}
-                </button>
-              ))}
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              O Modo Básico simplifica a interface, ocultando elementos menos essenciais.
-            </p>
+        {/* 2 — Interface Mode */}
+        <Card
+          ref={modeRef}
+          className={cn(
+            "transition-all duration-200",
+            tourStep === 1 && "ring-2 ring-primary ring-offset-2 relative z-50",
+          )}
+        >
+          <CardContent className="pt-6 a11y-space-card">
+            <fieldset>
+              <legend className="text-sm font-semibold text-foreground mb-1">
+                Modo de Interface
+              </legend>
+              <p className="text-xs text-muted-foreground mb-3">
+                O Modo Básico simplifica a interface, ocultando elementos menos essenciais.
+              </p>
+              <div className="flex gap-3" role="group">
+                {(["basic", "advanced"] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    aria-pressed={preferences.interfaceMode === mode}
+                    onClick={() => setField("interfaceMode", mode)}
+                    className={cn(
+                      "flex-1 px-4 py-2 rounded-lg font-medium transition-colors min-h-[44px]",
+                      preferences.interfaceMode === mode
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:bg-muted/80",
+                    )}
+                  >
+                    {mode === "basic" ? "Básico" : "Avançado"}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
           </CardContent>
         </Card>
 
-        {/* Spacing Section */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="mb-4">
-              <label className="text-sm font-semibold text-foreground block">
+        {/* 3 — Spacing */}
+        <Card
+          ref={spacingRef}
+          className={cn(
+            "transition-all duration-200",
+            tourStep === 2 && "ring-2 ring-primary ring-offset-2 relative z-50",
+          )}
+        >
+          <CardContent className="pt-6 a11y-space-card">
+            <fieldset>
+              <legend className="text-sm font-semibold text-foreground mb-1">
                 Espaçamento entre Elementos
-              </label>
-              <p className="text-xs text-muted-foreground mt-1">
+              </legend>
+              <p className="text-xs text-muted-foreground mt-1 mb-3">
                 Controla o espaço entre botões, cards e campos do formulário.
               </p>
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              {(
-                [
-                  { key: "compact", label: "Compacto", emoji: "⬛" },
-                  { key: "comfortable", label: "Confortável", emoji: "🔲" },
-                  { key: "spacious", label: "Espaçoso", emoji: "⬜" },
-                ] as const
-              ).map(({ key, label, emoji }) => (
-                <button
-                  key={key}
-                  onClick={() => setField("spacing", key)}
-                  aria-pressed={preferences.spacing === key}
-                  className={`flex flex-col items-center gap-2 px-3 py-4 rounded-xl border-2 font-medium transition-colors ${
-                    preferences.spacing === key
-                      ? "border-primary bg-primary/5 text-primary"
-                      : "border-border bg-muted/30 text-muted-foreground hover:border-primary/40"
-                  }`}
-                >
-                  <span className="text-xl">{emoji}</span>
-                  <span className="text-xs">{label}</span>
-                </button>
-              ))}
-            </div>
+              <div className="grid grid-cols-3 gap-3" role="group">
+                {(
+                  [
+                    {
+                      key: "compact",
+                      label: "Compacto",
+                      sublabel: "Menos espaço",
+                      emoji: "⬛",
+                    },
+                    {
+                      key: "comfortable",
+                      label: "Confortável",
+                      sublabel: "Espaço padrão",
+                      emoji: "🔲",
+                    },
+                    {
+                      key: "spacious",
+                      label: "Espaçoso",
+                      sublabel: "Mais espaço",
+                      emoji: "⬜",
+                    },
+                  ] as const
+                ).map(({ key, label, sublabel, emoji }) => (
+                  <button
+                    key={key}
+                    type="button"
+                    aria-pressed={preferences.spacing === key}
+                    onClick={() => setField("spacing", key)}
+                    className={cn(
+                      "flex flex-col items-center gap-1 px-3 py-4 rounded-xl border-2 font-medium transition-colors min-h-[80px]",
+                      preferences.spacing === key
+                        ? "border-primary bg-primary/5 text-primary"
+                        : "border-border bg-muted/30 text-muted-foreground hover:border-primary/40",
+                    )}
+                  >
+                    <span className="text-xl" aria-hidden="true">
+                      {emoji}
+                    </span>
+                    <span className="text-xs font-semibold">{label}</span>
+                    <span className="text-[10px] text-muted-foreground">{sublabel}</span>
+                  </button>
+                ))}
+              </div>
+            </fieldset>
           </CardContent>
         </Card>
 
-        {/* Toggles Section */}
-        <Card>
-          <CardContent className="pt-6 space-y-4">
-            <div className="space-y-4">
-              {/* Dark Mode */}
-              <button
-                onClick={() => setField("darkMode", !preferences.darkMode)}
-                className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">🌙</span>
-                  <div className="text-left">
-                    <p className="font-medium text-sm">Modo Escuro</p>
-                  </div>
-                </div>
-                <div
-                  className={`w-12 h-6 rounded-full transition-colors ${
-                    preferences.darkMode ? "bg-primary" : "bg-muted"
-                  }`}
-                >
-                  <div
-                    className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform ${
-                      preferences.darkMode ? "translate-x-6" : "translate-x-0.5"
-                    }`}
-                  />
-                </div>
-              </button>
-
-              {/* High Contrast */}
-              <button
-                onClick={() =>
-                  setField(
-                    "contrast",
-                    preferences.contrast === "default" ? "high" : "default",
-                  )
+        {/* 4 — Toggles */}
+        <Card
+          ref={togglesRef}
+          className={cn(
+            "transition-all duration-200",
+            tourStep === 3 && "ring-2 ring-primary ring-offset-2 relative z-50",
+          )}
+        >
+          <CardContent className="pt-6 a11y-space-card">
+            <p className="text-sm font-semibold text-foreground mb-4">
+              Ajustes Rápidos
+            </p>
+            <div className="space-y-1 divide-y divide-border">
+              <ToggleRow
+                emoji="🌙"
+                label="Modo Escuro"
+                description="Fundo escuro para reduzir o cansaço visual"
+                checked={preferences.darkMode}
+                onChange={(v) => setField("darkMode", v)}
+              />
+              <ToggleRow
+                emoji="◑"
+                label="Alto Contraste"
+                description="Bordas e textos mais definidos para maior legibilidade"
+                checked={preferences.contrast !== "default"}
+                onChange={(v) =>
+                  setField("contrast", v ? "high" : "default")
                 }
-                className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">◑</span>
-                  <div className="text-left">
-                    <p className="font-medium text-sm">Alto Contraste</p>
-                  </div>
-                </div>
-                <div
-                  className={`w-12 h-6 rounded-full transition-colors ${
-                    preferences.contrast !== "default"
-                      ? "bg-primary"
-                      : "bg-muted"
-                  }`}
-                >
-                  <div
-                    className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform ${
-                      preferences.contrast !== "default"
-                        ? "translate-x-6"
-                        : "translate-x-0.5"
-                    }`}
-                  />
-                </div>
-              </button>
-
-              {/* Audio Feedback */}
-              <button
-                onClick={() =>
-                  setField(
-                    "audioFeedbackEnabled",
-                    !preferences.audioFeedbackEnabled,
-                  )
-                }
-                className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">🔊</span>
-                  <div className="text-left">
-                    <p className="font-medium text-sm">Feedback de Áudio</p>
-                  </div>
-                </div>
-                <div
-                  className={`w-12 h-6 rounded-full transition-colors ${
-                    preferences.audioFeedbackEnabled ? "bg-primary" : "bg-muted"
-                  }`}
-                >
-                  <div
-                    className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform ${
-                      preferences.audioFeedbackEnabled
-                        ? "translate-x-6"
-                        : "translate-x-0.5"
-                    }`}
-                  />
-                </div>
-              </button>
-
-              {/* Large Touch Targets */}
-              <button
-                onClick={() =>
-                  setField("largeTouchTargets", !preferences.largeTouchTargets)
-                }
-                className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">👆</span>
-                  <div className="text-left">
-                    <p className="font-medium text-sm">
-                      Alvos de Toque Maiores
-                    </p>
-                  </div>
-                </div>
-                <div
-                  className={`w-12 h-6 rounded-full transition-colors ${
-                    preferences.largeTouchTargets ? "bg-primary" : "bg-muted"
-                  }`}
-                >
-                  <div
-                    className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform ${
-                      preferences.largeTouchTargets
-                        ? "translate-x-6"
-                        : "translate-x-0.5"
-                    }`}
-                  />
-                </div>
-              </button>
+              />
+              <ToggleRow
+                emoji="🔊"
+                label="Feedback de Áudio"
+                description="Sons de confirmação ao concluir ações"
+                checked={preferences.audioFeedbackEnabled}
+                onChange={(v) => setField("audioFeedbackEnabled", v)}
+              />
+              <ToggleRow
+                emoji="👆"
+                label="Botões Maiores"
+                description="Aumenta a área clicável de todos os botões (mínimo 64px)"
+                checked={preferences.largeTouchTargets}
+                onChange={(v) => setField("largeTouchTargets", v)}
+              />
             </div>
           </CardContent>
         </Card>
 
         {/* Save Status */}
-        <div className="text-center">
-          <p
-            role="status"
-            aria-live="polite"
-            className="text-sm text-muted-foreground"
-          >
+        <div
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          className="text-center"
+        >
+          <p className="text-sm text-muted-foreground">
             {isSaving
               ? "Salvando..."
               : isSaved
                 ? "✓ Configurações salvas"
-                : "Ajustes automáticos"}
+                : "Ajustes salvos automaticamente"}
           </p>
         </div>
 
-        {/* Reset Button */}
+        {/* Reset */}
         <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
           <Button
             type="button"

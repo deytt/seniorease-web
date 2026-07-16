@@ -17,10 +17,13 @@ import {
   Star,
   Circle,
 } from "lucide-react";
+import { NotificationBell } from "@/presentation/components/layout/NotificationBell";
 import { getTasksDi } from "@/lib/di/tasksDi";
 import { getRemindersDi } from "@/lib/di/remindersDi";
+import { getNotificationsDi } from "@/lib/di/notificationsDi";
 import { useTasks } from "@/presentation/hooks/useTasks";
 import { useReminders } from "@/presentation/hooks/useReminders";
+import { useNotificationItems } from "@/presentation/hooks/useNotificationItems";
 import { usePreferencesStore } from "@/presentation/providers/PreferencesProvider";
 
 const FONT_SIZE_LABELS: Record<string, string> = {
@@ -55,17 +58,21 @@ export default function DashboardPage() {
 
   const taskRepository = getTasksDi().taskRepository;
   const reminderRepository = getRemindersDi().reminderRepository;
+  const notificationRepository = getNotificationsDi().notificationRepository;
   const { tasks, loading: tasksLoading, fetchTasks } = useTasks(taskRepository);
   const {
     reminders,
     loading: remindersLoading,
     fetchReminders,
   } = useReminders(reminderRepository);
+  const { fetchNotifications, todayCount: notificationsTodayCount } =
+    useNotificationItems(notificationRepository);
 
   useEffect(() => {
     if (user?.id) {
       fetchTasks(user.id);
       fetchReminders(user.id);
+      fetchNotifications(user.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
@@ -74,7 +81,11 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div
+        role="status"
+        aria-live="polite"
+        className="flex items-center justify-center min-h-[60vh]"
+      >
         <p className="text-muted-foreground">Carregando...</p>
       </div>
     );
@@ -112,17 +123,7 @@ export default function DashboardPage() {
             {pendingTasks.length !== 1 ? "s" : ""} hoje
           </p>
         </div>
-        <Button
-          variant="destructive"
-          size="sm"
-          className="gap-2 flex-shrink-0"
-          asChild
-        >
-          <a href="tel:1-800-736467">
-            <AlertTriangle className="size-4" />
-            Emergência
-          </a>
-        </Button>
+        <NotificationBell unreadCount={notificationsTodayCount} />
       </div>
 
       {/* Main Grid */}
@@ -130,10 +131,10 @@ export default function DashboardPage() {
         {/* Left Column */}
         <div className="space-y-6">
           {/* Daily Encouragement Card */}
-          <Card className="bg-primary text-white border-0 overflow-hidden relative">
+          <Card className="bg-primary text-primary-foreground border-0 overflow-hidden relative">
             <CardContent className="p-6">
               <div className="flex items-center gap-2 mb-3 opacity-90">
-                <Star className="size-4 fill-yellow-300 text-yellow-300" />
+                <Star className="size-4 fill-current text-primary-foreground/70" aria-hidden="true" />
                 <span className="text-sm font-medium">
                   Encorajamento Diário
                 </span>
@@ -143,7 +144,8 @@ export default function DashboardPage() {
                 {completedTasks.length !== 1 ? "s " : " "}ontem &mdash; que
                 maravilha! Continue com o ótimo trabalho hoje.&rdquo;
               </p>
-              <div className="flex gap-6">
+              {/* Stats — apenas no Modo Avançado */}
+              <div className="flex gap-6 advanced-only">
                 <div>
                   <p className="text-2xl font-bold">{completedTasks.length}</p>
                   <p className="text-xs opacity-75 mt-0.5">Ontem</p>
@@ -157,9 +159,9 @@ export default function DashboardPage() {
                   <p className="text-xs opacity-75 mt-0.5">Restante</p>
                 </div>
               </div>
-              {/* Decorative circle */}
-              <div className="absolute right-0 top-0 w-48 h-48 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/4 pointer-events-none" />
-              <div className="absolute right-12 bottom-0 w-32 h-32 rounded-full bg-white/5 translate-y-1/2 pointer-events-none" />
+              {/* Decorative circles */}
+              <div aria-hidden="true" className="absolute right-0 top-0 w-48 h-48 rounded-full bg-primary-foreground/5 -translate-y-1/2 translate-x-1/4 pointer-events-none" />
+              <div aria-hidden="true" className="absolute right-12 bottom-0 w-32 h-32 rounded-full bg-primary-foreground/5 translate-y-1/2 pointer-events-none" />
             </CardContent>
           </Card>
 
@@ -270,19 +272,22 @@ export default function DashboardPage() {
                 </Link>
                 <Link
                   href="tel:1-800-736467"
+                  aria-label="Ligar para emergência"
                   className="flex flex-col items-center gap-2 p-4 rounded-xl border border-border hover:bg-muted/50 hover:border-destructive/30 transition-colors text-center"
                 >
                   <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center">
-                    <AlertTriangle className="size-5 text-destructive" />
+                    <AlertTriangle className="size-5 text-destructive" aria-hidden="true" />
                   </div>
                   <span className="text-xs font-medium">Emergência</span>
                 </Link>
+                {/* Histórico — apenas no Modo Avançado */}
                 <Link
                   href="/history"
-                  className="flex flex-col items-center gap-2 p-4 rounded-xl border border-border hover:bg-muted/50 hover:border-warning/30 transition-colors text-center"
+                  aria-label="Ver histórico de atividades"
+                  className="advanced-only flex flex-col items-center gap-2 p-4 rounded-xl border border-border hover:bg-muted/50 hover:border-warning/30 transition-colors text-center"
                 >
                   <div className="w-10 h-10 rounded-full bg-warning/10 flex items-center justify-center">
-                    <History className="size-5 text-warning" />
+                    <History className="size-5 text-warning" aria-hidden="true" />
                   </div>
                   <span className="text-xs font-medium">Histórico</span>
                 </Link>
@@ -334,11 +339,11 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          {/* Accessibility Status */}
-          <Card>
+          {/* Accessibility Status — apenas no Modo Avançado */}
+          <Card className="advanced-only">
             <CardContent className="p-6">
               <h2 className="text-base font-semibold mb-4 flex items-center gap-2">
-                <Settings className="size-4 text-secondary" />
+                <Settings className="size-4 text-secondary" aria-hidden="true" />
                 Status de Acessibilidade
               </h2>
               <div className="space-y-2 text-sm">

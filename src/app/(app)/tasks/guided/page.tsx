@@ -47,7 +47,7 @@ export default function GuidedTaskHubPage() {
   if (loading && !showEmptyState) {
     return (
       <div
-        className="flex min-h-[60vh] items-center justify-center bg-[#f8fafc]"
+        className="flex min-h-[60vh] items-center justify-center bg-background"
         role="status"
         aria-live="polite"
       >
@@ -62,7 +62,7 @@ export default function GuidedTaskHubPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[60vh] w-full max-w-lg items-center justify-center bg-[#f8fafc] py-8">
+    <div className="mx-auto flex min-h-[60vh] w-full max-w-lg items-center justify-center bg-background py-8">
       <Card className="w-full border-border bg-card shadow-card">
         <CardContent className="p-8 text-center">
           <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-primary-light">
