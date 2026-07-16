@@ -1,8 +1,19 @@
 import { getToken, onMessage, type MessagePayload } from "firebase/messaging";
 import { messaging } from "./fcmConfig";
 
+let activeFcmToken: string | null = null;
+
+export function getActiveFcmToken(): string | null {
+  return activeFcmToken;
+}
+
+export function clearActiveFcmToken(): void {
+  activeFcmToken = null;
+}
+
 /**
- * Request permission and get FCM token for the user
+ * Request permission and get FCM token for the user.
+ * Persists the token in memory so it can be removed on sign-out.
  */
 export async function requestFCMToken(): Promise<string | null> {
   try {
@@ -22,9 +33,12 @@ export async function requestFCMToken(): Promise<string | null> {
       vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
     });
 
+    if (token) {
+      activeFcmToken = token;
+    }
+
     return token;
   } catch (error) {
-    // Push service not available is expected in development/localhost without HTTPS
     if (error instanceof Error) {
       if (error.message.includes("push service not available")) {
         console.info(
@@ -39,7 +53,7 @@ export async function requestFCMToken(): Promise<string | null> {
 }
 
 /**
- * Handle incoming messages
+ * Handle incoming messages while the app is in the foreground.
  */
 export async function setupMessageListener(
   callback: (payload: MessagePayload) => void,
@@ -49,12 +63,10 @@ export async function setupMessageListener(
     if (!msg) return;
 
     onMessage(msg, (payload) => {
-      console.log("Message received:", payload);
       callback(payload);
 
-      // Show notification if in focus
       if (payload.notification) {
-        const notificationOptions = {
+        const notificationOptions: NotificationOptions = {
           body: payload.notification.body,
           icon: payload.notification.icon || "/icon-192x192.png",
           badge: "/badge-72x72.png",

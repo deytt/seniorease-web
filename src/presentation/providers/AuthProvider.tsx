@@ -12,7 +12,12 @@ import { onAuthStateChanged } from "firebase/auth";
 
 import type { User } from "@/domain/entities/User";
 import { auth } from "@/infrastructure/firebase/config";
+import {
+  clearActiveFcmToken,
+  getActiveFcmToken,
+} from "@/infrastructure/firebase/fcmService";
 import { getGetCurrentUserUseCase, getSignOutUseCase } from "@/lib/di/authDi";
+import { getNotificationsDi } from "@/lib/di/notificationsDi";
 
 interface AuthContextType {
   user: User | null;
@@ -75,11 +80,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         const token = await requestFCMToken();
         if (token) {
-          console.log("FCM Token obtained successfully");
+          await getNotificationsDi().registerFcmTokenUseCase.execute(
+            user.id,
+            token,
+          );
         }
 
-        await setupMessageListener((payload) => {
-          console.log("New notification:", payload);
+        await setupMessageListener(() => {
+          // Histórico atualiza via Firestore; push em foreground usa Notification API.
         });
       } catch (err) {
         console.error("Error initializing FCM:", err);
@@ -91,6 +99,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const handleSignOut = async () => {
     try {
+      const token = getActiveFcmToken();
+      if (token && user?.id) {
+        await getNotificationsDi().removeFcmTokenUseCase.execute(user.id, token);
+        clearActiveFcmToken();
+      }
+
       const signOutUseCase = getSignOutUseCase();
       await signOutUseCase.execute();
       setUser(null);
