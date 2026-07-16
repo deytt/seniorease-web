@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import type { User } from "@/domain/entities/User";
 import type { IProfileRepository } from "@/domain/repositories/IProfileRepository";
+import type { IHistoryRecorder } from "@/domain/history/IHistoryRecorder";
 import { SaveUserProfileUseCase } from "@/domain/usecases/profile/SaveUserProfileUseCase";
 
 const mockUser: User = {
@@ -18,22 +19,31 @@ function createRepository(): IProfileRepository {
   };
 }
 
+function createHistoryRecorder(): IHistoryRecorder {
+  return {
+    record: vi.fn().mockResolvedValue(undefined),
+  };
+}
+
 describe("SaveUserProfileUseCase", () => {
   it("salva o perfil quando o nome é válido", async () => {
     const repository = createRepository();
-    const useCase = new SaveUserProfileUseCase(repository);
+    const historyRecorder = createHistoryRecorder();
+    const useCase = new SaveUserProfileUseCase(repository, historyRecorder);
 
     const result = await useCase.execute("user-1", { name: "Ana Silva" });
 
     expect(repository.saveProfile).toHaveBeenCalledWith("user-1", {
       name: "Ana Silva",
     });
+    expect(historyRecorder.record).toHaveBeenCalled();
     expect(result).toEqual(mockUser);
   });
 
   it("não valida o nome quando ele não é enviado", async () => {
     const repository = createRepository();
-    const useCase = new SaveUserProfileUseCase(repository);
+    const historyRecorder = createHistoryRecorder();
+    const useCase = new SaveUserProfileUseCase(repository, historyRecorder);
 
     await useCase.execute("user-1", { phone: "11999999999" });
 
@@ -44,7 +54,8 @@ describe("SaveUserProfileUseCase", () => {
 
   it("bloqueia nomes com mais de 30 caracteres", async () => {
     const repository = createRepository();
-    const useCase = new SaveUserProfileUseCase(repository);
+    const historyRecorder = createHistoryRecorder();
+    const useCase = new SaveUserProfileUseCase(repository, historyRecorder);
 
     await expect(
       useCase.execute("user-1", { name: "a".repeat(31) }),
@@ -55,7 +66,8 @@ describe("SaveUserProfileUseCase", () => {
 
   it("bloqueia nomes com menos de 3 caracteres", async () => {
     const repository = createRepository();
-    const useCase = new SaveUserProfileUseCase(repository);
+    const historyRecorder = createHistoryRecorder();
+    const useCase = new SaveUserProfileUseCase(repository, historyRecorder);
 
     await expect(useCase.execute("user-1", { name: "ab" })).rejects.toThrow(
       "Nome deve ter pelo menos 3 caracteres.",

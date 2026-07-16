@@ -29,31 +29,43 @@ export function getGetRemindersUseCase(): GetRemindersUseCase {
 
 export function getCreateReminderUseCase(): CreateReminderUseCase {
   if (!createReminderUseCase) {
-    createReminderUseCase = new CreateReminderUseCase(getReminderRepository());
+    const { historyRecorder } = getHistoryDi();
+    createReminderUseCase = new CreateReminderUseCase(
+      getReminderRepository(),
+      historyRecorder,
+    );
   }
   return createReminderUseCase;
 }
 
 export function getUpdateReminderUseCase(): UpdateReminderUseCase {
   if (!updateReminderUseCase) {
-    updateReminderUseCase = new UpdateReminderUseCase(getReminderRepository());
+    const { historyRecorder } = getHistoryDi();
+    updateReminderUseCase = new UpdateReminderUseCase(
+      getReminderRepository(),
+      historyRecorder,
+    );
   }
   return updateReminderUseCase;
 }
 
 export function getDeleteReminderUseCase(): DeleteReminderUseCase {
   if (!deleteReminderUseCase) {
-    deleteReminderUseCase = new DeleteReminderUseCase(getReminderRepository());
+    const { historyRecorder } = getHistoryDi();
+    deleteReminderUseCase = new DeleteReminderUseCase(
+      getReminderRepository(),
+      historyRecorder,
+    );
   }
   return deleteReminderUseCase;
 }
 
 export function getMarkReminderAsReadUseCase(): MarkReminderAsReadUseCase {
   if (!markReminderAsReadUseCase) {
-    const { historyRepository } = getHistoryDi();
+    const { historyRecorder } = getHistoryDi();
     markReminderAsReadUseCase = new MarkReminderAsReadUseCase(
       getReminderRepository(),
-      historyRepository,
+      historyRecorder,
     );
   }
   return markReminderAsReadUseCase;

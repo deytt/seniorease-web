@@ -1,4 +1,5 @@
-import { HistoryEvent } from "../entities/HistoryEvent";
+import type { HistoryEvent } from "../entities/HistoryEvent";
+import type { HistoryStats } from "../history/computeHistoryStats";
 
 export interface IHistoryRepository {
   getHistoryEvents(userId: string): Promise<HistoryEvent[]>;
@@ -7,14 +8,6 @@ export interface IHistoryRepository {
     startDate: Date,
     endDate: Date,
   ): Promise<HistoryEvent[]>;
-  createHistoryEvent(event: Omit<HistoryEvent, "id">): Promise<HistoryEvent>;
-  getStats(
-    userId: string,
-    daysBack?: number,
-  ): Promise<{
-    totalCompleted: number;
-    streak: number;
-    thisWeek: number;
-    thisMonth: number;
-  }>;
+  logEvent(event: Omit<HistoryEvent, "id">): Promise<HistoryEvent>;
+  getStats(userId: string): Promise<HistoryStats>;
 }

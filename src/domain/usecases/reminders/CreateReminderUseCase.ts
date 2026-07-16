@@ -1,6 +1,9 @@
 import { Reminder } from "../../entities/Reminder";
 import type { ReminderCategory } from "../../entities/ReminderCategory";
 import { IReminderRepository } from "../../repositories/IReminderRepository";
+import { HistoryActionType } from "../../history/HistoryActionType";
+import type { IHistoryRecorder } from "../../history/IHistoryRecorder";
+import { buildReminderCreatedTitle } from "../../history/historyTitles";
 
 export interface CreateReminderInput {
   userId: string;
@@ -12,7 +15,10 @@ export interface CreateReminderInput {
 }
 
 export class CreateReminderUseCase {
-  constructor(private reminderRepository: IReminderRepository) {}
+  constructor(
+    private reminderRepository: IReminderRepository,
+    private historyRecorder: IHistoryRecorder,
+  ) {}
 
   async execute(input: CreateReminderInput): Promise<Reminder> {
     const now = new Date();
@@ -28,6 +34,16 @@ export class CreateReminderUseCase {
       createdAt: now,
     };
 
-    return this.reminderRepository.createReminder(reminder);
+    const createdReminder = await this.reminderRepository.createReminder(reminder);
+
+    await this.historyRecorder.record({
+      userId: input.userId,
+      type: HistoryActionType.reminderCreated,
+      title: buildReminderCreatedTitle(input.title.trim()),
+      entityId: createdReminder.id,
+      category: input.category,
+    });
+
+    return createdReminder;
   }
 }

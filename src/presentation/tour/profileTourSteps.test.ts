@@ -6,15 +6,16 @@ import {
 } from "@/presentation/tour/profileTourSteps";
 
 describe("profileTourSteps", () => {
-  it("define 7 passos cobrindo todas as seções do perfil", () => {
-    expect(profileTourSteps).toHaveLength(7);
-    expect(PROFILE_TOUR_STEP_TARGETS).toHaveLength(7);
+  it("define 8 passos cobrindo todas as seções do perfil", () => {
+    expect(profileTourSteps).toHaveLength(8);
+    expect(PROFILE_TOUR_STEP_TARGETS).toHaveLength(8);
   });
 
   it("aponta para os data-tour corretos em ordem de leitura", () => {
     const selectors = profileTourSteps.map((step) => step.element);
 
     expect(selectors).toEqual([
+      "[data-tour='profile-header']",
       "[data-tour='profile-photo']",
       "[data-tour='profile-account-status']",
       "[data-tour='profile-help']",

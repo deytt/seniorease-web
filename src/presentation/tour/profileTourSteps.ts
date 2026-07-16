@@ -1,6 +1,7 @@
 import type { DriveStep } from "driver.js";
 
 export const PROFILE_TOUR_STEP_TARGETS = [
+  "profile-header",
   "profile-photo",
   "profile-account-status",
   "profile-help",
@@ -13,6 +14,16 @@ export const PROFILE_TOUR_STEP_TARGETS = [
 export type ProfileTourStepTarget = (typeof PROFILE_TOUR_STEP_TARGETS)[number];
 
 export const profileTourSteps: DriveStep[] = [
+  {
+    element: "[data-tour='profile-header']",
+    popover: {
+      title: "Bem-vindo ao seu perfil",
+      description:
+        "Esta é a sua página de perfil — o lugar onde ficam seus dados pessoais, endereço, preferências de notificação e opções para proteger sua conta. Neste tour, mostramos cada área com calma. Pode pausar ou sair quando quiser.",
+      side: "bottom",
+      align: "start",
+    },
+  },
   {
     element: "[data-tour='profile-photo']",
     popover: {
