@@ -1,10 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   Accessibility,
-  Bell,
   ChevronRight,
   Clock,
   Plus,
@@ -173,7 +173,7 @@ function QuickActionTile({
           iconWrapClassName,
         )}
       >
-        <img
+        <Image
           src={iconSrc}
           alt=""
           width={20}
