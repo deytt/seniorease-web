@@ -9,6 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -16,6 +18,7 @@
     "@hookform/resolvers": "^5.4.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "driver.js": "^1.7.0",
     "firebase": "^12.15.0",
     "lottie-react": "^2.4.1",
     "lucide-react": "^1.23.0",
@@ -44,8 +47,10 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "eslint-plugin-storybook": "^10.5.0",
+    "jsdom": "^26.1.0",
     "storybook": "^10.5.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   }
 }

@@ -22,7 +22,6 @@ firebase.initializeApp(firebaseConfig);
 
 const messaging = firebase.messaging();
 
-// Handle background messages
 messaging.onBackgroundMessage((payload) => {
   console.log("Received background message:", payload);
 
@@ -38,5 +37,35 @@ messaging.onBackgroundMessage((payload) => {
   return self.registration.showNotification(
     notificationTitle,
     notificationOptions,
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  const { entityType, entityId } = event.notification.data ?? {};
+  let url = "/dashboard";
+
+  if (entityType === "task" && entityId) {
+    url = `/tasks/${entityId}`;
+  } else if (entityType === "reminder") {
+    url = "/reminders";
+  }
+
+  event.waitUntil(
+    clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((windowClients) => {
+        for (const client of windowClients) {
+          if ("focus" in client) {
+            client.navigate(url);
+            return client.focus();
+          }
+        }
+
+        if (clients.openWindow) {
+          return clients.openWindow(url);
+        }
+      }),
   );
 });

@@ -382,6 +382,12 @@ html[data-interface-mode="basic"] .advanced-only {
        acessibilidade escala a partir dessa base, nunca abaixo dela. */
     font-size: calc(16px * var(--a11y-font-scale));
     scroll-behavior: smooth;
+    /*
+     * Mantém faixa da scrollbar sempre reservada (evita salto horizontal).
+     * Não usar scrollbar-gutter: stable — a faixa reservada fica fora da
+     * viewport de position:fixed e aparece branca quando um modal abre.
+     */
+    overflow-y: scroll;
   }
 
   body {
@@ -405,6 +411,30 @@ html[data-interface-mode="basic"] .advanced-only {
     outline: 3px solid var(--focus);
     outline-offset: 2px;
   }
+}
+
+/*
+ * Fallback fora de @layer — react-remove-scroll injeta estilos em runtime
+ * e vence regras dentro de @layer base.
+ */
+body[data-scroll-locked] {
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+  position: static !important;
+  --removed-body-scroll-bar-size: 0px !important;
+}
+
+html.with-scroll-bars-hidden,
+.with-scroll-bars-hidden {
+  padding-right: 0 !important;
+}
+
+.right-scroll-bar-position {
+  right: 0 !important;
+}
+
+.width-before-scroll-bar {
+  margin-right: 0 !important;
 }
 
 /* ==========================================================================

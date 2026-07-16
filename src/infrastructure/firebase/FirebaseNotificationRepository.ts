@@ -1,68 +1,125 @@
 import {
   collection,
-  query,
-  where,
-  orderBy,
-  limit as firestoreLimit,
+  doc,
   getDocs,
-  Timestamp,
-  type QueryDocumentSnapshot,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+  setDoc,
+  deleteDoc,
+  where,
 } from "firebase/firestore";
-import { db } from "./config";
-import type { NotificationItem, NotificationEntityType } from "@/domain/entities/NotificationItem";
-import type { INotificationRepository } from "@/domain/repositories/INotificationRepository";
 
-/**
- * Implementação Firebase de `INotificationRepository`.
- *
- * Lê a coleção `notifications` onde `userId == uid`,
- * ordenada por `sentAt` decrescente, com limite configurável.
- *
- * Espelha `FirebaseNotificationHistoryRepository` do mobile.
- * A escrita é exclusiva da Cloud Function `sendDueNotifications` —
- * o cliente web é somente-leitura.
- */
+import type { NotificationItem } from "@/domain/entities/NotificationItem";
+import type { IFcmTokenRepository } from "@/domain/repositories/IFcmTokenRepository";
+import type { INotificationRepository } from "@/domain/repositories/INotificationRepository";
+import { db } from "@/infrastructure/firebase/config";
+
+function parseTimestamp(value: unknown): Date {
+  if (
+    value &&
+    typeof value === "object" &&
+    "toDate" in value &&
+    typeof value.toDate === "function"
+  ) {
+    return value.toDate();
+  }
+
+  if (value instanceof Date) {
+    return value;
+  }
+
+  if (typeof value === "string" || typeof value === "number") {
+    return new Date(value);
+  }
+
+  return new Date();
+}
+
+function normalizeNotificationItem(
+  id: string,
+  data: Record<string, unknown>,
+): NotificationItem {
+  const entityType = data.entityType === "reminder" ? "reminder" : "task";
+
+  return {
+    id,
+    userId: String(data.userId ?? ""),
+    entityId: String(data.entityId ?? ""),
+    entityType,
+    title: String(data.title ?? ""),
+    body: String(data.body ?? ""),
+    sentAt: parseTimestamp(data.sentAt),
+    successCount: Number(data.successCount ?? 0),
+    failureCount: Number(data.failureCount ?? 0),
+  };
+}
+
 export class FirebaseNotificationRepository implements INotificationRepository {
-  private readonly collectionName = "notifications";
+  private collectionName = "notifications";
 
   async getNotifications(
     userId: string,
-    limit = 50,
+    maxItems = 50,
   ): Promise<NotificationItem[]> {
     const q = query(
       collection(db, this.collectionName),
       where("userId", "==", userId),
       orderBy("sentAt", "desc"),
-      firestoreLimit(limit),
+      limit(maxItems),
     );
 
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((doc) => this.mapDoc(doc));
+    return snapshot.docs.map((docSnap) =>
+      normalizeNotificationItem(docSnap.id, docSnap.data()),
+    );
   }
 
-  private mapDoc(
-    doc: QueryDocumentSnapshot,
-  ): NotificationItem {
-    const data = doc.data();
-    const sentAtRaw = data["sentAt"];
+  subscribeToNotifications(
+    userId: string,
+    callback: (items: NotificationItem[]) => void,
+    maxItems = 50,
+  ): () => void {
+    const q = query(
+      collection(db, this.collectionName),
+      where("userId", "==", userId),
+      orderBy("sentAt", "desc"),
+      limit(maxItems),
+    );
 
-    const sentAt: Date =
-      sentAtRaw instanceof Timestamp
-        ? sentAtRaw.toDate()
-        : new Date();
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        callback(
+          snapshot.docs.map((docSnap) =>
+            normalizeNotificationItem(docSnap.id, docSnap.data()),
+          ),
+        );
+      },
+      (error) => {
+        console.error("Erro ao escutar notificações:", error);
+        callback([]);
+      },
+    );
+  }
+}
 
-    const rawType = data["entityType"] as string | undefined;
-    const entityType: NotificationEntityType =
-      rawType === "reminder" ? "reminder" : "task";
+export class FirebaseFcmTokenRepository implements IFcmTokenRepository {
+  async saveToken(userId: string, token: string): Promise<void> {
+    await setDoc(
+      doc(db, "users", userId, "fcmTokens", token),
+      {
+        token,
+        platform: "web",
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true },
+    );
+  }
 
-    return {
-      id: doc.id,
-      userId: (data["userId"] as string) ?? "",
-      entityId: (data["entityId"] as string) ?? "",
-      entityType,
-      title: (data["title"] as string) ?? "",
-      body: (data["body"] as string) ?? "",
-      sentAt,
-    };
+  async removeToken(userId: string, token: string): Promise<void> {
+    await deleteDoc(doc(db, "users", userId, "fcmTokens", token));
   }
 }

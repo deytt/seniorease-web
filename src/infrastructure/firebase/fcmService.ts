@@ -1,7 +1,5 @@
 import { getToken, onMessage, type MessagePayload } from "firebase/messaging";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { messaging } from "./fcmConfig";
-import { db } from "./config";
 
 const FIREBASE_MESSAGING_SW_PATH = "/firebase-messaging-sw.js";
 
@@ -68,8 +66,20 @@ async function getServiceWorkerRegistration(): Promise<
   return navigator.serviceWorker.register(serviceWorkerUrl, { scope: "/" });
 }
 
+let activeFcmToken: string | null = null;
+
+export function getActiveFcmToken(): string | null {
+  return activeFcmToken;
+}
+
+export function clearActiveFcmToken(): void {
+  activeFcmToken = null;
+}
+
 /**
- * Request permission and get FCM token for the user
+ * Request permission and get FCM token for the user.
+ * Persists the token in memory so it can be removed on sign-out.
+ * Token persistence in Firestore goes through RegisterFcmTokenUseCase.
  */
 export async function requestFCMToken(): Promise<string | null> {
   try {
@@ -94,9 +104,12 @@ export async function requestFCMToken(): Promise<string | null> {
       serviceWorkerRegistration,
     });
 
+    if (token) {
+      activeFcmToken = token;
+    }
+
     return token;
   } catch (error) {
-    // Push service not available is expected in development/localhost without HTTPS
     if (error instanceof Error) {
       if (error.message.includes("push service not available")) {
         console.info(
@@ -111,28 +124,7 @@ export async function requestFCMToken(): Promise<string | null> {
 }
 
 /**
- * Salva o token FCM no mesmo caminho usado pelo mobile:
- * users/{uid}/fcmTokens/{token}
- *
- * A Cloud Function `sendDueNotifications` lê exatamente essa subcoleção.
- */
-export async function saveFCMToken(
-  userId: string,
-  token: string,
-): Promise<void> {
-  await setDoc(
-    doc(db, "users", userId, "fcmTokens", token),
-    {
-      token,
-      platform: "web",
-      updatedAt: serverTimestamp(),
-    },
-    { merge: true },
-  );
-}
-
-/**
- * Handle incoming messages
+ * Handle incoming messages while the app is in the foreground.
  */
 export async function setupMessageListener(
   callback: (payload: MessagePayload) => void,
@@ -142,12 +134,10 @@ export async function setupMessageListener(
     if (!msg) return;
 
     onMessage(msg, (payload) => {
-      console.log("Message received:", payload);
       callback(payload);
 
-      // Show notification if in focus
       if (payload.notification) {
-        const notificationOptions = {
+        const notificationOptions: NotificationOptions = {
           body: payload.notification.body,
           icon: payload.notification.icon || "/icon-192x192.png",
           badge: "/badge-72x72.png",

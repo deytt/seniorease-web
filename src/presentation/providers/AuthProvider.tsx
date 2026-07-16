@@ -12,13 +12,19 @@ import { onAuthStateChanged } from "firebase/auth";
 
 import type { User } from "@/domain/entities/User";
 import { auth } from "@/infrastructure/firebase/config";
+import {
+  clearActiveFcmToken,
+  getActiveFcmToken,
+} from "@/infrastructure/firebase/fcmService";
 import { getGetCurrentUserUseCase, getSignOutUseCase } from "@/lib/di/authDi";
+import { getNotificationsDi } from "@/lib/di/notificationsDi";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   error: string | null;
   signOut: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -69,17 +75,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const initFCM = async () => {
       try {
-        const { requestFCMToken, saveFCMToken, setupMessageListener } =
+        const { requestFCMToken, setupMessageListener } =
           await import("@/infrastructure/firebase/fcmService");
 
         const token = await requestFCMToken();
         if (token) {
-          await saveFCMToken(user.id, token);
-          console.log("FCM Token obtained successfully");
+          await getNotificationsDi().registerFcmTokenUseCase.execute(
+            user.id,
+            token,
+          );
         }
 
-        await setupMessageListener((payload) => {
-          console.log("New notification:", payload);
+        await setupMessageListener(() => {
+          // Histórico atualiza via Firestore; push em foreground usa Notification API.
         });
       } catch (err) {
         console.error("Error initializing FCM:", err);
@@ -91,6 +99,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const handleSignOut = async () => {
     try {
+      const token = getActiveFcmToken();
+      if (token && user?.id) {
+        await getNotificationsDi().removeFcmTokenUseCase.execute(user.id, token);
+        clearActiveFcmToken();
+      }
+
       const signOutUseCase = getSignOutUseCase();
       await signOutUseCase.execute();
       setUser(null);
@@ -100,9 +114,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const refreshUser = async () => {
+    try {
+      const currentUser = await getGetCurrentUserUseCase().execute();
+      setUser(currentUser);
+      setError(null);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Erro ao atualizar dados do perfil",
+      );
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ user, loading, error, signOut: handleSignOut }}
+      value={{ user, loading, error, signOut: handleSignOut, refreshUser }}
     >
       {children}
     </AuthContext.Provider>

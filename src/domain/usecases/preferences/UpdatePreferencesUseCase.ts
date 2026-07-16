@@ -1,16 +1,18 @@
 import type { IPreferencesRepository } from "@/domain/repositories/IPreferencesRepository";
 import type { UserPreferences } from "@/domain/entities/UserPreferences";
+import { HistoryActionType } from "@/domain/history/HistoryActionType";
+import type { IHistoryRecorder } from "@/domain/history/IHistoryRecorder";
+import { HISTORY_STATIC_TITLES } from "@/domain/history/historyTitles";
 
 /**
  * Faz o papel do "SavePreferencesUseCase" descrito na ADR-009: além de
  * persistir, aplica a regra de derivação do contraste máximo.
- *
- * Regra (ADR-009, válida em Web e Mobile):
- * `contrast: 'maximum'` NUNCA é escolhido diretamente pelo usuário na UI —
- * é derivado automaticamente quando `darkMode == true && contrast == 'high'`.
  */
 export class UpdatePreferencesUseCase {
-  constructor(private readonly repository: IPreferencesRepository) {}
+  constructor(
+    private readonly repository: IPreferencesRepository,
+    private readonly historyRecorder: IHistoryRecorder,
+  ) {}
 
   async execute(preferences: UserPreferences): Promise<UserPreferences> {
     const derived: UserPreferences = {
@@ -19,13 +21,21 @@ export class UpdatePreferencesUseCase {
         preferences.darkMode && preferences.contrast === "high"
           ? "maximum"
           : preferences.contrast === "maximum"
-            ? "high" // usuário nunca escolhe "maximum" manualmente; se veio assim sem dark mode, rebaixa para "high"
+            ? "high"
             : preferences.contrast,
-      remindersEnabled: preferences.remindersNotificationsEnabled,
       updatedAt: new Date(),
     };
 
     await this.repository.savePreferences(derived);
+
+    await this.historyRecorder.record({
+      userId: derived.userId,
+      type: HistoryActionType.accessibilityChanged,
+      title: HISTORY_STATIC_TITLES[HistoryActionType.accessibilityChanged],
+      entityId: null,
+      category: null,
+    });
+
     return derived;
   }
 }

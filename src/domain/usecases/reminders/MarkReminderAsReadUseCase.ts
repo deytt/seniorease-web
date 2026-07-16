@@ -1,23 +1,24 @@
 import { Reminder } from "../../entities/Reminder";
 import { IReminderRepository } from "../../repositories/IReminderRepository";
-import { IHistoryRepository } from "../../repositories/IHistoryRepository";
+import { HistoryActionType } from "../../history/HistoryActionType";
+import type { IHistoryRecorder } from "../../history/IHistoryRecorder";
+import { buildReminderCompletedTitle } from "../../history/historyTitles";
 
 export class MarkReminderAsReadUseCase {
   constructor(
     private reminderRepository: IReminderRepository,
-    private historyRepository: IHistoryRepository,
+    private historyRecorder: IHistoryRecorder,
   ) {}
 
   async execute(reminderId: string): Promise<Reminder> {
     const reminder = await this.reminderRepository.markAsRead(reminderId);
 
-    await this.historyRepository.createHistoryEvent({
+    await this.historyRecorder.record({
       userId: reminder.userId,
-      ...(reminder.taskId ? { taskId: reminder.taskId } : {}),
-      eventType: "reminder_marked",
-      title: reminder.title,
-      description: `Lembrete marcado como concluído: ${reminder.title}`,
-      createdAt: new Date(),
+      type: HistoryActionType.reminderCompleted,
+      title: buildReminderCompletedTitle(reminder.title),
+      entityId: reminder.id,
+      category: reminder.category,
     });
 
     return reminder;
