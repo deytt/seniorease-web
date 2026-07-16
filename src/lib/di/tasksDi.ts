@@ -13,7 +13,6 @@ import type { ITaskRepository } from "@/domain/repositories/ITaskRepository";
 const isDummyFirebaseKey =
   process.env.NEXT_PUBLIC_FIREBASE_API_KEY?.includes("Dummy");
 
-// Singleton instances
 let taskRepository: ITaskRepository | null = null;
 let getTasksUseCase: GetTasksUseCase | null = null;
 let getTaskByIdUseCase: GetTaskByIdUseCase | null = null;
@@ -48,10 +47,10 @@ export function getGetTaskByIdUseCase(): GetTaskByIdUseCase {
 
 export function getCreateTaskUseCase(): CreateTaskUseCase {
   if (!createTaskUseCase) {
-    const { historyRepository } = getHistoryDi();
+    const { historyRecorder } = getHistoryDi();
     createTaskUseCase = new CreateTaskUseCase(
       getTaskRepository(),
-      historyRepository,
+      historyRecorder,
     );
   }
   return createTaskUseCase;
@@ -66,17 +65,21 @@ export function getUpdateTaskUseCase(): UpdateTaskUseCase {
 
 export function getDeleteTaskUseCase(): DeleteTaskUseCase {
   if (!deleteTaskUseCase) {
-    deleteTaskUseCase = new DeleteTaskUseCase(getTaskRepository());
+    const { historyRecorder } = getHistoryDi();
+    deleteTaskUseCase = new DeleteTaskUseCase(
+      getTaskRepository(),
+      historyRecorder,
+    );
   }
   return deleteTaskUseCase;
 }
 
 export function getCompleteTaskUseCase(): CompleteTaskUseCase {
   if (!completeTaskUseCase) {
-    const { historyRepository } = getHistoryDi();
+    const { historyRecorder } = getHistoryDi();
     completeTaskUseCase = new CompleteTaskUseCase(
       getTaskRepository(),
-      historyRepository,
+      historyRecorder,
     );
   }
   return completeTaskUseCase;
@@ -84,14 +87,15 @@ export function getCompleteTaskUseCase(): CompleteTaskUseCase {
 
 export function getAdvanceGuidedTaskStepUseCase(): AdvanceGuidedTaskStepUseCase {
   if (!advanceGuidedTaskStepUseCase) {
+    const { historyRecorder } = getHistoryDi();
     advanceGuidedTaskStepUseCase = new AdvanceGuidedTaskStepUseCase(
       getTaskRepository(),
+      historyRecorder,
     );
   }
   return advanceGuidedTaskStepUseCase;
 }
 
-// Factory function for DI container
 export function getTasksDi() {
   return {
     taskRepository: getTaskRepository(),

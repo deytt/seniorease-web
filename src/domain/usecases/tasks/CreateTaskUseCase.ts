@@ -1,6 +1,8 @@
 import { Task } from "../../entities/Task";
 import { ITaskRepository } from "../../repositories/ITaskRepository";
-import { IHistoryRepository } from "../../repositories/IHistoryRepository";
+import { HistoryActionType } from "../../history/HistoryActionType";
+import type { IHistoryRecorder } from "../../history/IHistoryRecorder";
+import { buildTaskCreatedTitle } from "../../history/historyTitles";
 
 export interface CreateTaskInput {
   userId: string;
@@ -20,7 +22,7 @@ export interface CreateTaskInput {
 export class CreateTaskUseCase {
   constructor(
     private taskRepository: ITaskRepository,
-    private historyRepository: IHistoryRepository,
+    private historyRecorder: IHistoryRecorder,
   ) {}
 
   async execute(input: CreateTaskInput): Promise<Task> {
@@ -45,14 +47,12 @@ export class CreateTaskUseCase {
 
     const createdTask = await this.taskRepository.createTask(task);
 
-    // Create history event
-    await this.historyRepository.createHistoryEvent({
+    await this.historyRecorder.record({
       userId: input.userId,
-      taskId: createdTask.id,
-      eventType: "task_created",
-      title: input.title,
-      description: `Nova tarefa criada: ${input.title}`,
-      createdAt: new Date(),
+      type: HistoryActionType.taskCreated,
+      title: buildTaskCreatedTitle(input.title),
+      entityId: createdTask.id,
+      category: input.category ?? null,
     });
 
     return createdTask;

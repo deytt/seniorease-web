@@ -44,8 +44,13 @@ export function EmailVerificationForm({ onSuccess }: EmailVerificationFormProps)
   async function handleCheckVerification() {
     setIsChecking(true);
     try {
+      if (!user?.id) {
+        toast.error("Sessão inválida. Faça login novamente.");
+        return;
+      }
+
       const reloadEmailVerificationUseCase = getReloadEmailVerificationUseCase();
-      const verified = await reloadEmailVerificationUseCase.execute();
+      const verified = await reloadEmailVerificationUseCase.execute(user.id);
       await refreshUser();
 
       if (verified) {

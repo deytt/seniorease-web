@@ -191,7 +191,10 @@ export function ProfileScreen({
 
   return (
     <div className="mx-auto w-full max-w-6xl pb-16">
-      <div className="flex items-start justify-between gap-4">
+      <div
+        className="flex items-start justify-between gap-4"
+        data-tour="profile-header"
+      >
         <h1 className="text-[30px] font-bold leading-9 text-[#0f172a]">
           Meu Perfil
         </h1>

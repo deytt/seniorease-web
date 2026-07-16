@@ -10,16 +10,8 @@ import { UpdateUserUseCase } from "@/domain/usecases/auth/UpdateUserUseCase";
 import { ChangePasswordUseCase } from "@/domain/usecases/auth/ChangePasswordUseCase";
 import { SendEmailVerificationUseCase } from "@/domain/usecases/auth/SendEmailVerificationUseCase";
 import { ReloadEmailVerificationUseCase } from "@/domain/usecases/auth/ReloadEmailVerificationUseCase";
+import { getHistoryDi } from "@/lib/di/historyDi";
 
-/**
- * Injeção de dependência manual (suficiente para o escopo do Hackathon).
- * Se o projeto crescer, isto pode virar um container real (ex: tsyringe),
- * mas o ponto importante já está garantido: Presentation nunca instancia
- * Firebase diretamente, apenas consome os casos de uso do Domain.
- *
- * Em desenvolvimento local, usa MockAuthRepository para não depender de credenciais Firebase.
- * Detecta credenciais dummy do .env.local
- */
 const isDummyFirebaseKey =
   process.env.NEXT_PUBLIC_FIREBASE_API_KEY?.includes("Dummy");
 const authRepository = isDummyFirebaseKey
@@ -41,8 +33,20 @@ export const changePasswordUseCase = new ChangePasswordUseCase(authRepository);
 export const sendEmailVerificationUseCase = new SendEmailVerificationUseCase(
   authRepository,
 );
-export const reloadEmailVerificationUseCase =
-  new ReloadEmailVerificationUseCase(authRepository);
+
+let reloadEmailVerificationUseCaseInstance: ReloadEmailVerificationUseCase | null =
+  null;
+
+export function getReloadEmailVerificationUseCase() {
+  if (!reloadEmailVerificationUseCaseInstance) {
+    const { historyRecorder } = getHistoryDi();
+    reloadEmailVerificationUseCaseInstance = new ReloadEmailVerificationUseCase(
+      authRepository,
+      historyRecorder,
+    );
+  }
+  return reloadEmailVerificationUseCaseInstance;
+}
 
 export function getSignInUseCase() {
   return signInUseCase;
@@ -78,8 +82,4 @@ export function getChangePasswordUseCase() {
 
 export function getSendEmailVerificationUseCase() {
   return sendEmailVerificationUseCase;
-}
-
-export function getReloadEmailVerificationUseCase() {
-  return reloadEmailVerificationUseCase;
 }
