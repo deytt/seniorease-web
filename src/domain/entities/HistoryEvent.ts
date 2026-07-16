@@ -1,17 +1,15 @@
+import type { HistoryActionType } from "@/domain/history/HistoryActionType";
+
 /**
- * Entidade de domínio — evento de histórico
- * Ver memory-bank/systemPatterns.md
+ * Entidade de domínio — evento de histórico.
+ * Schema Firestore: `history/{historyId}` — ver memory-bank/firebaseSchema.md
  */
 export interface HistoryEvent {
   id: string;
   userId: string;
-  taskId?: string;
-  eventType:
-    | "task_completed"
-    | "task_created"
-    | "reminder_marked"
-    | "preference_updated";
+  type: HistoryActionType;
   title: string;
-  description: string;
-  createdAt: Date;
+  entityId?: string | null;
+  category?: string | null;
+  occurredAt: Date;
 }

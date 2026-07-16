@@ -1,19 +1,9 @@
-import { IHistoryRepository } from "../../repositories/IHistoryRepository";
-
-export interface GetStatsInput {
-  userId: string;
-  daysBack?: number;
-}
+import type { IHistoryRepository } from "../../repositories/IHistoryRepository";
 
 export class GetStatsUseCase {
   constructor(private historyRepository: IHistoryRepository) {}
 
-  async execute(input: GetStatsInput): Promise<{
-    totalCompleted: number;
-    streak: number;
-    thisWeek: number;
-    thisMonth: number;
-  }> {
-    return this.historyRepository.getStats(input.userId, input.daysBack);
+  async execute(input: { userId: string }) {
+    return this.historyRepository.getStats(input.userId);
   }
 }
