@@ -60,7 +60,7 @@ function ProfileCard({
   return (
     <section
       className={cn(
-        "rounded-2xl border border-[#e2e8f0] bg-white shadow-card",
+        "rounded-2xl border border-border bg-card shadow-card",
         className,
       )}
       {...props}
@@ -81,7 +81,7 @@ function ProfileSectionHeader({
 }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <h2 className="text-lg font-bold leading-7 text-[#0f172a]">{title}</h2>
+      <h2 className="text-lg font-bold leading-7 text-foreground">{title}</h2>
       {editHref ? (
         <Link
           href={editHref}
@@ -102,11 +102,11 @@ function ProfileInfoField({
   value: string;
 }) {
   return (
-    <div className="rounded-[14px] bg-[#f8fafc] p-3">
-      <p className="text-xs font-semibold uppercase tracking-[0.3px] text-[#94a3b8]">
+    <div className="rounded-[14px] bg-muted p-3">
+      <p className="text-xs font-semibold uppercase tracking-[0.3px] text-muted-foreground">
         {label}
       </p>
-      <p className="mt-1 text-[15px] font-medium leading-[1.5] text-[#0f172a]">
+      <p className="mt-1 text-[15px] font-medium leading-[1.5] text-foreground">
         {value}
       </p>
     </div>
@@ -126,11 +126,11 @@ function ProfileStatusRow({
     <div
       className={cn(
         "flex items-start justify-between gap-4 py-2",
-        !isLast && "border-b border-[#e2e8f0] pb-[9px] pt-2",
+        !isLast && "border-b border-border pb-[9px] pt-2",
       )}
     >
-      <span className="text-sm leading-5 text-[#64748b]">{label}</span>
-      <span className="text-right text-sm font-semibold leading-5 text-[#0f172a]">
+      <span className="text-sm leading-5 text-muted-foreground">{label}</span>
+      <span className="text-right text-sm font-semibold leading-5 text-foreground">
         {value}
       </span>
     </div>
@@ -153,11 +153,11 @@ function ProfileSecurityLink({
   return (
     <Link
       href={href}
-      className="flex min-h-11 items-center justify-between rounded-[14px] border border-[#e2e8f0] p-[17px] transition-colors hover:bg-[#f8fafc]"
+      className="flex min-h-11 items-center justify-between rounded-[14px] border border-border p-[17px] transition-colors hover:bg-muted"
     >
       <span className="flex items-center gap-3">
         <Icon className={cn("size-[18px] shrink-0", iconClassName)} aria-hidden />
-        <span className="text-base font-medium text-[#0f172a]">{label}</span>
+        <span className="text-base font-medium text-foreground">{label}</span>
       </span>
       <span className="flex items-center gap-2">
         {showAlert ? (
@@ -167,7 +167,7 @@ function ProfileSecurityLink({
           />
         ) : null}
         <ChevronRight
-          className="size-[18px] shrink-0 text-[#64748b]"
+          className="size-[18px] shrink-0 text-muted-foreground"
           aria-hidden
         />
       </span>
@@ -195,7 +195,7 @@ export function ProfileScreen({
         className="flex items-start justify-between gap-4"
         data-tour="profile-header"
       >
-        <h1 className="text-[30px] font-bold leading-9 text-[#0f172a]">
+        <h1 className="text-[30px] font-bold leading-9 text-foreground">
           Meu Perfil
         </h1>
         <Button
@@ -216,13 +216,13 @@ export function ProfileScreen({
             <div className="flex flex-col items-center text-center">
               <ProfileAvatar name={user.name} photoUrl={user.photoUrl} />
 
-              <h2 className="mt-4 text-xl font-bold leading-7 text-[#0f172a]">
+              <h2 className="mt-4 text-xl font-bold leading-7 text-foreground">
                 {formatProfileValue(user.name)}
               </h2>
-              <p className="mt-1 text-base leading-6 text-[#64748b]">
+              <p className="mt-1 text-base leading-6 text-muted-foreground">
                 {formatProfileValue(user.email)}
               </p>
-              <p className="mt-1 text-sm leading-5 text-[#94a3b8]">
+              <p className="mt-1 text-sm leading-5 text-muted-foreground">
                 {getProfilePhoneDisplay(user)}
               </p>
 
@@ -230,7 +230,7 @@ export function ProfileScreen({
                 type="button"
                 onClick={onPhotoClick}
                 disabled={isUploadingPhoto}
-                className="mt-4 inline-flex h-[42px] w-full max-w-[278px] cursor-pointer items-center justify-center rounded-[14px] border border-[#e2e8f0] text-sm font-semibold text-primary transition-colors hover:bg-primary-light disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-4 inline-flex h-[42px] w-full max-w-[278px] cursor-pointer items-center justify-center rounded-[14px] border border-border text-sm font-semibold text-primary transition-colors hover:bg-primary-light disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isUploadingPhoto ? "Enviando..." : "Editar Foto de Perfil"}
               </button>
@@ -238,7 +238,7 @@ export function ProfileScreen({
           </ProfileCard>
 
           <ProfileCard className="p-[21px]" data-tour="profile-account-status">
-            <h2 className="text-lg font-bold leading-[27px] text-[#0f172a]">
+            <h2 className="text-lg font-bold leading-[27px] text-foreground">
               Status da Conta
             </h2>
             <div className="mt-3 space-y-0">
@@ -328,7 +328,7 @@ export function ProfileScreen({
           </ProfileCard>
 
           <ProfileCard className="p-[25px]" data-tour="profile-account-support">
-            <h2 className="text-lg font-bold leading-7 text-[#0f172a]">
+            <h2 className="text-lg font-bold leading-7 text-foreground">
               Conta e suporte
             </h2>
             <div className="mt-4 flex flex-col gap-3">

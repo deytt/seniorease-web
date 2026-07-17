@@ -45,7 +45,7 @@ function HistoryCard({
   return (
     <section
       className={cn(
-        "rounded-2xl border border-[#e2e8f0] bg-white shadow-card",
+        "rounded-2xl border border-border bg-card shadow-card",
         className,
       )}
     >
@@ -75,8 +75,8 @@ function HistoryStatCard({
       >
         <Icon className="size-[22px]" aria-hidden />
       </div>
-      <p className="mt-3 text-2xl font-black leading-8 text-[#0f172a]">{value}</p>
-      <p className="mt-1 text-sm leading-5 text-[#64748b]">{label}</p>
+      <p className="mt-3 text-2xl font-black leading-8 text-foreground">{value}</p>
+      <p className="mt-1 text-sm leading-5 text-muted-foreground">{label}</p>
     </HistoryCard>
   );
 }
@@ -98,10 +98,10 @@ function HistoryTimelineEvent({ event }: { event: HistoryEvent }) {
       </div>
 
       <HistoryCard className="min-w-0 flex-1 p-[17px]">
-        <p className="text-[15px] font-semibold leading-[22.5px] text-[#0f172a]">
+        <p className="text-[15px] font-semibold leading-[22.5px] text-foreground">
           {event.title}
         </p>
-        <p className="mt-1 text-sm leading-5 text-[#94a3b8]">
+        <p className="mt-1 text-sm leading-5 text-muted-foreground">
           {formatHistoryEventDate(event.occurredAt)}
         </p>
       </HistoryCard>
@@ -128,10 +128,10 @@ export function HistoryScreen({
     <div className="pb-20">
       <header className="mb-8 flex items-start justify-between gap-4" data-tour="history-header">
         <div>
-          <h1 className="text-[30px] font-bold leading-9 text-[#0f172a]">
+          <h1 className="text-[30px] font-bold leading-9 text-foreground">
             Histórico de Atividades
           </h1>
-          <p className="mt-2 text-base leading-6 text-[#64748b]">
+          <p className="mt-2 text-base leading-6 text-muted-foreground">
             Parabéns! Você tem sido muito consistente.
           </p>
         </div>
@@ -168,21 +168,15 @@ export function HistoryScreen({
       </div>
 
       {showStreakBanner ? (
-        <div
-          className="mt-8 flex items-center gap-4 rounded-2xl border border-[#e2e8f0] p-5 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.1)]"
-          style={{
-            backgroundImage:
-              "linear-gradient(174.58deg, rgba(245, 158, 11, 0.133) 0%, rgb(255, 251, 235) 100%)",
-          }}
-        >
-          <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-[#f59e0b] text-white">
+        <div className="mt-8 flex items-center gap-4 rounded-2xl border border-warning/40 bg-card p-5 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.1)]">
+          <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-warning text-warning-foreground">
             <Award className="size-7" aria-hidden />
           </div>
           <div className="min-w-0">
-            <p className="text-lg font-bold leading-7 text-[#0f172a]">
+            <p className="text-lg font-bold leading-7 text-foreground">
               {getStreakBannerTitle(stats.streak)}
             </p>
-            <p className="mt-0.5 text-base leading-6 text-[#64748b]">
+            <p className="mt-0.5 text-base leading-6 text-muted-foreground">
               {getStreakBannerDescription(stats.streak)}
             </p>
           </div>
@@ -190,7 +184,7 @@ export function HistoryScreen({
       ) : null}
 
       <section className="mt-8" data-tour="history-activity">
-        <h2 className="text-xl font-bold leading-[30px] text-[#0f172a]">
+        <h2 className="text-xl font-bold leading-[30px] text-foreground">
           Atividade Recente
         </h2>
 
@@ -205,11 +199,11 @@ export function HistoryScreen({
 
         {loading ? (
           <HistoryCard className="mt-4 p-8 text-center">
-            <p className="text-base text-[#64748b]">Carregando histórico...</p>
+            <p className="text-base text-muted-foreground">Carregando histórico...</p>
           </HistoryCard>
         ) : visibleEvents.length === 0 ? (
           <HistoryCard className="mt-4 p-12 text-center">
-            <p className="text-base text-[#64748b]">
+            <p className="text-base text-muted-foreground">
               Nenhuma atividade no histórico ainda.
             </p>
           </HistoryCard>

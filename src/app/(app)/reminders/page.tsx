@@ -26,6 +26,7 @@ import {
   useReminderListFilter,
 } from "@/presentation/components/reminders/reminderFilterPills";
 import { isReminderToday } from "@/presentation/components/reminders/reminderVisuals";
+import { useSeniorFeedback } from "@/lib/feedback/useSeniorFeedback";
 
 export default function RemindersPage() {
   const { user, loading: authLoading } = useAuthContext();
@@ -40,6 +41,7 @@ export default function RemindersPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { filter, setFilter } = useReminderListFilter({ kind: "all" });
+  const feedback = useSeniorFeedback();
 
   const isBasicMode = preferences.interfaceMode === "basic";
   const {
@@ -93,6 +95,7 @@ export default function RemindersPage() {
     try {
       setBusyId(reminderId);
       await markReminderAsReadUseCase.execute(reminderId);
+      feedback.success();
       setReminders((prev) =>
         prev.map((r) => (r.id === reminderId ? { ...r, isRead: true } : r)),
       );
@@ -147,13 +150,13 @@ export default function RemindersPage() {
         >
           <DialogContent
             showCloseButton={false}
-            className="gap-5 rounded-2xl border border-[#e2e8f0] bg-white p-6 shadow-[0px_8px_24px_rgba(0,0,0,0.12)] sm:max-w-md"
+            className="gap-5 rounded-2xl border border-border bg-card p-6 shadow-modal sm:max-w-md"
           >
             <DialogHeader className="gap-3 text-left">
-              <DialogTitle className="font-sans text-xl font-bold normal-case tracking-normal text-[#0f172a]">
+              <DialogTitle className="font-sans text-xl font-bold normal-case tracking-normal">
                 Excluir lembrete?
               </DialogTitle>
-              <DialogDescription className="text-base leading-relaxed text-[#64748b]">
+              <DialogDescription className="text-base leading-relaxed text-muted-foreground">
                 Tem certeza que deseja excluir o lembrete &quot;
                 {reminderToDelete?.title}&quot;? Esta ação não pode ser
                 desfeita.
@@ -217,7 +220,7 @@ export default function RemindersPage() {
         </div>
 
         {filteredReminders.length === 0 ? (
-          <div className="rounded-2xl border border-[#e2e8f0] bg-white p-10 text-center shadow-[0px_1px_1.5px_rgba(0,0,0,0.1),0px_1px_1px_rgba(0,0,0,0.1)]">
+          <div className="rounded-2xl border border-border bg-card p-10 text-center shadow-card">
             <Bell
               className="mx-auto mb-3 size-10 text-muted-foreground"
               aria-hidden

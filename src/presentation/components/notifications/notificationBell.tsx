@@ -25,7 +25,7 @@ export function NotificationBell({ userId, className }: NotificationBellProps) {
           : "Notificações"
       }
       className={cn(
-        "relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-[14px] border border-[#e2e8f0] bg-white text-[#0f172a] transition-colors hover:bg-[#f8fafc]",
+        "relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-[14px] border border-border bg-card text-foreground transition-colors hover:bg-muted",
         className,
       )}
     >

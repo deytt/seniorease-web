@@ -13,6 +13,7 @@ import {
   getResumeStepIndex,
 } from "@/presentation/components/tasks/guidedTaskUtils";
 import type { Task } from "@/domain/entities/Task";
+import { useSeniorFeedback } from "@/lib/feedback/useSeniorFeedback";
 
 export default function GuidedTaskPage({
   params,
@@ -32,6 +33,7 @@ export default function GuidedTaskPage({
 
   const { taskRepository, completeTaskUseCase, advanceGuidedTaskStepUseCase } =
     getTasksDi();
+  const feedback = useSeniorFeedback();
 
   useEffect(() => {
     if (!user) return;
@@ -80,6 +82,7 @@ export default function GuidedTaskPage({
 
   const handleNextStep = async () => {
     if (!task) return;
+    feedback.light();
 
     try {
       setIsAdvancing(true);
@@ -116,6 +119,7 @@ export default function GuidedTaskPage({
       }
 
       await completeTaskUseCase.execute(taskId);
+      feedback.success();
       setShowCelebration(true);
       setTimeout(() => {
         router.push("/dashboard");
@@ -129,7 +133,7 @@ export default function GuidedTaskPage({
   if (loading) {
     return (
       <div
-        className="flex min-h-[60vh] items-center justify-center bg-[#f8fafc]"
+        className="flex min-h-[60vh] items-center justify-center bg-background"
         role="status"
         aria-live="polite"
       >
@@ -143,7 +147,7 @@ export default function GuidedTaskPage({
 
   if (error || !task) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center bg-[#f8fafc] p-4">
+      <div className="flex min-h-[60vh] items-center justify-center bg-background p-4">
         <Card className="w-full max-w-sm bg-card shadow-card">
           <CardContent className="p-6 text-center">
             <p className="mb-4 font-medium text-destructive">
@@ -162,9 +166,10 @@ export default function GuidedTaskPage({
     <GuidedTaskScreen
       task={task}
       currentStepIndex={currentStepIndex}
-      onPrevious={() =>
-        setCurrentStepIndex((prev) => Math.max(0, prev - 1))
-      }
+      onPrevious={() => {
+        feedback.selection();
+        setCurrentStepIndex((prev) => Math.max(0, prev - 1));
+      }}
       onNext={handleNextStep}
       onComplete={handleCompleteTask}
       onStepSelect={handleStepSelect}

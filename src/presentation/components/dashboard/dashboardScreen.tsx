@@ -66,7 +66,7 @@ function DashboardCard({
   return (
     <section
       className={cn(
-        "rounded-2xl border border-[#e2e8f0] bg-white shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]",
+        "rounded-2xl border border-border bg-card shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]",
         className,
       )}
     >
@@ -86,16 +86,16 @@ function DashboardTaskRow({ task }: { task: Task }) {
       className={cn(
         "flex items-center gap-4 rounded-[14px] border p-[17px]",
         isCompleted
-          ? "border-[#bbf7d0] bg-[#f8fff8]"
-          : "border-[#e2e8f0] bg-white",
+          ? "border-success/40 bg-success-light"
+          : "border-border bg-card",
       )}
     >
       <div
         className={cn(
           "flex size-6 shrink-0 items-center justify-center rounded-full border-2",
           isCompleted
-            ? "border-[#22c55e] bg-[#00c950] text-white"
-            : "border-[#e2e8f0] bg-white",
+            ? "border-success bg-success text-white"
+            : "border-border bg-card",
         )}
         aria-hidden
       >
@@ -105,15 +105,15 @@ function DashboardTaskRow({ task }: { task: Task }) {
       <div className="min-w-0 flex-1">
         <p
           className={cn(
-            "text-base font-medium leading-6 text-[#0f172a]",
-            isCompleted && "text-[#94a3b8] line-through",
+            "text-base font-medium leading-6 text-foreground",
+            isCompleted && "text-muted-foreground line-through",
           )}
         >
           {task.title}
         </p>
         <div className="mt-1 flex flex-wrap items-center gap-3">
           {timeLabel ? (
-            <span className="inline-flex items-center gap-1 text-xs font-medium text-[#94a3b8]">
+            <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground">
               <Clock className="size-3" aria-hidden />
               {timeLabel}
             </span>
@@ -143,7 +143,7 @@ function DashboardTaskRow({ task }: { task: Task }) {
 
       <Link
         href={getTaskActionHref(task)}
-        className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-[10px] bg-[#eff6ff] px-3 py-1.5 text-xs font-medium text-[#2563eb] transition-colors hover:bg-[#dbeafe]"
+        className="a11y-touch-target inline-flex min-h-11 shrink-0 items-center justify-center rounded-[10px] bg-primary-light px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/20"
       >
         {getTaskActionLabel(task)}
       </Link>
@@ -165,7 +165,7 @@ function QuickActionTile({
   return (
     <Link
       href={href}
-      className="flex min-h-[104px] flex-col items-center justify-center gap-2 rounded-[14px] border border-[#e2e8f0] p-[17px] text-center transition-colors hover:bg-[#f8fafc]"
+      className="flex min-h-[104px] flex-col items-center justify-center gap-2 rounded-[14px] border border-border p-[17px] text-center transition-colors hover:bg-muted"
     >
       <div
         className={cn(
@@ -182,7 +182,7 @@ function QuickActionTile({
           className="size-5"
         />
       </div>
-      <span className="text-xs font-semibold text-[#0f172a]">{label}</span>
+      <span className="text-xs font-semibold text-foreground">{label}</span>
     </Link>
   );
 }
@@ -208,10 +208,10 @@ export function DashboardScreen({
     <div className="pb-20">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-[30px] font-bold leading-9 text-[#0f172a]">
+          <h1 className="text-[30px] font-bold leading-9 text-foreground">
             {getDashboardGreeting()}, {firstName}! {getDashboardGreetingEmoji()}
           </h1>
-          <p className="mt-1 text-base leading-6 text-[#64748b]">
+          <p className="mt-1 text-base leading-6 text-muted-foreground">
             {formatDashboardDate()} · Você tem {stats.remainingToday}{" "}
             {stats.remainingToday === 1 ? "tarefa restante" : "tarefas restantes"}{" "}
             hoje
@@ -220,42 +220,36 @@ export function DashboardScreen({
         <NotificationBell userId={userId} />
       </header>
 
-      <div
-        className="relative mt-8 overflow-hidden rounded-2xl border border-[#e2e8f0] p-6 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]"
-        style={{
-          backgroundImage:
-            "linear-gradient(174.31deg, rgb(37, 99, 235) 0%, rgb(29, 78, 216) 100%)",
-        }}
-      >
-        <div className="pointer-events-none absolute -right-8 -top-8 size-40 rounded-full bg-white/10" />
-        <div className="pointer-events-none absolute bottom-0 right-12 size-24 translate-y-1/2 rounded-full bg-white/10" />
+      <div className="relative mt-8 overflow-hidden rounded-2xl border-0 bg-primary p-6 text-primary-foreground shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]">
+        <div className="pointer-events-none absolute -right-8 -top-8 size-40 rounded-full bg-primary-foreground/10" />
+        <div className="pointer-events-none absolute bottom-0 right-12 size-24 translate-y-1/2 rounded-full bg-primary-foreground/10" />
 
         <div className="relative">
-          <div className="flex items-center gap-2 text-sm font-medium text-[#dbeafe]">
+          <div className="flex items-center gap-2 text-sm font-medium text-primary-foreground/80">
             <Sparkles className="size-[18px]" aria-hidden />
             Encorajamento diário
           </div>
-          <p className="mt-2 max-w-3xl text-xl font-semibold leading-8 text-white">
+          <p className="mt-2 max-w-3xl text-xl font-semibold leading-8 text-primary-foreground">
             {buildEncouragementMessage(stats)}
           </p>
-          <div className="mt-4 flex flex-wrap gap-6">
+          <div className="mt-4 flex flex-wrap gap-6 advanced-only">
             <div className="text-center">
-              <p className="text-[30px] font-bold leading-9 text-white">
+              <p className="text-[30px] font-bold leading-9 text-primary-foreground">
                 {stats.completedYesterday}
               </p>
-              <p className="text-xs text-[#bedbff]">Ontem</p>
+              <p className="text-xs text-primary-foreground/70">Ontem</p>
             </div>
             <div className="text-center">
-              <p className="text-[30px] font-bold leading-9 text-white">
+              <p className="text-[30px] font-bold leading-9 text-primary-foreground">
                 {stats.completedToday}
               </p>
-              <p className="text-xs text-[#bedbff]">Concluídas hoje</p>
+              <p className="text-xs text-primary-foreground/70">Concluídas hoje</p>
             </div>
             <div className="text-center">
-              <p className="text-[30px] font-bold leading-9 text-white">
+              <p className="text-[30px] font-bold leading-9 text-primary-foreground">
                 {stats.remainingToday}
               </p>
-              <p className="text-xs text-[#bedbff]">Restantes</p>
+              <p className="text-xs text-primary-foreground/70">Restantes</p>
             </div>
           </div>
         </div>
@@ -264,12 +258,12 @@ export function DashboardScreen({
       <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
         <DashboardCard className="p-[25px]">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="text-xl font-bold leading-7 text-[#0f172a]">
+            <h2 className="text-xl font-bold leading-7 text-foreground">
               Tarefas de hoje
             </h2>
             <Button
               asChild
-              className="min-h-11 cursor-pointer rounded-[10px] bg-[#2563eb] px-4 py-2 text-sm font-medium hover:bg-[#1d4ed8]"
+              className="min-h-11 cursor-pointer rounded-[10px] bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
               <Link href="/tasks/create">
                 <Plus className="size-4" aria-hidden />
@@ -279,13 +273,13 @@ export function DashboardScreen({
           </div>
 
           {loading ? (
-            <p className="mt-5 text-base text-[#64748b]">Carregando tarefas...</p>
+            <p className="mt-5 text-base text-muted-foreground">Carregando tarefas...</p>
           ) : todayTasks.length === 0 ? (
-            <div className="mt-5 rounded-[14px] border border-dashed border-[#e2e8f0] p-8 text-center">
-              <p className="text-base font-medium text-[#0f172a]">
+            <div className="mt-5 rounded-[14px] border border-dashed border-border p-8 text-center">
+              <p className="text-base font-medium text-foreground">
                 Nenhuma tarefa para hoje
               </p>
-              <p className="mt-1 text-sm text-[#64748b]">
+              <p className="mt-1 text-sm text-muted-foreground">
                 Que tal adicionar uma nova atividade?
               </p>
             </div>
@@ -299,7 +293,7 @@ export function DashboardScreen({
 
           <Link
             href="/tasks"
-            className="mt-4 flex min-h-11 items-center justify-center gap-1 rounded-[14px] border border-[#e2e8f0] text-sm font-medium text-[#64748b] transition-colors hover:bg-[#f8fafc]"
+            className="a11y-touch-target mt-4 flex min-h-11 items-center justify-center gap-1 rounded-[14px] border border-border text-sm font-medium text-muted-foreground transition-colors hover:bg-muted"
           >
             Ver todas as tarefas
             <ChevronRight className="size-4" aria-hidden />
@@ -309,7 +303,7 @@ export function DashboardScreen({
         <div className="flex flex-col gap-6">
           <DashboardCard className="p-[21px]">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <h2 className="text-[17px] font-bold leading-[25.5px] text-[#0f172a]">
+              <h2 className="text-[17px] font-bold leading-[25.5px] text-foreground">
                 Ações rápidas
               </h2>
               {showSeedAction && onSeedDemoData ? (
@@ -318,7 +312,7 @@ export function DashboardScreen({
                   variant="outline"
                   disabled={seeding}
                   onClick={onSeedDemoData}
-                  className="min-h-11 rounded-[10px] border-[#e2e8f0] text-xs font-medium text-[#64748b]"
+                  className="min-h-11 rounded-[10px] border-border text-xs font-medium text-muted-foreground"
                 >
                   {seeding ? "Carregando exemplos..." : "Carregar exemplos"}
                 </Button>
@@ -353,13 +347,13 @@ export function DashboardScreen({
           </DashboardCard>
 
           <DashboardCard className="p-[21px]">
-            <h2 className="text-[17px] font-bold leading-[25.5px] text-[#0f172a]">
+            <h2 className="text-[17px] font-bold leading-[25.5px] text-foreground">
               Lembretes próximos
             </h2>
             {loading ? (
-              <p className="mt-4 text-sm text-[#64748b]">Carregando lembretes...</p>
+              <p className="mt-4 text-sm text-muted-foreground">Carregando lembretes...</p>
             ) : upcomingReminders.length === 0 ? (
-              <p className="mt-4 py-4 text-center text-sm text-[#64748b]">
+              <p className="mt-4 py-4 text-center text-sm text-muted-foreground">
                 Nenhum lembrete próximo
               </p>
             ) : (
@@ -372,7 +366,7 @@ export function DashboardScreen({
                   return (
                     <div
                       key={reminder.id}
-                      className="flex items-center gap-3 rounded-[14px] bg-[#f8fafc] p-3"
+                      className="flex items-center gap-3 rounded-[14px] bg-muted p-3"
                     >
                       <div
                         className={cn(
@@ -383,10 +377,10 @@ export function DashboardScreen({
                         <Icon className={cn("size-[18px]", visual.iconClassName)} />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-[#0f172a]">
+                        <p className="text-sm font-semibold text-foreground">
                           {formatReminderListTime(scheduledAt)}
                         </p>
-                        <p className="truncate text-xs text-[#64748b]">
+                        <p className="truncate text-xs text-muted-foreground">
                           {reminder.title}
                         </p>
                       </div>
@@ -397,57 +391,65 @@ export function DashboardScreen({
             )}
             <Link
               href="/reminders"
-              className="mt-4 flex min-h-11 items-center justify-center gap-1 rounded-[14px] border border-[#e2e8f0] text-sm font-medium text-[#64748b] transition-colors hover:bg-[#f8fafc]"
+              className="a11y-touch-target mt-4 flex min-h-11 items-center justify-center gap-1 rounded-[14px] border border-border text-sm font-medium text-muted-foreground transition-colors hover:bg-muted"
             >
               Gerenciar lembretes
               <ChevronRight className="size-4" aria-hidden />
             </Link>
           </DashboardCard>
 
-          <section className="rounded-2xl border border-[#bfdbfe] bg-[#eff6ff] p-[21px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]">
-            <h2 className="flex items-center gap-2 text-[15px] font-bold leading-[22.5px] text-[#2563eb]">
-              <Accessibility className="size-[18px]" aria-hidden />
+          <section className="rounded-2xl border border-border bg-card p-[21px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]">
+            <h2 className="flex items-center gap-2 text-[15px] font-bold leading-[22.5px] text-foreground">
+              <Accessibility className="size-[18px] text-primary" aria-hidden />
               Status de acessibilidade
             </h2>
             <dl className="mt-3 space-y-2 text-sm">
-              <div className="flex items-center justify-between gap-4">
-                <dt className="text-[#64748b]">Tamanho da fonte</dt>
-                <dd className="font-semibold text-[#2563eb]">{accessibility.fontSize}</dd>
+              <div className="flex items-start justify-between gap-3">
+                <dt className="min-w-0 shrink text-muted-foreground">Tamanho da fonte</dt>
+                <dd className="max-w-[55%] text-right font-semibold text-foreground">
+                  {accessibility.fontSize}
+                </dd>
               </div>
-              <div className="flex items-center justify-between gap-4">
-                <dt className="text-[#64748b]">Modo de interface</dt>
-                <dd className="font-semibold text-[#2563eb]">
+              <div className="flex items-start justify-between gap-3">
+                <dt className="min-w-0 shrink text-muted-foreground">Modo de interface</dt>
+                <dd className="max-w-[55%] text-right font-semibold text-foreground">
                   {accessibility.interfaceMode}
                 </dd>
               </div>
-              <div className="flex items-center justify-between gap-4">
-                <dt className="text-[#64748b]">Espaçamento</dt>
-                <dd className="font-semibold text-[#2563eb]">{accessibility.spacing}</dd>
+              <div className="flex items-start justify-between gap-3">
+                <dt className="min-w-0 shrink text-muted-foreground">Espaçamento</dt>
+                <dd className="max-w-[55%] text-right font-semibold text-foreground">
+                  {accessibility.spacing}
+                </dd>
               </div>
-              <div className="flex items-center justify-between gap-4">
-                <dt className="text-[#64748b]">Contraste</dt>
-                <dd className="font-semibold text-[#2563eb]">{accessibility.contrast}</dd>
+              <div className="flex items-start justify-between gap-3">
+                <dt className="min-w-0 shrink text-muted-foreground">Contraste</dt>
+                <dd className="max-w-[55%] text-right font-semibold text-foreground">
+                  {accessibility.contrast}
+                </dd>
               </div>
-              <div className="flex items-center justify-between gap-4">
-                <dt className="text-[#64748b]">Tema</dt>
-                <dd className="font-semibold text-[#2563eb]">{accessibility.theme}</dd>
+              <div className="flex items-start justify-between gap-3">
+                <dt className="min-w-0 shrink text-muted-foreground">Tema</dt>
+                <dd className="max-w-[55%] text-right font-semibold text-foreground">
+                  {accessibility.theme}
+                </dd>
               </div>
-              <div className="flex items-center justify-between gap-4">
-                <dt className="text-[#64748b]">Feedback de áudio</dt>
-                <dd className="font-semibold text-[#2563eb]">
+              <div className="flex items-start justify-between gap-3">
+                <dt className="min-w-0 shrink text-muted-foreground">Feedback de áudio</dt>
+                <dd className="max-w-[55%] text-right font-semibold text-foreground">
                   {accessibility.audioFeedback}
                 </dd>
               </div>
-              <div className="flex items-center justify-between gap-4">
-                <dt className="text-[#64748b]">Alvos de toque maiores</dt>
-                <dd className="font-semibold text-[#2563eb]">
+              <div className="flex items-start justify-between gap-3">
+                <dt className="min-w-0 shrink text-muted-foreground">Alvos de toque maiores</dt>
+                <dd className="max-w-[55%] text-right font-semibold text-foreground">
                   {accessibility.largeTouchTargets}
                 </dd>
               </div>
             </dl>
             <Button
               asChild
-              className="mt-4 min-h-11 w-full cursor-pointer rounded-[10px] bg-[#2563eb] hover:bg-[#1d4ed8]"
+              className="mt-4 min-h-11 w-full cursor-pointer rounded-[10px] bg-primary text-primary-foreground hover:bg-primary/90"
             >
               <Link href="/acessibility">Ajustar configurações</Link>
             </Button>

@@ -25,7 +25,7 @@ export function ProfileFormPageShell({
         <Button
           variant="ghost"
           size="sm"
-          className="mb-6 min-h-11 cursor-pointer rounded-[14px] text-[#64748b] hover:text-[#0f172a]"
+          className="mb-6 min-h-11 cursor-pointer rounded-[14px] text-muted-foreground hover:text-foreground"
         >
           <ChevronLeft className="mr-2 size-4" aria-hidden />
           {backLabel}
@@ -33,13 +33,13 @@ export function ProfileFormPageShell({
       </Link>
 
       <div className="mb-8">
-        <h1 className="mb-2 text-3xl font-bold text-[#0f172a]">{title}</h1>
+        <h1 className="mb-2 text-3xl font-bold text-foreground">{title}</h1>
         {description ? (
-          <p className="text-base text-[#64748b]">{description}</p>
+          <p className="text-base text-muted-foreground">{description}</p>
         ) : null}
       </div>
 
-      <Card className="rounded-2xl border border-[#e2e8f0] shadow-[0px_1px_1.5px_rgba(0,0,0,0.1),0px_1px_1px_rgba(0,0,0,0.1)]">
+      <Card className="rounded-2xl border border-border shadow-[0px_1px_1.5px_rgba(0,0,0,0.1),0px_1px_1px_rgba(0,0,0,0.1)]">
         <CardContent className="p-6">{children}</CardContent>
       </Card>
     </div>

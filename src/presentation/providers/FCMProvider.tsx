@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
+import {
+  getFirebaseMessagingServiceWorkerUrl,
+} from "@/infrastructure/firebase/fcmService";
 
 /**
  * Componente para registrar o Service Worker do FCM
@@ -9,14 +12,18 @@ import { useEffect } from "react";
 export function FCMProvider() {
   useEffect(() => {
     if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .register("/firebase-messaging-sw.js")
-        .then((registration) => {
-          console.log("Service Worker registered:", registration);
-        })
-        .catch((error) => {
-          console.error("Service Worker registration failed:", error);
-        });
+      try {
+        navigator.serviceWorker
+          .register(getFirebaseMessagingServiceWorkerUrl(), { scope: "/" })
+          .then((registration) => {
+            console.log("Service Worker registered:", registration);
+          })
+          .catch((error) => {
+            console.error("Service Worker registration failed:", error);
+          });
+      } catch (error) {
+        console.error("Service Worker registration failed:", error);
+      }
     }
   }, []);
 

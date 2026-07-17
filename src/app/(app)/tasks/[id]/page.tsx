@@ -20,6 +20,7 @@ import { getTasksDi } from "@/lib/di/tasksDi";
 import { useTasks } from "@/presentation/hooks/useTasks";
 import type { Task } from "@/domain/entities/Task";
 import type { TaskStep } from "@/domain/entities/TaskStep";
+import { useSeniorFeedback } from "@/lib/feedback/useSeniorFeedback";
 
 export default function TaskDetailsPage({
   params,
@@ -32,6 +33,7 @@ export default function TaskDetailsPage({
 
   const taskRepository = getTasksDi().taskRepository;
   const { fetchTaskById } = useTasks(taskRepository);
+  const feedback = useSeniorFeedback();
 
   const [task, setTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(true);
@@ -63,6 +65,7 @@ export default function TaskDetailsPage({
     try {
       const completeUseCase = getTasksDi().completeTaskUseCase;
       await completeUseCase.execute(taskId);
+      feedback.success();
       if (task) setTask({ ...task, status: "completed" });
     } catch (error) {
       console.error("Erro ao marcar como concluída:", error);
@@ -276,7 +279,7 @@ export default function TaskDetailsPage({
               )}
 
               {/* Meta Information - 3 Columns */}
-              <div className="bg-slate-50 dark:bg-slate-900/30 rounded-lg p-4">
+              <div className="rounded-lg border border-border bg-muted p-4">
                 <div className="grid grid-cols-3 gap-6">
                   {/* Due Time */}
                   {task.dueDate && (
@@ -284,7 +287,7 @@ export default function TaskDetailsPage({
                       <p className="text-xs uppercase text-muted-foreground font-semibold mb-2 tracking-wide">
                         Horário de Entrega
                       </p>
-                      <p className="text-lg font-semibold">
+                      <p className="text-lg font-semibold text-foreground">
                         {formatTime(task.dueDate)}
                       </p>
                       <p className="text-sm text-muted-foreground mt-1">
@@ -299,20 +302,8 @@ export default function TaskDetailsPage({
                       <p className="text-xs uppercase text-muted-foreground font-semibold mb-2 tracking-wide">
                         Categoria
                       </p>
-                      <p className="text-lg font-semibold">
+                      <p className="text-lg font-semibold text-foreground">
                         {getCategoryLabel(task.category)}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Reminder */}
-                  {task.reminderTime && (
-                    <div>
-                      <p className="text-xs uppercase text-muted-foreground font-semibold mb-2 tracking-wide">
-                        Lembrete
-                      </p>
-                      <p className="text-lg font-semibold">
-                        {task.reminderTime}
                       </p>
                     </div>
                   )}
@@ -415,20 +406,21 @@ export default function TaskDetailsPage({
             </CardContent>
           </Card>
 
-          {/* Reminder Card */}
+          {/* Notification Card — aviso baseado no dueDate (ADR-020) */}
           {task.dueDate && (
-            <Card className="bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-900/50">
+            <Card className="border-warning/40 bg-warning-light">
               <CardContent className="pt-6 space-y-3">
-                <h3 className="font-semibold text-base flex items-center gap-2">
-                  <Clock className="size-4 text-amber-600" />
-                  Lembrete
+                <h3 className="font-semibold text-base flex items-center gap-2 text-foreground">
+                  <Clock className="size-4 text-warning" aria-hidden />
+                  Notificação
                 </h3>
-                <div className="bg-amber-100/50 dark:bg-amber-900/30 rounded-lg p-3">
-                  <p className="text-sm font-semibold text-amber-700 dark:text-amber-400">
+                <div className="rounded-lg border border-warning/30 bg-card p-3">
+                  <p className="text-sm font-semibold text-foreground">
                     {formatTime(task.dueDate)}
                   </p>
-                  <p className="text-xs text-amber-600 dark:text-amber-500 mt-1">
-                    {task.reminderTime || "Nenhum lembrete configurado"}
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    O aviso é enviado conforme as preferências de notificação de
+                    tarefas (antecedência configurada no perfil).
                   </p>
                 </div>
               </CardContent>

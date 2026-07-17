@@ -27,29 +27,29 @@ function NotificationCard({ notification }: { notification: NotificationItem }) 
   return (
     <Link
       href={href}
-      className="flex items-start gap-4 rounded-[14px] border border-[#e2e8f0] bg-white p-4 transition-colors hover:bg-[#f8fafc]"
+      className="flex items-start gap-4 rounded-[14px] border border-border bg-card p-4 transition-colors hover:bg-muted"
     >
       <div
         className={cn(
           "flex size-10 shrink-0 items-center justify-center rounded-[12px]",
           notification.entityType === "task"
-            ? "bg-[rgba(37,99,235,0.13)] text-[#2563eb]"
-            : "bg-[rgba(245,158,11,0.13)] text-[#f59e0b]",
+            ? "bg-primary/15 text-primary"
+            : "bg-warning/15 text-warning",
         )}
       >
         <Icon className="size-5" aria-hidden />
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <p className="text-sm font-semibold text-[#0f172a]">
+          <p className="text-sm font-semibold text-foreground">
             {notification.title}
           </p>
-          <span className="rounded-full bg-[#eff6ff] px-2 py-0.5 text-[11px] font-semibold text-[#2563eb]">
+          <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-semibold text-primary">
             {getNotificationEntityLabel(notification.entityType)}
           </span>
         </div>
-        <p className="mt-1 text-sm text-[#64748b]">{notification.body}</p>
-        <p className="mt-2 text-xs font-medium text-[#94a3b8]">
+        <p className="mt-1 text-sm text-muted-foreground">{notification.body}</p>
+        <p className="mt-2 text-xs font-medium text-muted-foreground">
           {formatNotificationTime(notification.sentAt)}
         </p>
       </div>
@@ -74,28 +74,28 @@ export function NotificationsScreen({
           </Link>
         </Button>
         <div>
-          <h1 className="text-[30px] font-bold leading-9 text-[#0f172a]">
+          <h1 className="text-[30px] font-bold leading-9 text-foreground">
             Notificações
           </h1>
-          <p className="mt-1 text-base text-[#64748b]">
+          <p className="mt-1 text-base text-muted-foreground">
             Avisos enviados sobre tarefas e lembretes
           </p>
         </div>
       </header>
 
       {loading ? (
-        <p className="text-base text-[#64748b]" role="status">
+        <p className="text-base text-muted-foreground" role="status">
           Carregando notificações...
         </p>
       ) : notifications.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[#e2e8f0] bg-white p-10 text-center">
+        <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center">
           <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#eff6ff] text-[#2563eb]">
             <Bell className="size-6" aria-hidden />
           </div>
-          <p className="mt-4 text-base font-semibold text-[#0f172a]">
+          <p className="mt-4 text-base font-semibold text-foreground">
             Nenhuma notificação ainda
           </p>
-          <p className="mt-2 text-sm text-[#64748b]">
+          <p className="mt-2 text-sm text-muted-foreground">
             Quando uma tarefa ou lembrete estiver próximo do horário, o aviso
             aparecerá aqui.
           </p>

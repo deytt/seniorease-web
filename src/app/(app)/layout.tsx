@@ -54,10 +54,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-[#f8fafc]">
+    <div className="min-h-screen w-full overflow-x-hidden bg-background">
+      {/* Skip navigation — acessibilidade por teclado (WCAG 2.4.1) */}
+      <a href="#main-content" className="skip-nav">
+        Ir para o conteúdo principal
+      </a>
+
       <Navigation onCollapsedChange={setSidebarCollapsed} />
 
       <main
+        id="main-content"
+        tabIndex={-1}
         className={cn(
           "min-h-screen min-w-0 pt-16 transition-all duration-300 lg:pt-0",
           sidebarCollapsed ? "lg:ml-[68px]" : "lg:ml-64",
