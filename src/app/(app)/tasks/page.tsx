@@ -113,7 +113,11 @@ export default function TaskListPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div
+        role="status"
+        aria-live="polite"
+        className="flex items-center justify-center min-h-screen"
+      >
         <p className="text-muted-foreground">Carregando tarefas...</p>
       </div>
     );
@@ -197,11 +201,12 @@ export default function TaskListPage() {
     const isCompleted = task.status === "completed";
 
     return (
-      <div
+      <article
+        aria-label={`Tarefa: ${task.title}${isCompleted ? " — concluída" : ""}`}
         className={`flex flex-col md:flex-row md:items-center gap-4 bg-card border rounded-xl px-5 py-4 hover:shadow-sm transition-shadow ${isCompleted ? "opacity-70" : ""}`}
       >
-        {/* Checkbox */}
-        <div className="flex-shrink-0 flex md:block">
+        {/* Status visual */}
+        <div className="flex-shrink-0 flex md:block" aria-hidden="true">
           {isCompleted ? (
             <CheckCircle2 className="size-6 text-primary" />
           ) : (
@@ -276,7 +281,7 @@ export default function TaskListPage() {
             <Link href={`/tasks/${task.id}`}>Detalhes</Link>
           </Button>
         </div>
-      </div>
+      </article>
     );
   };
 
@@ -452,10 +457,18 @@ export default function TaskListPage() {
 
       {/* Search */}
       <div className="relative mb-5">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+        <Search
+          aria-hidden="true"
+          className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground"
+        />
+        <label htmlFor="task-search" className="sr-only">
+          Pesquisar tarefas
+        </label>
         <input
-          type="text"
+          id="task-search"
+          type="search"
           placeholder="Pesquisar tarefas..."
+          aria-label="Pesquisar tarefas"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-input bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"

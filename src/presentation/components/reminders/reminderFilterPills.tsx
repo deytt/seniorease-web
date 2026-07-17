@@ -85,7 +85,7 @@ function FilterPill({
         "min-h-11 shrink-0 cursor-pointer rounded-[14px] border px-4 py-2 text-sm font-semibold whitespace-nowrap transition-colors",
         active
           ? "border-primary bg-primary text-primary-foreground"
-          : "border-[#e2e8f0] bg-white text-[#64748b] hover:border-primary/50 hover:text-foreground",
+          : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-foreground",
       )}
     >
       {label}

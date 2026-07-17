@@ -15,12 +15,18 @@ export class UpdateTaskUseCase {
   constructor(private taskRepository: ITaskRepository) {}
 
   async execute(input: UpdateTaskInput): Promise<Task> {
-    const updates: Partial<Task> = {};
+    const updates: Partial<Task> = {
+      updatedAt: new Date(),
+    };
 
     if (input.title !== undefined) updates.title = input.title;
     if (input.description !== undefined)
       updates.description = input.description;
-    if (input.dueDate !== undefined) updates.dueDate = input.dueDate;
+    if (input.dueDate !== undefined) {
+      updates.dueDate = input.dueDate;
+      // Repõe o flag para a Cloud Function reenviar o push no novo horário
+      updates.notified = false;
+    }
     if (input.steps !== undefined) updates.steps = input.steps;
     if (input.status !== undefined) updates.status = input.status;
 

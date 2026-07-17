@@ -46,7 +46,7 @@ function ReminderActions({
       )}
     >
       {isCompleted ? (
-        <span className="inline-flex min-h-11 items-center gap-1.5 rounded-[10px] bg-[#f0fdf4] px-3 text-sm font-semibold text-[#22c55e]">
+        <span className="inline-flex min-h-11 items-center gap-1.5 rounded-[10px] bg-success-light px-3 text-sm font-semibold text-success">
           <Check className="size-4" aria-hidden />
           Concluído
         </span>
@@ -56,7 +56,7 @@ function ReminderActions({
             type="button"
             size="sm"
             className={cn(
-              "min-h-11 cursor-pointer rounded-[14px] bg-[#22c55e] font-bold text-white hover:bg-[#22c55e]/90",
+              "min-h-11 cursor-pointer rounded-[14px] bg-success font-bold text-white hover:bg-success/90",
               stacked && "min-h-11 min-w-0 flex-1 sm:flex-none",
             )}
             onClick={() => onMarkDone?.(reminder.id)}
@@ -70,7 +70,7 @@ function ReminderActions({
               type="button"
               variant="outline"
               size="icon-sm"
-              className="size-11 shrink-0 cursor-pointer rounded-[10px] border-[#e2e8f0]"
+              className="size-11 shrink-0 cursor-pointer rounded-[10px] border-border"
               onClick={() => onEdit(reminder)}
               aria-label={`Editar lembrete ${reminder.title}`}
             >
@@ -143,8 +143,8 @@ export function ReminderCard({
   return (
     <article
       className={cn(
-        "w-full max-w-full overflow-hidden rounded-2xl border border-[#e2e8f0] bg-white p-4 shadow-[0px_1px_1.5px_rgba(0,0,0,0.1),0px_1px_1px_rgba(0,0,0,0.1)] sm:p-5",
-        isCompleted && "bg-[#f9fafb] opacity-65",
+        "w-full max-w-full overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-card sm:p-5",
+        isCompleted && "opacity-65",
         className,
       )}
       aria-label={`${reminder.title}, ${formatReminderTime(reminder.scheduledAt)} ${formatReminderPeriod(reminder.scheduledAt)}`}
@@ -155,12 +155,12 @@ export function ReminderCard({
             <p
               className={cn(
                 "text-xl font-black leading-7 sm:text-2xl sm:leading-8",
-                isCompleted ? "text-[#94a3b8]" : "text-[#0f172a]",
+                isCompleted ? "text-muted-foreground" : "text-foreground",
               )}
             >
               {formatReminderTime(reminder.scheduledAt)}
             </p>
-            <p className="mt-0.5 text-sm font-semibold leading-5 text-[#94a3b8]">
+            <p className="mt-0.5 text-sm font-semibold leading-5 text-muted-foreground">
               {formatReminderPeriod(reminder.scheduledAt)}
             </p>
             {showDate && (
@@ -187,15 +187,15 @@ export function ReminderCard({
               className={cn(
                 "text-base font-bold leading-snug sm:text-[17px] sm:leading-[25.5px]",
                 isCompleted
-                  ? "text-[#94a3b8] line-through"
-                  : "text-[#0f172a]",
+                  ? "text-muted-foreground line-through"
+                  : "text-foreground",
               )}
             />
             {reminder.message ? (
               <ResponsivePreviewText
                 text={reminder.message}
                 limits={REMINDER_MESSAGE_PREVIEW_LIMITS}
-                className="mt-0.5 text-sm font-normal leading-5 text-[#64748b]"
+                className="mt-0.5 text-sm font-normal leading-5 text-muted-foreground"
               />
             ) : null}
           </div>

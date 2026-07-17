@@ -181,7 +181,7 @@ const mockTaskPending: Task = {
   status: "pending",
   dueDate: new Date(Date.now() + 86400000), // amanhã
   steps: [],
-  reminderTime: null,
+  notified: false,
   createdAt: new Date(),
   updatedAt: new Date(),
 };

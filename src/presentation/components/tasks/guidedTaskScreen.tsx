@@ -142,7 +142,7 @@ export function GuidedTaskScreen({
     "Siga as instruções deste passo com calma.";
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col justify-center rounded-2xl bg-[#f8fafc] px-3 py-4 sm:px-1 sm:py-6 lg:min-h-[calc(100vh-12rem)] lg:py-8">
+    <div className="mx-auto flex w-full max-w-2xl flex-col justify-center rounded-2xl bg-background px-3 py-4 sm:px-1 sm:py-6 lg:min-h-[calc(100vh-12rem)] lg:py-8">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <Button
           variant="ghost"
@@ -158,7 +158,7 @@ export function GuidedTaskScreen({
         </Button>
 
         <span
-          className="inline-flex w-full min-w-0 items-center justify-center rounded-full bg-secondary px-4 py-2 text-base font-semibold leading-snug text-white sm:w-auto sm:max-w-sm sm:justify-start sm:text-lg"
+          className="inline-flex w-full min-w-0 items-center justify-center rounded-full bg-secondary px-4 py-2 text-base font-semibold leading-snug text-secondary-foreground sm:w-auto sm:max-w-sm sm:justify-start sm:text-lg"
           title={task.title}
         >
           <span className="truncate">{task.title}</span>
@@ -310,19 +310,19 @@ export function GuidedTaskScreen({
             </p>
           </div>
 
-          <div className="sticky bottom-0 z-10 -mx-3 mt-4 border-t border-[#e2e8f0] bg-[#f8fafc]/95 px-3 py-4 backdrop-blur-sm supports-[padding:max(0px)]:pb-[max(1rem,env(safe-area-inset-bottom))] sm:static sm:mx-0 sm:mt-6 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none">
+          <div className="sticky bottom-0 z-10 -mx-3 mt-4 border-t border-border bg-background/95 px-3 py-4 backdrop-blur-sm supports-[padding:max(0px)]:pb-[max(1rem,env(safe-area-inset-bottom))] sm:static sm:mx-0 sm:mt-6 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
               <button
                 type="button"
                 className={cn(
-                  "inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-3 rounded-2xl border border-[#e2e8f0] bg-white px-4 py-4 text-base font-bold text-[#0f172a] transition-colors hover:bg-[#f8fafc] disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-[4.375rem] sm:px-6 sm:py-5 sm:text-lg",
+                  "inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-3 rounded-2xl border border-border bg-card px-4 py-4 text-base font-bold text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-[4.375rem] sm:px-6 sm:py-5 sm:text-lg",
                 )}
                 onClick={onPrevious}
                 disabled={currentStepIndex === 0 || isBusy}
                 aria-disabled={currentStepIndex === 0}
               >
                 <ArrowLeft
-                  className="size-5 shrink-0 text-[#0f172a] sm:size-6"
+                  className="size-5 shrink-0 text-foreground sm:size-6"
                   aria-hidden="true"
                 />
                 Passo Anterior

@@ -18,8 +18,10 @@ export interface Task {
   status: TaskStatus;
   priority?: TaskPriority;
   category?: TaskCategory;
-  reminderTime?: string; // Format: "HH:mm" e.g. "08:00"
   dueDate?: Date;
   completedAt?: Date;
+  /** false por defeito; a Cloud Function marca true após enviar o push (ADR-020). */
+  notified: boolean;
   createdAt: Date;
+  updatedAt?: Date;
 }

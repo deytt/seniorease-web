@@ -38,6 +38,12 @@ export interface UserPreferences {
   updatedAt: Date | null;
 }
 
+/** Campos legados do schema pré-ADR-020 — só para leitura de documentos antigos. */
+type LegacyPreferenceFields = {
+  remindersEnabled?: boolean;
+  notificationTime?: string | null;
+};
+
 /**
  * Multiplicadores de fonte — techContext.md.
  * "small" nunca deve resultar em texto abaixo de 16px reais (base já é 16px).
@@ -71,5 +77,32 @@ export function defaultPreferences(userId: string): UserPreferences {
     remindersNotificationsEnabled: true,
     reminderNotificationOffset: "30m",
     updatedAt: null,
+  };
+}
+
+export function normalizePreferences(
+  value: (Partial<UserPreferences> & LegacyPreferenceFields) | null | undefined,
+  userId: string,
+): UserPreferences {
+  const defaults = defaultPreferences(userId);
+  const remindersNotificationsEnabled =
+    value?.remindersNotificationsEnabled ??
+    value?.remindersEnabled ??
+    defaults.remindersNotificationsEnabled;
+
+  return {
+    ...defaults,
+    ...value,
+    userId: value?.userId ?? userId,
+    tasksNotificationsEnabled:
+      value?.tasksNotificationsEnabled ??
+      value?.remindersEnabled ??
+      defaults.tasksNotificationsEnabled,
+    taskNotificationOffset:
+      value?.taskNotificationOffset ?? defaults.taskNotificationOffset,
+    remindersNotificationsEnabled,
+    reminderNotificationOffset:
+      value?.reminderNotificationOffset ?? defaults.reminderNotificationOffset,
+    updatedAt: value?.updatedAt ?? defaults.updatedAt,
   };
 }
