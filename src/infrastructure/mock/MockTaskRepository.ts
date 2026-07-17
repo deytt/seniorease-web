@@ -17,6 +17,7 @@ export class MockTaskRepository implements ITaskRepository {
       // Rehydrate dates
       return parsed.map((t) => ({
         ...t,
+        notified: t.notified ?? false,
         dueDate: t.dueDate ? new Date(t.dueDate) : undefined,
         completedAt: t.completedAt ? new Date(t.completedAt) : undefined,
         createdAt: new Date(t.createdAt),
@@ -45,6 +46,7 @@ export class MockTaskRepository implements ITaskRepository {
     const newTask: Task = {
       ...task,
       id: "mock-task-" + Date.now() + "-" + Math.random().toString(36).slice(2),
+      notified: task.notified ?? false,
       createdAt: new Date(),
     };
     this.saveTasks([...tasks, newTask]);

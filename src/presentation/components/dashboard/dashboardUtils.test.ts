@@ -16,6 +16,7 @@ function buildTask(overrides: Partial<Task> & Pick<Task, "id">): Task {
     description: "",
     steps: [],
     status: "pending",
+    notified: false,
     createdAt: new Date("2026-07-16T08:00:00"),
     ...overrides,
   };

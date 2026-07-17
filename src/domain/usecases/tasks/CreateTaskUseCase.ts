@@ -16,7 +16,6 @@ export interface CreateTaskInput {
   dueDate?: Date;
   priority?: "low" | "medium" | "high";
   category?: "medication" | "health" | "exercise" | "social" | "personal";
-  reminderTime?: string;
 }
 
 export class CreateTaskUseCase {
@@ -26,6 +25,7 @@ export class CreateTaskUseCase {
   ) {}
 
   async execute(input: CreateTaskInput): Promise<Task> {
+    const now = new Date();
     const task: Omit<Task, "id" | "createdAt"> = {
       userId: input.userId,
       title: input.title,
@@ -33,7 +33,6 @@ export class CreateTaskUseCase {
       status: "pending",
       priority: input.priority,
       category: input.category,
-      reminderTime: input.reminderTime,
       steps: input.steps.map((step, index) => ({
         id: `step_${index}`,
         taskId: "temp",
@@ -43,6 +42,9 @@ export class CreateTaskUseCase {
         isCompleted: false,
       })),
       dueDate: input.dueDate,
+      // Necessário para a Cloud Function `sendDueNotifications` (query notified == false)
+      notified: false,
+      updatedAt: now,
     };
 
     const createdTask = await this.taskRepository.createTask(task);

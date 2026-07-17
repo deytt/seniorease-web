@@ -86,8 +86,8 @@ function ToggleRow({
       <div
         aria-hidden="true"
         className={cn(
-          "relative w-12 h-6 rounded-full transition-colors flex-shrink-0 ml-3",
-          checked ? "bg-primary" : "bg-muted",
+          "relative w-12 h-6 rounded-full border transition-colors flex-shrink-0 ml-3",
+          checked ? "border-primary bg-primary" : "border-border bg-input",
         )}
       >
         <div
@@ -365,7 +365,7 @@ export default function AccessibilityCenterPage() {
                   ] as const;
                   setField("fontSize", sizes[parseInt(e.target.value)]);
                 }}
-                className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                className="font-size-slider w-full h-2 rounded-full appearance-none cursor-pointer bg-input accent-primary"
               />
               <div
                 className="flex justify-between text-xs text-muted-foreground"
@@ -404,10 +404,10 @@ export default function AccessibilityCenterPage() {
                     aria-pressed={preferences.interfaceMode === mode}
                     onClick={() => setField("interfaceMode", mode)}
                     className={cn(
-                      "flex-1 px-4 py-2 rounded-lg font-medium transition-colors min-h-[44px]",
+                      "flex-1 px-4 py-2 rounded-lg border font-medium transition-colors min-h-[44px]",
                       preferences.interfaceMode === mode
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground hover:bg-muted/80",
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-muted text-muted-foreground hover:bg-muted/80",
                     )}
                   >
                     {mode === "basic" ? "Básico" : "Avançado"}
@@ -555,22 +555,23 @@ export default function AccessibilityCenterPage() {
             Redefinir para Padrões
           </Button>
           <DialogContent>
-            <DialogHeader>
+            <DialogHeader className="pr-2">
               <DialogTitle>Redefinir para o padrão?</DialogTitle>
               <DialogDescription>
                 Isso vai desfazer todos os ajustes de acessibilidade que você
                 fez. Esta ação não pode ser desfeita.
               </DialogDescription>
             </DialogHeader>
-            <DialogFooter>
+            <DialogFooter className="gap-2 sm:gap-2">
               <DialogClose asChild>
-                <Button type="button" variant="outline">
+                <Button type="button" variant="outline" className="min-h-11">
                   Cancelar
                 </Button>
               </DialogClose>
               <Button
                 type="button"
                 variant="destructive"
+                className="min-h-11"
                 onClick={() => {
                   resetToDefaults();
                   setIsResetDialogOpen(false);

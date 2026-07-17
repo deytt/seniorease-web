@@ -13,6 +13,7 @@ import {
   getResumeStepIndex,
 } from "@/presentation/components/tasks/guidedTaskUtils";
 import type { Task } from "@/domain/entities/Task";
+import { useSeniorFeedback } from "@/lib/feedback/useSeniorFeedback";
 
 export default function GuidedTaskPage({
   params,
@@ -32,6 +33,7 @@ export default function GuidedTaskPage({
 
   const { taskRepository, completeTaskUseCase, advanceGuidedTaskStepUseCase } =
     getTasksDi();
+  const feedback = useSeniorFeedback();
 
   useEffect(() => {
     if (!user) return;
@@ -80,6 +82,7 @@ export default function GuidedTaskPage({
 
   const handleNextStep = async () => {
     if (!task) return;
+    feedback.light();
 
     try {
       setIsAdvancing(true);
@@ -116,6 +119,7 @@ export default function GuidedTaskPage({
       }
 
       await completeTaskUseCase.execute(taskId);
+      feedback.success();
       setShowCelebration(true);
       setTimeout(() => {
         router.push("/dashboard");
@@ -162,9 +166,10 @@ export default function GuidedTaskPage({
     <GuidedTaskScreen
       task={task}
       currentStepIndex={currentStepIndex}
-      onPrevious={() =>
-        setCurrentStepIndex((prev) => Math.max(0, prev - 1))
-      }
+      onPrevious={() => {
+        feedback.selection();
+        setCurrentStepIndex((prev) => Math.max(0, prev - 1));
+      }}
       onNext={handleNextStep}
       onComplete={handleCompleteTask}
       onStepSelect={handleStepSelect}

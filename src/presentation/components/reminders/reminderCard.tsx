@@ -70,7 +70,7 @@ function ReminderActions({
               type="button"
               variant="outline"
               size="icon-sm"
-              className="size-11 shrink-0 cursor-pointer rounded-[10px] border-[#e2e8f0]"
+              className="size-11 shrink-0 cursor-pointer rounded-[10px] border-border"
               onClick={() => onEdit(reminder)}
               aria-label={`Editar lembrete ${reminder.title}`}
             >

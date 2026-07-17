@@ -26,6 +26,7 @@ import {
   useReminderListFilter,
 } from "@/presentation/components/reminders/reminderFilterPills";
 import { isReminderToday } from "@/presentation/components/reminders/reminderVisuals";
+import { useSeniorFeedback } from "@/lib/feedback/useSeniorFeedback";
 
 export default function RemindersPage() {
   const { user, loading: authLoading } = useAuthContext();
@@ -40,6 +41,7 @@ export default function RemindersPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { filter, setFilter } = useReminderListFilter({ kind: "all" });
+  const feedback = useSeniorFeedback();
 
   const isBasicMode = preferences.interfaceMode === "basic";
   const {
@@ -93,6 +95,7 @@ export default function RemindersPage() {
     try {
       setBusyId(reminderId);
       await markReminderAsReadUseCase.execute(reminderId);
+      feedback.success();
       setReminders((prev) =>
         prev.map((r) => (r.id === reminderId ? { ...r, isRead: true } : r)),
       );

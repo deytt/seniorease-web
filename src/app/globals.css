@@ -192,10 +192,16 @@
   --foreground: #f8fafc;       /* darkTextPrimary */
   --card: #1e293b;             /* darkSurface */
   --card-foreground: #f8fafc;
-  --muted: #1e293b;            /* darkSurface */
+  --muted: #334155;            /* slate700 — um passo acima da surface #1e293b para
+                                  destacar campos internos sobre cards */
   --muted-foreground: #cbd5e1; /* darkTextSecondary (era #94a3b8 — muito escuro) */
   --border: #475569;           /* darkBorder (era #334155 — muito escuro) */
   --input: #475569;            /* darkBorder */
+  --primary-light: #1e3a5f;    /* azul escuro legível (era #eff6ff) */
+  --secondary-light: #134e4a;
+  --success-light: #14532d;
+  --warning-light: #78350f;
+  --destructive-light: #450a0a;
   --sidebar: #1e293b;          /* darkSurface */
   --sidebar-foreground: #f1f5f9;
   --sidebar-border: #475569;   /* darkBorder */
@@ -220,12 +226,17 @@
   --card-foreground: #ffffff;
   --border: #666666;           /* mobile outline (era #ffffff — cegante) */
   --input: #666666;
-  --muted: #111111;            /* maximumSurface (era #1f2937) */
+  --muted: #262626;            /* um passo acima da surface #111111 para destacar
+                                  campos internos (ProfileInfoField, tracks, toggles) */
   --muted-foreground: #dddddd; /* maximumTextSecondary (era #e5e7eb) */
   --primary: #ffff00;          /* maximumButton — amarelo do mobile (era #60a5fa) */
   --primary-foreground: #000000; /* maximumButtonText */
+  --primary-light: #111111;    /* superfície escura (evita azul-claro/branco) */
   --secondary: #ffff00;        /* alinha secondary também */
   --secondary-foreground: #000000;
+  --secondary-light: #111111;
+  --success-light: #111111;
+  --warning-light: #111111;
   --ring: #ffff00;             /* foco visível em fundo preto */
   --focus: #ffff00;
 }
@@ -234,13 +245,64 @@
    Botões Maiores (largeTouchTargets) — Módulo 1
    Alvo mínimo de 64×64px, conforme techContext.md / ADR-009.
    ========================================================================== */
-.a11y-large-touch button,
-.a11y-large-touch [role="button"],
+.a11y-large-touch button:not(.dialog-close-btn),
+.a11y-large-touch [role="button"]:not(.dialog-close-btn),
 .a11y-large-touch a[role="button"],
-.a11y-large-touch input,
+.a11y-large-touch a[data-slot="button"],
+.a11y-large-touch .a11y-touch-target,
+.a11y-large-touch input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
 .a11y-large-touch select,
 .a11y-large-touch textarea {
   min-height: 64px;
+}
+
+/* Botão fechar do modal: mantém 44px mesmo com alvos maiores */
+.a11y-large-touch .dialog-close-btn {
+  min-height: 44px;
+  min-width: 44px;
+  height: 44px;
+  width: 44px;
+}
+
+/* Slider de tamanho da fonte — trilho fino + bolinha amarela no contraste máximo */
+.font-size-slider {
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--input);
+  accent-color: var(--primary);
+}
+
+.font-size-slider::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--input);
+}
+
+.font-size-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -6px;
+  border-radius: 9999px;
+  border: 2px solid var(--background);
+  background: var(--primary);
+  cursor: pointer;
+}
+
+.font-size-slider::-moz-range-track {
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--input);
+}
+
+.font-size-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  border: 2px solid var(--background);
+  background: var(--primary);
+  cursor: pointer;
 }
 
 /* ==========================================================================
@@ -344,6 +406,64 @@ html[data-interface-mode="basic"] .advanced-only {
 /* 3. Bordas hardcoded (#e2e8f0) ficam visíveis no contraste máximo */
 .dark[data-contrast="maximum"] [class~="border-\[#e2e8f0\]"] {
   border-color: var(--border) !important;
+}
+
+/* 4. Textos hardcoded do Figma (slate) — ilegíveis em fundo preto.
+      Cobre telas que ainda não migraram 100% para tokens semânticos. */
+.dark [class~="text-\[#0f172a\]"],
+.dark[data-contrast="maximum"] [class~="text-\[#0f172a\]"] {
+  color: var(--foreground) !important;
+}
+.dark [class~="text-\[#64748b\]"],
+.dark [class~="text-\[#94a3b8\]"],
+.dark[data-contrast="maximum"] [class~="text-\[#64748b\]"],
+.dark[data-contrast="maximum"] [class~="text-\[#94a3b8\]"] {
+  color: var(--muted-foreground) !important;
+}
+.dark [class~="text-\[#2563eb\]"],
+.dark[data-contrast="maximum"] [class~="text-\[#2563eb\]"] {
+  color: var(--primary) !important;
+}
+
+/* 5. Ícones de categoria (reminder/task) usam bg-*-light como fundo colorido.
+      No dark mode os CSS vars já definem versões escuras adequadas.
+      No contraste máximo garantimos que não colidam com o fundo do card (#111111). */
+.dark[data-contrast="maximum"] .bg-warning-light  { background-color: #2a1500 !important; }
+.dark[data-contrast="maximum"] .bg-success-light  { background-color: #0a2a10 !important; }
+.dark[data-contrast="maximum"] .bg-secondary-light { background-color: #0a2020 !important; }
+.dark[data-contrast="maximum"] .bg-destructive-light { background-color: #2a0808 !important; }
+/* bg-primary-light NÃO sobrescrever aqui — a regra acima já converte para
+   amarelo sólido no contraste máximo (botões Editar/Iniciar, dica do guiado). */
+
+/* 6. Cards com bg-card já usam token; reforça texto legível dentro deles */
+.dark[data-contrast="maximum"] .bg-card {
+  background-color: var(--card) !important;
+  color: var(--card-foreground) !important;
+}
+
+/* ==========================================================================
+   Inputs nativos do browser (datetime-local, select) — dark mode
+   O browser renderiza o widget/picker com o color-scheme do sistema.
+   Forçar "dark" garante que o ícone de calendário e o dropdown do select
+   apareçam com fundo escuro em vez de branco.
+   ========================================================================== */
+.dark input[type="datetime-local"],
+.dark input[type="date"],
+.dark input[type="time"],
+.dark input[type="month"],
+.dark input[type="week"] {
+  color-scheme: dark;
+}
+
+.dark select {
+  color-scheme: dark;
+  background-color: var(--card);
+  color: var(--foreground);
+}
+
+.dark select option {
+  background-color: var(--card);
+  color: var(--foreground);
 }
 
 /* ==========================================================================
