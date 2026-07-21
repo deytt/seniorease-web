@@ -90,6 +90,19 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
     return () => media.removeEventListener("change", sync);
   }, [onCollapsedChange]);
 
+  useEffect(() => {
+    if (!isMobileOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMobileOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isMobileOpen]);
+
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -208,6 +221,15 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
           </nav>
         )}
       </header>
+
+      {isMobileOpen ? (
+        <button
+          type="button"
+          className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+          aria-label="Fechar menu"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      ) : null}
 
       {/* Desktop sidebar — a partir de lg */}
       <aside
