@@ -5,6 +5,7 @@ import { ArrowLeft, Bell, CheckSquare2 } from "lucide-react";
 
 import type { NotificationItem } from "@/domain/entities/NotificationItem";
 import { cn } from "@/lib/utils";
+import { backNavButtonClassName } from "@/presentation/lib/backNavButtonClassName";
 import { Button } from "@/presentation/components/ui/button";
 import {
   formatNotificationTime,
@@ -87,9 +88,12 @@ export function NotificationsScreen({
         <Button
           asChild
           variant="ghost"
-          className="min-h-11 min-w-11 rounded-[14px] px-0"
+          className={cn(
+            "min-w-11 rounded-[14px] px-0",
+            backNavButtonClassName,
+          )}
         >
-          <Link href="/dashboard" aria-label="Voltar ao painel">
+          <Link href="/dashboard" aria-label="Voltar ao Dashboard">
             <ArrowLeft className="size-5" />
           </Link>
         </Button>

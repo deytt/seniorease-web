@@ -6,15 +6,16 @@ import {
 } from "@/presentation/tour/createReminderTourSteps";
 
 describe("createReminderTourSteps", () => {
-  it("define 4 passos cobrindo o formulário de criação de lembrete", () => {
-    expect(createReminderTourSteps).toHaveLength(4);
-    expect(CREATE_REMINDER_TOUR_STEP_TARGETS).toHaveLength(4);
+  it("define passos com overview, campos e CTA de criar", () => {
+    expect(createReminderTourSteps).toHaveLength(5);
+    expect(CREATE_REMINDER_TOUR_STEP_TARGETS).toHaveLength(5);
   });
 
   it("aponta para os data-tour corretos em ordem de leitura", () => {
     const selectors = createReminderTourSteps.map((step) => step.element);
 
     expect(selectors).toEqual([
+      "[data-tour='create-reminder-header']",
       "[data-tour='create-reminder-basics']",
       "[data-tour='create-reminder-category']",
       "[data-tour='create-reminder-schedule']",

@@ -24,8 +24,9 @@ export const TOUR_CATALOG: TourCatalogItem[] = [
   },
   {
     id: "dashboard",
-    title: "Painel",
-    description: "Conheça as tarefas de hoje, as ações rápidas e os lembretes próximos.",
+    title: "Dashboard",
+    description:
+      "Conheça as tarefas de hoje, as ações rápidas, o status de acessibilidade e os lembretes próximos.",
     route: "/dashboard",
   },
   {

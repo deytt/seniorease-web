@@ -130,6 +130,7 @@ export function EditNotificationPreferencesForm() {
 
       <Button
         type="submit"
+        data-tour="notif-save"
         className="w-full cursor-pointer rounded-[14px]"
         size="lg"
         disabled={isSaving}

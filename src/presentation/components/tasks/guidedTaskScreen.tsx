@@ -15,6 +15,7 @@ import { Button } from "@/presentation/components/ui/button";
 import { Card, CardContent } from "@/presentation/components/ui/card";
 import type { Task } from "@/domain/entities/Task";
 import { cn } from "@/lib/utils";
+import { backNavButtonClassName } from "@/presentation/lib/backNavButtonClassName";
 import {
   getCompletedStepCount,
   getGuidedProgressPercent,
@@ -163,7 +164,10 @@ export function GuidedTaskScreen({
         <Button
           variant="ghost"
           size="sm"
-          className="h-11 min-h-11 w-fit shrink-0 bg-transparent px-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground sm:text-base"
+          className={cn(
+            "h-11 w-fit shrink-0 px-1 text-sm sm:text-base",
+            backNavButtonClassName,
+          )}
           asChild
         >
           <Link href="/tasks" aria-label="Sair do Modo Guiado">
@@ -173,7 +177,10 @@ export function GuidedTaskScreen({
           </Link>
         </Button>
 
-        <div className="flex w-full min-w-0 items-center justify-center gap-2 sm:w-auto sm:justify-end">
+        <div
+          className="flex w-full min-w-0 items-center justify-center gap-2 sm:w-auto sm:justify-end"
+          data-tour="guided-header"
+        >
           <span
             className="inline-flex w-full min-w-0 items-center justify-center rounded-full bg-secondary px-4 py-2 text-base font-semibold leading-snug text-secondary-foreground sm:w-auto sm:max-w-sm sm:justify-start sm:text-lg"
             title={task.title}

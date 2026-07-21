@@ -1,11 +1,12 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Award, CircleHelp } from "lucide-react";
+import { Award } from "lucide-react";
 import type { HistoryEvent } from "@/domain/entities/HistoryEvent";
 import type { InterfaceMode } from "@/domain/entities/UserPreferences";
 import { cn } from "@/lib/utils";
 import { useHistoryTour } from "@/presentation/hooks/useHistoryTour";
+import { TourHelpButton } from "@/presentation/tour/TourChrome";
 import {
   HISTORY_STAT_CARDS,
   filterHistoryEventsForMode,
@@ -135,16 +136,10 @@ export function HistoryScreen({
             Parabéns! Você tem sido muito consistente.
           </p>
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          className="size-11 shrink-0 cursor-pointer rounded-[14px]"
+        <TourHelpButton
           onClick={beginTour}
-          aria-label="Abrir tour guiado do histórico"
-        >
-          <CircleHelp className="size-5" aria-hidden />
-        </Button>
+          label="Abrir tour guiado do histórico"
+        />
       </header>
 
       <div

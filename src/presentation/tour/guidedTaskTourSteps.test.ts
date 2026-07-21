@@ -6,15 +6,16 @@ import {
 } from "@/presentation/tour/guidedTaskTourSteps";
 
 describe("guidedTaskTourSteps", () => {
-  it("define 4 passos cobrindo o Modo Guiado", () => {
-    expect(guidedTaskTourSteps).toHaveLength(4);
-    expect(GUIDED_TASK_TOUR_STEP_TARGETS).toHaveLength(4);
+  it("define passos com overview, conteúdo e CTA de navegação", () => {
+    expect(guidedTaskTourSteps).toHaveLength(5);
+    expect(GUIDED_TASK_TOUR_STEP_TARGETS).toHaveLength(5);
   });
 
   it("aponta para os data-tour corretos em ordem de leitura", () => {
     const selectors = guidedTaskTourSteps.map((step) => step.element);
 
     expect(selectors).toEqual([
+      "[data-tour='guided-header']",
       "[data-tour='guided-progress']",
       "[data-tour='guided-step-card']",
       "[data-tour='guided-tip']",

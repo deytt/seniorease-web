@@ -284,6 +284,7 @@ export function DashboardScreen({
             </h2>
             <Button
               asChild
+              data-tour="dashboard-add-task"
               className="min-h-11 cursor-pointer rounded-[10px] bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
               <Link href="/tasks/create">
@@ -419,7 +420,10 @@ export function DashboardScreen({
             </Link>
           </DashboardCard>
 
-          <section className="rounded-2xl border border-border bg-card p-[21px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]">
+          <section
+            className="rounded-2xl border border-border bg-card p-[21px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]"
+            data-tour="dashboard-accessibility"
+          >
             <h2 className="flex items-center gap-2 text-[15px] font-bold leading-[22.5px] text-foreground">
               <Accessibility className="size-[18px] text-primary" aria-hidden />
               Status de acessibilidade
