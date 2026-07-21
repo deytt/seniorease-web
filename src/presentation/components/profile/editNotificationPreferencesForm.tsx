@@ -80,6 +80,7 @@ export function EditNotificationPreferencesForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-6" data-tour="notif-tasks">
       <PreferenceToggle
         id="task-notifications"
         label="Notificações de tarefas"
@@ -100,7 +101,9 @@ export function EditNotificationPreferencesForm() {
           disabled={isSaving}
         />
       ) : null}
+      </div>
 
+      <div className="space-y-6" data-tour="notif-reminders">
       <PreferenceToggle
         id="reminder-notifications"
         label="Notificações de lembretes"
@@ -123,6 +126,7 @@ export function EditNotificationPreferencesForm() {
           disabled={isSaving}
         />
       ) : null}
+      </div>
 
       <Button
         type="submit"

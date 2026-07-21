@@ -76,6 +76,36 @@ export const TOUR_CATALOG: TourCatalogItem[] = [
     description: "Ajuste o tamanho da letra, o modo de uso, o espaçamento e outros atalhos.",
     route: "/acessibility",
   },
+  {
+    id: "security",
+    title: "Segurança",
+    description: "Veja como verificar o e-mail e alterar a senha da conta.",
+    route: "/profile/security",
+  },
+  {
+    id: "about",
+    title: "Sobre o SeniorEase",
+    description: "Conheça o propósito do app, a versão e a aplicação web.",
+    route: "/about",
+  },
+  {
+    id: "personalInfo",
+    title: "Informações Pessoais",
+    description: "Aprenda a atualizar nome, telefone e outros dados pessoais.",
+    route: "/profile/edit",
+  },
+  {
+    id: "address",
+    title: "Endereço",
+    description: "Veja onde preencher o endereço na edição do perfil.",
+    route: "/profile/edit",
+  },
+  {
+    id: "notificationPreferences",
+    title: "Preferências de Notificação",
+    description: "Escolha avisos de tarefas e lembretes e a antecedência.",
+    route: "/profile/notifications/edit",
+  },
 ];
 
 export function getTourCatalogItem(tourId: string): TourCatalogItem | undefined {

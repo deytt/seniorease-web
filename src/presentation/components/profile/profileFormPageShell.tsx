@@ -9,6 +9,7 @@ interface ProfileFormPageShellProps {
   backLabel: string;
   title: string;
   description?: string;
+  headerAction?: ReactNode;
   children: ReactNode;
 }
 
@@ -17,6 +18,7 @@ export function ProfileFormPageShell({
   backLabel,
   title,
   description,
+  headerAction,
   children,
 }: ProfileFormPageShellProps) {
   return (
@@ -32,10 +34,15 @@ export function ProfileFormPageShell({
         </Button>
       </Link>
 
-      <div className="mb-8">
-        <h1 className="mb-2 text-3xl font-bold text-foreground">{title}</h1>
-        {description ? (
-          <p className="text-base text-muted-foreground">{description}</p>
+      <div className="mb-8 flex items-start justify-between gap-3">
+        <div className="min-w-0" data-tour="profile-form-header">
+          <h1 className="mb-2 text-3xl font-bold text-foreground">{title}</h1>
+          {description ? (
+            <p className="text-base text-muted-foreground">{description}</p>
+          ) : null}
+        </div>
+        {headerAction ? (
+          <div className="shrink-0 pt-1">{headerAction}</div>
         ) : null}
       </div>
 
