@@ -11,7 +11,6 @@ import {
   updatePreferencesUseCase,
 } from "@/lib/di/preferencesDi";
 import {
-  defaultPreferences,
   FONT_SCALE_MAP,
   normalizePreferences,
   SPACING_SCALE_MAP,

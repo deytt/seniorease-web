@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { ArrowLeft, Bell, ClipboardList, Save } from "lucide-react";
@@ -39,52 +39,49 @@ type NotificationDraft = Pick<
   | "reminderNotificationOffset"
 >;
 
+function toNotificationDraft(preferences: UserPreferences): NotificationDraft {
+  return {
+    tasksNotificationsEnabled: preferences.tasksNotificationsEnabled,
+    taskNotificationOffset: preferences.taskNotificationOffset,
+    remindersNotificationsEnabled: preferences.remindersNotificationsEnabled,
+    reminderNotificationOffset: preferences.reminderNotificationOffset,
+  };
+}
+
 export default function NotificationPreferencesPage() {
   const preferences = usePreferencesStore((state) => state.preferences);
   const isLoaded = usePreferencesStore((state) => state.isLoaded);
   const isSaving = usePreferencesStore((state) => state.isSaving);
   const update = usePreferencesStore((state) => state.update);
+  const [draft, setDraft] = useState<NotificationDraft | null>(null);
 
-  const initialDraft = useMemo<NotificationDraft>(
-    () => ({
-      tasksNotificationsEnabled: preferences.tasksNotificationsEnabled,
-      taskNotificationOffset: preferences.taskNotificationOffset,
-      remindersNotificationsEnabled: preferences.remindersNotificationsEnabled,
-      reminderNotificationOffset: preferences.reminderNotificationOffset,
-    }),
-    [
-      preferences.tasksNotificationsEnabled,
-      preferences.taskNotificationOffset,
-      preferences.remindersNotificationsEnabled,
-      preferences.reminderNotificationOffset,
-    ],
-  );
-
-  const [draft, setDraft] = useState<NotificationDraft>(initialDraft);
-
-  useEffect(() => {
-    if (isLoaded) {
-      setDraft(initialDraft);
-    }
-  }, [initialDraft, isLoaded]);
+  const values = useMemo<NotificationDraft | null>(() => {
+    if (!isLoaded) return null;
+    return draft ?? toNotificationDraft(preferences);
+  }, [draft, isLoaded, preferences]);
 
   const updateDraft = <K extends keyof NotificationDraft>(
     key: K,
     value: NotificationDraft[K],
   ) => {
-    setDraft((current) => ({ ...current, [key]: value }));
+    setDraft((current) => ({
+      ...(current ?? toNotificationDraft(preferences)),
+      [key]: value,
+    }));
   };
 
   const handleSave = async () => {
+    if (!values) return;
+
     try {
-      await update(draft);
+      await update(values);
       toast.success("Preferências de notificação salvas.");
     } catch {
       toast.error("Não foi possível salvar. Tente novamente.");
     }
   };
 
-  if (!isLoaded) {
+  if (!isLoaded || !values) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <p className="text-muted-foreground">
@@ -118,8 +115,8 @@ export default function NotificationPreferencesPage() {
           iconBackgroundClassName="bg-primary-light"
           title="Tarefas"
           description="Receba um aviso antes do horário de uma tarefa."
-          enabled={draft.tasksNotificationsEnabled}
-          offset={draft.taskNotificationOffset}
+          enabled={values.tasksNotificationsEnabled}
+          offset={values.taskNotificationOffset}
           onEnabledChange={(value) =>
             updateDraft("tasksNotificationsEnabled", value)
           }
@@ -133,8 +130,8 @@ export default function NotificationPreferencesPage() {
           iconBackgroundClassName="bg-secondary-light"
           title="Lembretes"
           description="Receba um aviso antes do horário de um lembrete."
-          enabled={draft.remindersNotificationsEnabled}
-          offset={draft.reminderNotificationOffset}
+          enabled={values.remindersNotificationsEnabled}
+          offset={values.reminderNotificationOffset}
           onEnabledChange={(value) =>
             updateDraft("remindersNotificationsEnabled", value)
           }
