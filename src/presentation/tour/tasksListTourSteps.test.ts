@@ -6,9 +6,9 @@ import {
 } from "@/presentation/tour/tasksListTourSteps";
 
 describe("tasksListTourSteps", () => {
-  it("define 4 passos cobrindo a lista de tarefas", () => {
-    expect(tasksListTourSteps).toHaveLength(4);
-    expect(TASKS_LIST_TOUR_STEP_TARGETS).toHaveLength(4);
+  it("define passos incluindo o CTA Nova Tarefa", () => {
+    expect(tasksListTourSteps).toHaveLength(5);
+    expect(TASKS_LIST_TOUR_STEP_TARGETS).toHaveLength(5);
   });
 
   it("aponta para os data-tour corretos em ordem de leitura", () => {
@@ -16,6 +16,7 @@ describe("tasksListTourSteps", () => {
 
     expect(selectors).toEqual([
       "[data-tour='tasks-header']",
+      "[data-tour='tasks-create']",
       "[data-tour='tasks-search']",
       "[data-tour='tasks-filter']",
       "[data-tour='tasks-list']",

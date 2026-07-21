@@ -7,7 +7,6 @@ import {
   AlertCircle,
   BookOpen,
   ChevronRight,
-  CircleHelp,
   Info,
   Shield,
 } from "lucide-react";
@@ -17,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { ProfileAvatar } from "@/presentation/components/profile/profileAvatar";
 import { ProfileHelpCard } from "@/presentation/components/profile/profileHelpCard";
 import { useProfileTour } from "@/presentation/hooks/useProfileTour";
+import { TourHelpButton } from "@/presentation/tour/TourChrome";
 import { Button } from "@/presentation/components/ui/button";
 import {
   Dialog,
@@ -199,16 +199,10 @@ export function ProfileScreen({
         <h1 className="text-[30px] font-bold leading-9 text-foreground">
           Meu Perfil
         </h1>
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          className="size-11 shrink-0 cursor-pointer rounded-[14px]"
+        <TourHelpButton
           onClick={beginTour}
-          aria-label="Abrir tour guiado do perfil"
-        >
-          <CircleHelp className="size-5" aria-hidden />
-        </Button>
+          label="Abrir tour guiado do perfil"
+        />
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,328px)_minmax(0,1fr)] xl:gap-6">

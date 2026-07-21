@@ -4,6 +4,16 @@ export const ABOUT_TOUR_ID = "about";
 
 export const aboutTourSteps: DriveStep[] = [
   {
+    element: "[data-tour='profile-form-header']",
+    popover: {
+      title: "Sobre o SeniorEase",
+      description:
+        "Esta página conta o propósito do app, a versão e que você está na versão web.",
+      side: "bottom",
+      align: "start",
+    },
+  },
+  {
     element: "[data-tour='about-purpose']",
     popover: {
       title: "Para que serve o SeniorEase",

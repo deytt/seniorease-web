@@ -10,6 +10,8 @@ import { CreateReminderForm } from "@/presentation/components/reminders/createRe
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
 import { getRemindersDi } from "@/lib/di/remindersDi";
 import { Reminder } from "@/domain/entities/Reminder";
+import { backNavButtonClassName } from "@/presentation/lib/backNavButtonClassName";
+import { cn } from "@/lib/utils";
 
 export default function EditReminderPage() {
   const params = useParams<{ id: string }>();
@@ -71,7 +73,11 @@ export default function EditReminderPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 pb-20">
       <Link href="/reminders">
-        <Button variant="ghost" size="sm" className="mb-6">
+        <Button
+          variant="ghost"
+          size="sm"
+          className={cn("mb-6", backNavButtonClassName)}
+        >
           <ChevronLeft className="size-4 mr-2" />
           Voltar para Lembretes
         </Button>

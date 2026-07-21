@@ -3,6 +3,8 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/presentation/components/ui/button";
 import { Card, CardContent } from "@/presentation/components/ui/card";
+import { backNavButtonClassName } from "@/presentation/lib/backNavButtonClassName";
+import { cn } from "@/lib/utils";
 
 interface ProfileFormPageShellProps {
   backHref: string;
@@ -27,7 +29,7 @@ export function ProfileFormPageShell({
         <Button
           variant="ghost"
           size="sm"
-          className="mb-6 min-h-11 cursor-pointer rounded-[14px] bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
+          className={cn("mb-6", backNavButtonClassName)}
         >
           <ChevronLeft className="mr-2 size-4" aria-hidden />
           {backLabel}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 import type { Reminder } from "@/domain/entities/Reminder";
 import type { Task } from "@/domain/entities/Task";
 import { defaultPreferences } from "@/domain/entities/UserPreferences";
@@ -16,10 +17,30 @@ import { useAuthContext } from "@/presentation/providers/AuthProvider";
 const EMPTY_TASKS: Task[] = [];
 const EMPTY_REMINDERS: Reminder[] = [];
 
+async function fetchTasksSafe(userId: string): Promise<Task[]> {
+  try {
+    return await getTasksDi().taskRepository.getTasks(userId);
+  } catch (error) {
+    console.error("Erro ao carregar tarefas:", error);
+    toast.error("Não foi possível carregar as tarefas.");
+    return [];
+  }
+}
+
+async function fetchRemindersSafe(userId: string): Promise<Reminder[]> {
+  try {
+    return await getRemindersDi().reminderRepository.getReminders(userId);
+  } catch (error) {
+    console.error("Erro ao carregar lembretes:", error);
+    toast.error("Não foi possível carregar os lembretes.");
+    return [];
+  }
+}
+
 async function fetchDashboardData(userId: string) {
   const [tasksData, remindersData] = await Promise.all([
-    getTasksDi().taskRepository.getTasks(userId),
-    getRemindersDi().reminderRepository.getReminders(userId),
+    fetchTasksSafe(userId),
+    fetchRemindersSafe(userId),
   ]);
 
   return { tasksData, remindersData };
@@ -105,7 +126,7 @@ export default function DashboardPage() {
         role="status"
         aria-live="polite"
       >
-        <p className="text-base text-[#64748b]">Carregando painel...</p>
+        <p className="text-base text-[#64748b]">Carregando dashboard...</p>
       </div>
     );
   }

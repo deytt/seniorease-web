@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 import { useAccessibility } from "@/presentation/hooks/useAccessibility";
-import { consumePendingTourIf } from "@/presentation/tour/pendingTour";
+import { useAccessibilityTour } from "@/presentation/hooks/useAccessibilityTour";
+import { useAuthContext } from "@/presentation/providers/AuthProvider";
 import { Card, CardContent } from "@/presentation/components/ui/card";
 import { Button } from "@/presentation/components/ui/button";
 import {
@@ -16,39 +18,12 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/presentation/components/ui/dialog";
-import { ArrowLeft, HelpCircle, X, ChevronRight } from "lucide-react";
+import {
+  TourHelpButton,
+  TourOfferDialog,
+} from "@/presentation/tour/TourChrome";
+import { backNavButtonClassName } from "@/presentation/lib/backNavButtonClassName";
 import { cn } from "@/lib/utils";
-
-// ─── Guided Tour ─────────────────────────────────────────────────────────────
-
-const TOUR_STEPS = [
-  {
-    id: "font",
-    title: "Tamanho da letra",
-    description:
-      "Arraste o controle para deixar o texto maior ou menor, do jeito que você lê melhor.",
-  },
-  {
-    id: "mode",
-    title: "Modo de uso",
-    description:
-      "Escolha o Modo Básico para uma tela mais simples, ou Avançado para ver tudo.",
-  },
-  {
-    id: "spacing",
-    title: "Espaçamento",
-    description:
-      'Escolha quanto espaço quer entre os elementos. "Espaçoso" dá mais respiro à tela.',
-  },
-  {
-    id: "toggles",
-    title: "Ajustes rápidos",
-    description:
-      "Ligue ou desligue o modo escuro, alto contraste, sons e botões maiores.",
-  },
-] as const;
-
-// ─── Toggle Row ───────────────────────────────────────────────────────────────
 
 interface ToggleRowProps {
   emoji: string;
@@ -102,132 +77,23 @@ function ToggleRow({
   );
 }
 
-// ─── Tour Spotlight ───────────────────────────────────────────────────────────
-
-interface TourSpotlightProps {
-  step: number;
-  total: number;
-  title: string;
-  description: string;
-  onNext: () => void;
-  onClose: () => void;
-  anchorRef: React.RefObject<HTMLElement | null>;
-}
-
-function TourSpotlight({
-  step,
-  total,
-  title,
-  description,
-  onNext,
-  onClose,
-  anchorRef,
-}: TourSpotlightProps) {
-  const [top, setTop] = useState(0);
-
-  useEffect(() => {
-    if (anchorRef.current) {
-      const rect = anchorRef.current.getBoundingClientRect();
-      setTop(rect.bottom + window.scrollY + 8);
-      anchorRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    }
-  }, [anchorRef, step]);
-
-  const isLast = step === total - 1;
-
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label={`Tour guiado — passo ${step + 1} de ${total}: ${title}`}
-      style={{ top }}
-      className={cn(
-        "fixed left-1/2 z-50 w-[calc(100vw-2rem)] max-w-sm -translate-x-1/2",
-        "rounded-2xl bg-card shadow-modal border border-border p-5",
-        "animate-in fade-in slide-in-from-top-2 duration-200",
-      )}
-    >
-      {/* Progresso */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex gap-1.5" aria-hidden="true">
-          {Array.from({ length: total }).map((_, i) => (
-            <div
-              key={i}
-              className={cn(
-                "h-1.5 rounded-full transition-all",
-                i === step ? "w-6 bg-primary" : "w-1.5 bg-muted",
-              )}
-            />
-          ))}
-        </div>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Fechar tour guiado"
-          className="p-1 rounded-lg hover:bg-muted/60 transition-colors"
-        >
-          <X className="size-4 text-muted-foreground" aria-hidden="true" />
-        </button>
-      </div>
-
-      <p className="text-xs font-semibold text-primary mb-1 uppercase tracking-wide">
-        Passo {step + 1} de {total}
-      </p>
-      <h2 className="font-bold text-base text-foreground mb-1">{title}</h2>
-      <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-        {description}
-      </p>
-
-      <div className="flex gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="flex-1"
-          onClick={onClose}
-        >
-          Pular
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          className="flex-1"
-          onClick={onNext}
-        >
-          {isLast ? "Concluir" : "Próximo"}
-          {!isLast && (
-            <ChevronRight className="size-4 ml-1" aria-hidden="true" />
-          )}
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-// ─── Main Page ────────────────────────────────────────────────────────────────
-
 export default function AccessibilityCenterPage() {
+  const { user } = useAuthContext();
   const { preferences, isLoaded, isSaving, setField, resetToDefaults } =
     useAccessibility();
+  const {
+    showOfferDialog,
+    beginTour,
+    dismissOffer,
+    offerTitle,
+    offerDescription,
+  } = useAccessibilityTour({
+    userId: user?.id,
+    interfaceMode: preferences.interfaceMode,
+  });
 
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
-  const [tourStep, setTourStep] = useState<number | null>(null);
-
-  const fontRef = useRef<HTMLDivElement>(null);
-  const modeRef = useRef<HTMLDivElement>(null);
-  const spacingRef = useRef<HTMLDivElement>(null);
-  const togglesRef = useRef<HTMLDivElement>(null);
-
-  const sectionRefs = [fontRef, modeRef, spacingRef, togglesRef];
-
-  useEffect(() => {
-    if (!isLoaded) return;
-    if (!consumePendingTourIf("accessibility")) return;
-
-    const timer = window.setTimeout(() => setTourStep(0), 0);
-    return () => window.clearTimeout(timer);
-  }, [isLoaded]);
 
   useEffect(() => {
     if (!isSaving && isLoaded) {
@@ -270,75 +136,46 @@ export default function AccessibilityCenterPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Tour spotlight overlay */}
-      {tourStep !== null && (
-        <>
-          <div
-            aria-hidden="true"
-            className="fixed inset-0 z-40 bg-black/40"
-            onClick={() => setTourStep(null)}
-          />
-          <TourSpotlight
-            step={tourStep}
-            total={TOUR_STEPS.length}
-            title={TOUR_STEPS[tourStep].title}
-            description={TOUR_STEPS[tourStep].description}
-            anchorRef={sectionRefs[tourStep] as React.RefObject<HTMLElement>}
-            onNext={() => {
-              if (tourStep < TOUR_STEPS.length - 1) {
-                setTourStep(tourStep + 1);
-              } else {
-                setTourStep(null);
-              }
-            }}
-            onClose={() => setTourStep(null)}
-          />
-        </>
-      )}
-
-      {/* Header */}
       <div className="border-b bg-card p-4 md:p-6">
         <div className="max-w-2xl mx-auto">
           <Link href="/dashboard">
-            <Button variant="ghost" size="sm" className="mb-4" aria-label="Voltar ao painel">
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn("mb-4", backNavButtonClassName)}
+              aria-label="Voltar ao Dashboard"
+            >
               <ArrowLeft className="size-4 mr-2" aria-hidden="true" />
               Voltar
             </Button>
           </Link>
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl md:text-3xl font-bold">
-              Configurações de Acessibilidade
-            </h1>
-            <button
-              type="button"
-              onClick={() => setTourStep(0)}
-              aria-label="Iniciar tour guiado de acessibilidade"
-              className="flex items-center gap-1.5 text-sm text-primary font-medium px-3 py-2 rounded-xl hover:bg-primary/10 transition-colors min-h-[44px]"
-            >
-              <HelpCircle className="size-4" aria-hidden="true" />
-              <span className="hidden sm:inline">Tour guiado</span>
-            </button>
+          <div
+            className="flex items-start justify-between gap-3"
+            data-tour="a11y-header"
+          >
+            <div className="min-w-0">
+              <h1 className="text-2xl md:text-3xl font-bold">
+                Configurações de Acessibilidade
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Ajuste a aparência do app para facilitar o uso. As mudanças são
+                salvas automaticamente.
+              </p>
+            </div>
+            <TourHelpButton
+              onClick={beginTour}
+              label="Abrir tour guiado de acessibilidade"
+            />
           </div>
-          <p className="text-sm text-muted-foreground mt-1">
-            Ajuste a aparência do app para facilitar o uso. As mudanças são salvas automaticamente.
-          </p>
         </div>
       </div>
 
-      {/* Content */}
       <div
         className="max-w-2xl mx-auto p-4 md:p-6 space-y-6 a11y-space-section"
         role="main"
         aria-label="Configurações de acessibilidade"
       >
-        {/* 1 — Font Size */}
-        <Card
-          ref={fontRef}
-          className={cn(
-            "transition-all duration-200",
-            tourStep === 0 && "ring-2 ring-primary ring-offset-2 relative z-50",
-          )}
-        >
+        <Card data-tour="a11y-font">
           <CardContent className="pt-6 a11y-space-card">
             <div className="mb-4">
               <label
@@ -389,21 +226,15 @@ export default function AccessibilityCenterPage() {
           </CardContent>
         </Card>
 
-        {/* 2 — Interface Mode */}
-        <Card
-          ref={modeRef}
-          className={cn(
-            "transition-all duration-200",
-            tourStep === 1 && "ring-2 ring-primary ring-offset-2 relative z-50",
-          )}
-        >
+        <Card data-tour="a11y-mode">
           <CardContent className="pt-6 a11y-space-card">
             <fieldset>
               <legend className="text-sm font-semibold text-foreground mb-1">
                 Modo de Interface
               </legend>
               <p className="text-xs text-muted-foreground mb-3">
-                O Modo Básico simplifica a interface, ocultando elementos menos essenciais.
+                O Modo Básico simplifica a interface, ocultando elementos menos
+                essenciais.
               </p>
               <div className="flex gap-3" role="group">
                 {(["basic", "advanced"] as const).map((mode) => (
@@ -427,14 +258,7 @@ export default function AccessibilityCenterPage() {
           </CardContent>
         </Card>
 
-        {/* 3 — Spacing */}
-        <Card
-          ref={spacingRef}
-          className={cn(
-            "transition-all duration-200",
-            tourStep === 2 && "ring-2 ring-primary ring-offset-2 relative z-50",
-          )}
-        >
+        <Card data-tour="a11y-spacing">
           <CardContent className="pt-6 a11y-space-card">
             <fieldset>
               <legend className="text-sm font-semibold text-foreground mb-1">
@@ -482,7 +306,9 @@ export default function AccessibilityCenterPage() {
                       {emoji}
                     </span>
                     <span className="text-xs font-semibold">{label}</span>
-                    <span className="text-[10px] text-muted-foreground">{sublabel}</span>
+                    <span className="text-[10px] text-muted-foreground">
+                      {sublabel}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -490,14 +316,7 @@ export default function AccessibilityCenterPage() {
           </CardContent>
         </Card>
 
-        {/* 4 — Toggles */}
-        <Card
-          ref={togglesRef}
-          className={cn(
-            "transition-all duration-200",
-            tourStep === 3 && "ring-2 ring-primary ring-offset-2 relative z-50",
-          )}
-        >
+        <Card data-tour="a11y-toggles">
           <CardContent className="pt-6 a11y-space-card">
             <p className="text-sm font-semibold text-foreground mb-4">
               Ajustes Rápidos
@@ -537,7 +356,6 @@ export default function AccessibilityCenterPage() {
           </CardContent>
         </Card>
 
-        {/* Save Status */}
         <div
           role="status"
           aria-live="polite"
@@ -553,12 +371,12 @@ export default function AccessibilityCenterPage() {
           </p>
         </div>
 
-        {/* Reset */}
         <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
           <Button
             type="button"
             variant="outline"
             className="w-full"
+            data-tour="a11y-reset"
             onClick={() => setIsResetDialogOpen(true)}
           >
             Redefinir para Padrões
@@ -592,6 +410,14 @@ export default function AccessibilityCenterPage() {
           </DialogContent>
         </Dialog>
       </div>
+
+      <TourOfferDialog
+        open={showOfferDialog}
+        title={offerTitle}
+        description={offerDescription}
+        onDismiss={dismissOffer}
+        onStart={beginTour}
+      />
     </div>
   );
 }
