@@ -53,7 +53,7 @@ const QUICK_ACTION_ICONS = {
   newTask: "/icons/quick-actions/new-task.svg",
   accessibility: "/icons/quick-actions/accessibility.svg",
   reminders: "/icons/quick-actions/reminders.svg",
-  history: "/icons/quick-actions/history.svg",
+  guides: "/icons/quick-actions/guides.svg",
 } as const;
 
 function DashboardCard({
@@ -338,9 +338,9 @@ export function DashboardScreen({
                 iconWrapClassName="bg-[rgba(245,158,11,0.13)]"
               />
               <QuickActionTile
-                href="/history"
-                label="Histórico"
-                iconSrc={QUICK_ACTION_ICONS.history}
+                href="/guides"
+                label="Ajuda rápida"
+                iconSrc={QUICK_ACTION_ICONS.guides}
                 iconWrapClassName="bg-[rgba(34,197,94,0.13)]"
               />
             </div>
