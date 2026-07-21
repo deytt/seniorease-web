@@ -1,22 +1,20 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import React, { useState } from "react";
-import { Filter, Plus } from "lucide-react";
-import { ReminderFilterDialog } from "@/presentation/components/reminders/reminderFilterDialog";
+import { Plus } from "lucide-react";
+import { ReminderFilterChips } from "@/presentation/components/reminders/reminderFilterChips";
 import { ReminderCard } from "@/presentation/components/reminders/reminderCard";
 import { Button } from "@/presentation/components/ui/button";
 import {
-  EMPTY_REMINDER_LIST_FILTER,
-  isReminderListFilterActive,
+  DEFAULT_REMINDER_LIST_FILTER,
+  REMINDER_LIST_FILTER_OPTIONS,
   matchesReminderListFilter,
   type ReminderListFilter,
 } from "@/presentation/components/reminders/reminderFilter";
 import { isReminderToday } from "@/presentation/components/reminders/reminderVisuals";
-import { REMINDER_CATEGORY_LABELS } from "@/domain/entities/ReminderCategory";
 import type { Reminder } from "@/domain/entities/Reminder";
 
 /**
- * Demonstração integrada da página `/reminders` com filtro modal combinável,
- * cards e ações.
+ * Demonstração integrada da página `/reminders` com chips exclusivos.
  */
 const meta = {
   title: "Integrations/ReminderListPage",
@@ -27,7 +25,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Demonstração integrada da página de Lembretes com filtros combináveis, cards e ações.",
+          "Demonstração integrada da página de Lembretes com filtros exclusivos (Hoje / Medicação / Consultas).",
       },
     },
   },
@@ -43,7 +41,7 @@ const mockReminders: Reminder[] = [
     title: "Tomar medicação - Hipertensão",
     message: "Comprimido azul com água após café da manhã",
     category: "medication",
-    scheduledAt: new Date(Date.now() + 3600000),
+    scheduledAt: new Date(),
     isRead: false,
     notified: false,
     createdAt: new Date(),
@@ -54,7 +52,7 @@ const mockReminders: Reminder[] = [
     title: "Beber água",
     message: "Hidratação é importante",
     category: "hydration",
-    scheduledAt: new Date(Date.now() + 7200000),
+    scheduledAt: new Date(),
     isRead: false,
     notified: false,
     createdAt: new Date(),
@@ -96,16 +94,17 @@ const mockReminders: Reminder[] = [
 
 const ReminderListIntegration = () => {
   const [filter, setFilter] = useState<ReminderListFilter>(
-    EMPTY_REMINDER_LIST_FILTER,
+    DEFAULT_REMINDER_LIST_FILTER,
   );
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [reminders, setReminders] = useState(mockReminders);
 
   const filteredReminders = reminders.filter((reminder) =>
     matchesReminderListFilter(reminder, filter, isReminderToday),
   );
 
-  const filterActive = isReminderListFilterActive(filter);
+  const activeLabel =
+    REMINDER_LIST_FILTER_OPTIONS.find((option) => option.id === filter)
+      ?.label ?? filter;
 
   const handleMarkDone = (reminderId: string) => {
     setReminders((prev) =>
@@ -130,63 +129,35 @@ const ReminderListIntegration = () => {
             Gerencie seus lembretes e compromissos
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            className="min-h-11 cursor-pointer rounded-[14px]"
-            onClick={() => setIsFilterOpen(true)}
-          >
-            <Filter className="mr-2 size-4" aria-hidden />
-            Filtrar
-          </Button>
-          <Button
-            className="min-h-11 cursor-pointer rounded-[14px]"
-            onClick={() => console.log("Navegar para /reminders/create")}
-          >
-            <Plus className="mr-2 size-4" aria-hidden />
-            Novo Lembrete
-          </Button>
-        </div>
+        <Button
+          className="min-h-11 cursor-pointer rounded-[14px]"
+          onClick={() => console.log("Navegar para /reminders/create")}
+        >
+          <Plus className="mr-2 size-4" aria-hidden />
+          Novo Lembrete
+        </Button>
       </div>
 
-      <ReminderFilterDialog
-        open={isFilterOpen}
-        onOpenChange={setIsFilterOpen}
-        value={filter}
-        onApply={setFilter}
-      />
+      <ReminderFilterChips value={filter} onChange={setFilter} />
 
-      {filterActive && (
-        <p className="text-sm text-muted-foreground">
-          Filtrando por:{" "}
-          {[
-            filter.today ? "Hoje" : null,
-            filter.category
-              ? REMINDER_CATEGORY_LABELS[filter.category]
-              : null,
-          ]
-            .filter(Boolean)
-            .join(" + ")}{" "}
-          — {filteredReminders.length} de {reminders.length}
-        </p>
-      )}
+      <p className="text-sm text-muted-foreground">
+        Filtro ativo: <span className="font-bold">{activeLabel}</span> —{" "}
+        {filteredReminders.length} de {reminders.length}
+      </p>
 
       <div className="space-y-3 border-t pt-6">
         {filteredReminders.length === 0 ? (
           <div className="py-12 text-center">
             <p className="text-muted-foreground">
-              {filterActive
-                ? "Nenhum lembrete encontrado para este filtro"
-                : "Nenhum lembrete criado ainda"}
+              Nenhum lembrete encontrado para este filtro
             </p>
-            {filterActive && (
+            {filter !== "today" && (
               <Button
                 variant="outline"
                 className="mt-4 cursor-pointer rounded-[14px]"
-                onClick={() => setFilter(EMPTY_REMINDER_LIST_FILTER)}
+                onClick={() => setFilter("today")}
               >
-                Ver Todos
+                Ver lembretes de hoje
               </Button>
             )}
           </div>
@@ -198,29 +169,10 @@ const ReminderListIntegration = () => {
               onMarkDone={handleMarkDone}
               onEdit={handleEdit}
               onDelete={handleDelete}
-              showDate={!filter.today}
+              showDate={filter !== "today"}
             />
           ))
         )}
-      </div>
-
-      <div className="grid grid-cols-3 gap-4 border-t pt-6">
-        <div className="rounded-lg bg-muted/50 p-4 text-center">
-          <p className="text-2xl font-bold">
-            {reminders.filter((r) => !r.isRead).length}
-          </p>
-          <p className="text-xs text-muted-foreground">Pendentes</p>
-        </div>
-        <div className="rounded-lg bg-muted/50 p-4 text-center">
-          <p className="text-2xl font-bold">
-            {reminders.filter((r) => r.isRead).length}
-          </p>
-          <p className="text-xs text-muted-foreground">Concluídos</p>
-        </div>
-        <div className="rounded-lg bg-muted/50 p-4 text-center">
-          <p className="text-2xl font-bold">{reminders.length}</p>
-          <p className="text-xs text-muted-foreground">Total</p>
-        </div>
       </div>
     </div>
   );
@@ -228,62 +180,4 @@ const ReminderListIntegration = () => {
 
 export const Default: Story = {
   render: () => <ReminderListIntegration />,
-};
-
-export const ManyReminders: Story = {
-  render: () => {
-    const manyReminders = Array.from({ length: 12 }).flatMap(
-      () => mockReminders,
-    );
-
-    return (
-      <div className="mx-auto w-full max-w-4xl space-y-6 p-6">
-        <div>
-          <h1 className="text-3xl font-bold">Lembretes (Simulação com 60)</h1>
-          <p className="mt-1 text-muted-foreground">
-            Mostrando comportamento com muitos lembretes
-          </p>
-        </div>
-        <div className="max-h-96 space-y-3 overflow-y-auto">
-          {manyReminders.slice(0, 12).map((reminder, i) => (
-            <ReminderCard
-              key={`${reminder.id}-${i}`}
-              reminder={reminder}
-              onMarkDone={(id) => console.log("Mark done:", id)}
-              onEdit={(r) => console.log("Edit:", r.title)}
-              onDelete={(r) => console.log("Delete:", r.title)}
-            />
-          ))}
-        </div>
-      </div>
-    );
-  },
-};
-
-export const Empty: Story = {
-  render: () => (
-    <div className="mx-auto w-full max-w-4xl space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Lembretes</h1>
-          <p className="mt-1 text-muted-foreground">
-            Gerencie seus lembretes e compromissos
-          </p>
-        </div>
-        <Button className="cursor-pointer rounded-[14px]">
-          <Plus className="mr-2 size-4" aria-hidden />
-          Novo Lembrete
-        </Button>
-      </div>
-
-      <div className="border-t py-12 text-center">
-        <p className="mb-4 text-muted-foreground">
-          Você ainda não tem nenhum lembrete criado
-        </p>
-        <Button variant="default" className="cursor-pointer rounded-[14px]">
-          Criar Primeiro Lembrete
-        </Button>
-      </div>
-    </div>
-  ),
 };

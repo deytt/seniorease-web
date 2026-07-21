@@ -16,8 +16,8 @@ describe("remindersListTourSteps", () => {
 
     expect(selectors).toEqual([
       "[data-tour='reminders-header']",
-      "[data-tour='reminders-filter']",
       "[data-tour='reminders-create']",
+      "[data-tour='reminders-filter']",
       "[data-tour='reminders-list']",
     ]);
   });
