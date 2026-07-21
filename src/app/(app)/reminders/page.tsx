@@ -165,7 +165,7 @@ export default function RemindersPage() {
 
   return (
     <div className="pb-16">
-      <div className="mx-auto w-full max-w-5xl">
+      <div className="mx-auto w-full max-w-6xl">
         <Dialog
           open={Boolean(reminderToDelete)}
           onOpenChange={(open) => {

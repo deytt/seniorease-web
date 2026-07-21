@@ -163,7 +163,7 @@ export function GuidedTaskScreen({
         <Button
           variant="ghost"
           size="sm"
-          className="h-11 min-h-11 w-fit shrink-0 px-1 text-sm text-muted-foreground hover:text-foreground sm:text-base"
+          className="h-11 min-h-11 w-fit shrink-0 bg-transparent px-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground sm:text-base"
           asChild
         >
           <Link href="/tasks" aria-label="Sair do Modo Guiado">

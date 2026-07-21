@@ -27,7 +27,7 @@ export function ProfileFormPageShell({
         <Button
           variant="ghost"
           size="sm"
-          className="mb-6 min-h-11 cursor-pointer rounded-[14px] text-muted-foreground hover:text-foreground"
+          className="mb-6 min-h-11 cursor-pointer rounded-[14px] bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
         >
           <ChevronLeft className="mr-2 size-4" aria-hidden />
           {backLabel}
