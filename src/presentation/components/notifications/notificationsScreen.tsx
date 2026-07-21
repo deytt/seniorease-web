@@ -11,10 +11,17 @@ import {
   getNotificationEntityHref,
   getNotificationEntityLabel,
 } from "@/presentation/components/notifications/notificationUtils";
+import { useNotificationsTour } from "@/presentation/hooks/useNotificationsTour";
+import {
+  TourHelpButton,
+  TourOfferDialog,
+} from "@/presentation/tour/TourChrome";
 
 interface NotificationsScreenProps {
   notifications: NotificationItem[];
   loading?: boolean;
+  userId?: string;
+  interfaceMode?: "basic" | "advanced";
 }
 
 function NotificationCard({ notification }: { notification: NotificationItem }) {
@@ -60,10 +67,23 @@ function NotificationCard({ notification }: { notification: NotificationItem }) 
 export function NotificationsScreen({
   notifications,
   loading = false,
+  userId,
+  interfaceMode = "advanced",
 }: NotificationsScreenProps) {
+  const {
+    showOfferDialog,
+    beginTour,
+    dismissOffer,
+    offerTitle,
+    offerDescription,
+  } = useNotificationsTour({ userId, interfaceMode });
+
   return (
     <div className="pb-20">
-      <header className="mb-6 flex items-center gap-4">
+      <header
+        className="mb-6 flex items-center gap-4"
+        data-tour="notifications-header"
+      >
         <Button
           asChild
           variant="ghost"
@@ -73,7 +93,7 @@ export function NotificationsScreen({
             <ArrowLeft className="size-5" />
           </Link>
         </Button>
-        <div>
+        <div className="flex-1">
           <h1 className="text-[30px] font-bold leading-9 text-foreground">
             Notificações
           </h1>
@@ -81,32 +101,46 @@ export function NotificationsScreen({
             Avisos enviados sobre tarefas e lembretes
           </p>
         </div>
+        <TourHelpButton
+          onClick={beginTour}
+          label="Abrir tour guiado das notificações"
+        />
       </header>
 
-      {loading ? (
-        <p className="text-base text-muted-foreground" role="status">
-          Carregando notificações...
-        </p>
-      ) : notifications.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center">
-          <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#eff6ff] text-[#2563eb]">
-            <Bell className="size-6" aria-hidden />
+      <div data-tour="notifications-list">
+        {loading ? (
+          <p className="text-base text-muted-foreground" role="status">
+            Carregando notificações...
+          </p>
+        ) : notifications.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center">
+            <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#eff6ff] text-[#2563eb]">
+              <Bell className="size-6" aria-hidden />
+            </div>
+            <p className="mt-4 text-base font-semibold text-foreground">
+              Nenhuma notificação ainda
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Quando uma tarefa ou lembrete estiver próximo do horário, o aviso
+              aparecerá aqui.
+            </p>
           </div>
-          <p className="mt-4 text-base font-semibold text-foreground">
-            Nenhuma notificação ainda
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Quando uma tarefa ou lembrete estiver próximo do horário, o aviso
-            aparecerá aqui.
-          </p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {notifications.map((notification) => (
-            <NotificationCard key={notification.id} notification={notification} />
-          ))}
-        </div>
-      )}
+        ) : (
+          <div className="flex flex-col gap-3">
+            {notifications.map((notification) => (
+              <NotificationCard key={notification.id} notification={notification} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <TourOfferDialog
+        open={showOfferDialog}
+        title={offerTitle}
+        description={offerDescription}
+        onDismiss={dismissOffer}
+        onStart={beginTour}
+      />
     </div>
   );
 }

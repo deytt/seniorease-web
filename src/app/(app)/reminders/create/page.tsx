@@ -1,12 +1,32 @@
 "use client";
 
 import Link from "next/link";
+import { useAuthContext } from "@/presentation/providers/AuthProvider";
+import { usePreferences } from "@/presentation/hooks/usePreferences";
+import { useCreateReminderTour } from "@/presentation/hooks/useCreateReminderTour";
+import {
+  TourHelpButton,
+  TourOfferDialog,
+} from "@/presentation/tour/TourChrome";
 import { Button } from "@/presentation/components/ui/button";
 import { Card, CardContent } from "@/presentation/components/ui/card";
 import { ChevronLeft } from "lucide-react";
 import { CreateReminderForm } from "@/presentation/components/reminders/createReminderForm";
 
 export default function CreateReminderPage() {
+  const { user } = useAuthContext();
+  const { preferences } = usePreferences();
+  const {
+    showOfferDialog,
+    beginTour,
+    dismissOffer,
+    offerTitle,
+    offerDescription,
+  } = useCreateReminderTour({
+    userId: user?.id,
+    interfaceMode: preferences.interfaceMode,
+  });
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 pb-20">
       <Link href="/reminders">
@@ -20,12 +40,18 @@ export default function CreateReminderPage() {
         </Button>
       </Link>
 
-      <div className="mb-8">
-        <h1 className="mb-2 text-3xl font-bold text-[#0f172a]">Novo Lembrete</h1>
-        <p className="text-base text-[#64748b]">
-          Configure um lembrete para ajudá-lo a ficar no caminho certo. Todos os
-          campos marcados com * são obrigatórios.
-        </p>
+      <div className="mb-8 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="mb-2 text-3xl font-bold text-[#0f172a]">Novo Lembrete</h1>
+          <p className="text-base text-[#64748b]">
+            Configure um lembrete para ajudá-lo a ficar no caminho certo. Todos os
+            campos marcados com * são obrigatórios.
+          </p>
+        </div>
+        <TourHelpButton
+          onClick={beginTour}
+          label="Abrir tour guiado de criação de lembrete"
+        />
       </div>
 
       {/* Mesmo padrão visual dos cards da Central (Figma 16px + sombra suave) */}
@@ -34,6 +60,14 @@ export default function CreateReminderPage() {
           <CreateReminderForm />
         </CardContent>
       </Card>
+
+      <TourOfferDialog
+        open={showOfferDialog}
+        title={offerTitle}
+        description={offerDescription}
+        onDismiss={dismissOffer}
+        onStart={beginTour}
+      />
     </div>
   );
 }

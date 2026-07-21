@@ -4,6 +4,12 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
+import { usePreferences } from "@/presentation/hooks/usePreferences";
+import { useTaskDetailsTour } from "@/presentation/hooks/useTaskDetailsTour";
+import {
+  TourHelpButton,
+  TourOfferDialog,
+} from "@/presentation/tour/TourChrome";
 import { Button } from "@/presentation/components/ui/button";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Card, CardContent } from "@/presentation/components/ui/card";
@@ -29,7 +35,18 @@ export default function TaskDetailsPage({
 }) {
   const { id: taskId } = use(params);
   const router = useRouter();
-  useAuthContext();
+  const { user } = useAuthContext();
+  const { preferences } = usePreferences();
+  const {
+    showOfferDialog,
+    beginTour,
+    dismissOffer,
+    offerTitle,
+    offerDescription,
+  } = useTaskDetailsTour({
+    userId: user?.id,
+    interfaceMode: preferences.interfaceMode,
+  });
 
   const taskRepository = getTasksDi().taskRepository;
   const { fetchTaskById } = useTasks(taskRepository);
@@ -254,11 +271,18 @@ export default function TaskDetailsPage({
               </div>
 
               {/* Title and Action Buttons */}
-              <div className="flex items-start justify-between gap-4">
+              <div
+                className="flex items-start justify-between gap-4"
+                data-tour="task-details-header"
+              >
                 <div className="flex-1">
                   <h1 className="text-2xl font-bold">{task.title}</h1>
                 </div>
                 <div className="flex gap-2">
+                  <TourHelpButton
+                    onClick={beginTour}
+                    label="Abrir tour guiado dos detalhes da tarefa"
+                  />
                   <Button
                     variant="ghost"
                     size="sm"
@@ -314,7 +338,7 @@ export default function TaskDetailsPage({
 
           {/* Step-by-Step Checklist Card */}
           {task.steps && task.steps.length > 0 && (
-            <Card>
+            <Card data-tour="task-details-steps">
               <CardContent className="pt-6 space-y-4">
                 <h2 className="text-xl font-semibold">
                   Checklist Passo a Passo
@@ -362,7 +386,10 @@ export default function TaskDetailsPage({
                 </div>
 
                 {/* Action Buttons */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-4">
+                <div
+                  className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-4"
+                  data-tour="task-details-actions"
+                >
                   {task.steps &&
                     task.steps.length > 0 &&
                     task.status !== "completed" && (
@@ -428,6 +455,14 @@ export default function TaskDetailsPage({
           )}
         </div>
       </div>
+
+      <TourOfferDialog
+        open={showOfferDialog}
+        title={offerTitle}
+        description={offerDescription}
+        onDismiss={dismissOffer}
+        onStart={beginTour}
+      />
     </div>
   );
 }

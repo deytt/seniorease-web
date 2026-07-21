@@ -4,6 +4,7 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
+import { usePreferences } from "@/presentation/hooks/usePreferences";
 import { getTasksDi } from "@/lib/di/tasksDi";
 import { Button } from "@/presentation/components/ui/button";
 import { Card, CardContent } from "@/presentation/components/ui/card";
@@ -23,6 +24,7 @@ export default function GuidedTaskPage({
   const { id: taskId } = use(params);
   const router = useRouter();
   const { user } = useAuthContext();
+  const { preferences } = usePreferences();
   const [task, setTask] = useState<Task | null>(null);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -176,6 +178,8 @@ export default function GuidedTaskPage({
       isCompleting={isCompleting}
       isAdvancing={isAdvancing}
       showCelebration={showCelebration}
+      userId={user?.id}
+      interfaceMode={preferences.interfaceMode}
     />
   );
 }
