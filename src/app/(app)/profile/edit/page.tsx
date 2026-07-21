@@ -4,9 +4,26 @@ import { Loader2 } from "lucide-react";
 import { ProfileFormPageShell } from "@/presentation/components/profile/profileFormPageShell";
 import { EditProfileForm } from "@/presentation/components/profile/editProfileForm";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
+import { usePreferences } from "@/presentation/hooks/usePreferences";
+import { usePersonalInfoTour } from "@/presentation/hooks/usePersonalInfoTour";
+import { useAddressTour } from "@/presentation/hooks/useAddressTour";
+import {
+  TourHelpButton,
+  TourOfferDialog,
+} from "@/presentation/tour/TourChrome";
 
 export default function EditProfilePage() {
-  const { loading } = useAuthContext();
+  const { user, loading } = useAuthContext();
+  const { preferences } = usePreferences();
+  const personalTour = usePersonalInfoTour({
+    userId: user?.id,
+    interfaceMode: preferences.interfaceMode,
+  });
+  // Endereço só via Guia / pending — evita dois diálogos de oferta na mesma página
+  useAddressTour({
+    userId: user?.id,
+    interfaceMode: "advanced",
+  });
 
   if (loading) {
     return (
@@ -22,13 +39,29 @@ export default function EditProfilePage() {
   }
 
   return (
-    <ProfileFormPageShell
-      backHref="/profile"
-      backLabel="Voltar para o Perfil"
-      title="Editar Informações Pessoais"
-      description="Atualize seus dados pessoais."
-    >
-      <EditProfileForm />
-    </ProfileFormPageShell>
+    <>
+      <ProfileFormPageShell
+        backHref="/profile"
+        backLabel="Voltar para o Perfil"
+        title="Editar Informações Pessoais"
+        description="Atualize seus dados pessoais e endereço."
+        headerAction={
+          <TourHelpButton
+            onClick={personalTour.beginTour}
+            label="Abrir tour das informações pessoais"
+          />
+        }
+      >
+        <EditProfileForm />
+      </ProfileFormPageShell>
+
+      <TourOfferDialog
+        open={personalTour.showOfferDialog}
+        title={personalTour.offerTitle}
+        description={personalTour.offerDescription}
+        onDismiss={personalTour.dismissOffer}
+        onStart={personalTour.beginTour}
+      />
+    </>
   );
 }

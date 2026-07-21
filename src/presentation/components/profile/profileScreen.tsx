@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import {
   AlertCircle,
+  BookOpen,
   ChevronRight,
   CircleHelp,
   Info,
@@ -338,6 +339,12 @@ export function ProfileScreen({
                 icon={Shield}
                 iconClassName="text-secondary"
                 showAlert={!user.emailVerified}
+              />
+              <ProfileSecurityLink
+                href="/guides"
+                label="Guia do aplicativo"
+                icon={BookOpen}
+                iconClassName="text-success"
               />
               <ProfileSecurityLink
                 href="/about"

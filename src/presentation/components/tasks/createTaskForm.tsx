@@ -132,62 +132,66 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
 
   return (
     <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {/* Title */}
-      <div className="space-y-2">
-        <Label htmlFor="title">
-          Título da Tarefa <span className="text-destructive">*</span>
-        </Label>
-        <Input
-          id="title"
-          placeholder="Ex: Fazer compras no mercado"
-          maxLength={30}
-          {...register("title")}
-          disabled={isSubmitting}
-        />
-        <div className="flex justify-end">
-          <span
-            className={`text-xs ${titleValue.length >= 30 ? "text-destructive" : "text-muted-foreground"}`}
-          >
-            {titleValue.length}/30
-          </span>
+      {/* Title + Description */}
+      <div className="space-y-6" data-tour="create-task-basics">
+        <div className="space-y-2">
+          <Label htmlFor="title">
+            Título da Tarefa <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            id="title"
+            placeholder="Ex: Fazer compras no mercado"
+            maxLength={30}
+            {...register("title")}
+            disabled={isSubmitting}
+          />
+          <div className="flex justify-end">
+            <span
+              className={`text-xs ${titleValue.length >= 30 ? "text-destructive" : "text-muted-foreground"}`}
+            >
+              {titleValue.length}/30
+            </span>
+          </div>
+          {errors.title && (
+            <p className="text-sm text-destructive flex items-center gap-2">
+              <AlertCircle className="size-4" />
+              {errors.title.message}
+            </p>
+          )}
         </div>
-        {errors.title && (
-          <p className="text-sm text-destructive flex items-center gap-2">
-            <AlertCircle className="size-4" />
-            {errors.title.message}
-          </p>
-        )}
-      </div>
 
-      {/* Description */}
-      <div className="space-y-2">
-        <Label htmlFor="description">Descrição</Label>
-        <textarea
-          id="description"
-          placeholder="Adicione mais detalhes..."
-          className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-muted disabled:cursor-not-allowed"
-          rows={3}
-          maxLength={100}
-          {...register("description")}
-          disabled={isSubmitting}
-        />
-        <div className="flex justify-end">
-          <span
-            className={`text-xs ${descriptionValue.length >= 100 ? "text-destructive" : "text-muted-foreground"}`}
-          >
-            {descriptionValue.length}/100
-          </span>
+        <div className="space-y-2">
+          <Label htmlFor="description">Descrição</Label>
+          <textarea
+            id="description"
+            placeholder="Adicione mais detalhes..."
+            className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-muted disabled:cursor-not-allowed"
+            rows={3}
+            maxLength={100}
+            {...register("description")}
+            disabled={isSubmitting}
+          />
+          <div className="flex justify-end">
+            <span
+              className={`text-xs ${descriptionValue.length >= 100 ? "text-destructive" : "text-muted-foreground"}`}
+            >
+              {descriptionValue.length}/100
+            </span>
+          </div>
+          {errors.description && (
+            <p className="text-sm text-destructive flex items-center gap-2">
+              <AlertCircle className="size-4" />
+              {errors.description.message}
+            </p>
+          )}
         </div>
-        {errors.description && (
-          <p className="text-sm text-destructive flex items-center gap-2">
-            <AlertCircle className="size-4" />
-            {errors.description.message}
-          </p>
-        )}
       </div>
 
       {/* Priority and Category - Same Line on Desktop */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        data-tour="create-task-meta"
+      >
         {/* Priority */}
         <div className="space-y-2">
           <Label htmlFor="priority">
@@ -238,7 +242,7 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
       </div>
 
       {/* Date and Time */}
-      <div className="space-y-2">
+      <div className="space-y-2" data-tour="create-task-schedule">
         <Label htmlFor="dueDate">
           Data e Hora <span className="text-destructive">*</span>
         </Label>
@@ -257,7 +261,10 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
       </div>
 
       {/* Steps Section */}
-      <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+      <div
+        className="space-y-4 p-4 bg-muted/50 rounded-lg"
+        data-tour="create-task-steps"
+      >
         <div>
           <h3 className="font-semibold">
             Passos da Tarefa <span className="text-destructive">*</span>

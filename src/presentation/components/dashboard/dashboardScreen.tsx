@@ -36,6 +36,11 @@ import {
   getTaskPriorityBadge,
 } from "@/presentation/components/tasks/taskVisuals";
 import { Button } from "@/presentation/components/ui/button";
+import { useDashboardTour } from "@/presentation/hooks/useDashboardTour";
+import {
+  TourHelpButton,
+  TourOfferDialog,
+} from "@/presentation/tour/TourChrome";
 
 interface DashboardScreenProps {
   userId: string;
@@ -53,22 +58,24 @@ const QUICK_ACTION_ICONS = {
   newTask: "/icons/quick-actions/new-task.svg",
   accessibility: "/icons/quick-actions/accessibility.svg",
   reminders: "/icons/quick-actions/reminders.svg",
-  history: "/icons/quick-actions/history.svg",
+  guides: "/icons/quick-actions/guides.svg",
 } as const;
 
 function DashboardCard({
   className,
   children,
+  ...props
 }: {
   className?: string;
   children: ReactNode;
-}) {
+} & React.HTMLAttributes<HTMLElement>) {
   return (
     <section
       className={cn(
         "rounded-2xl border border-border bg-card shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]",
         className,
       )}
+      {...props}
     >
       {children}
     </section>
@@ -203,10 +210,18 @@ export function DashboardScreen({
   const todayTasks = getTodayDashboardTasks(tasks);
   const upcomingReminders = getUpcomingReminders(reminders);
   const accessibility = getAccessibilityPreviewSummary(preferences);
+  const { showOfferDialog, beginTour, dismissOffer, offerTitle, offerDescription } =
+    useDashboardTour({
+      userId,
+      interfaceMode: preferences.interfaceMode,
+    });
 
   return (
     <div className="pb-20">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <header
+        className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
+        data-tour="dashboard-header"
+      >
         <div>
           <h1 className="text-[30px] font-bold leading-9 text-foreground">
             {getDashboardGreeting()}, {firstName}! {getDashboardGreetingEmoji()}
@@ -217,7 +232,13 @@ export function DashboardScreen({
             hoje
           </p>
         </div>
-        <NotificationBell userId={userId} />
+        <div className="flex items-center gap-2">
+          <TourHelpButton
+            onClick={beginTour}
+            label="Abrir tour guiado do painel"
+          />
+          <NotificationBell userId={userId} />
+        </div>
       </header>
 
       <div className="relative mt-8 overflow-hidden rounded-2xl border-0 bg-primary p-6 text-primary-foreground shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]">
@@ -256,7 +277,7 @@ export function DashboardScreen({
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
-        <DashboardCard className="p-[25px]">
+        <DashboardCard className="p-[25px]" data-tour="dashboard-today-tasks">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-xl font-bold leading-7 text-foreground">
               Tarefas de hoje
@@ -301,7 +322,7 @@ export function DashboardScreen({
         </DashboardCard>
 
         <div className="flex flex-col gap-6">
-          <DashboardCard className="p-[21px]">
+          <DashboardCard className="p-[21px]" data-tour="dashboard-quick-actions">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <h2 className="text-[17px] font-bold leading-[25.5px] text-foreground">
                 Ações rápidas
@@ -338,15 +359,15 @@ export function DashboardScreen({
                 iconWrapClassName="bg-[rgba(245,158,11,0.13)]"
               />
               <QuickActionTile
-                href="/history"
-                label="Histórico"
-                iconSrc={QUICK_ACTION_ICONS.history}
+                href="/guides"
+                label="Ajuda rápida"
+                iconSrc={QUICK_ACTION_ICONS.guides}
                 iconWrapClassName="bg-[rgba(34,197,94,0.13)]"
               />
             </div>
           </DashboardCard>
 
-          <DashboardCard className="p-[21px]">
+          <DashboardCard className="p-[21px]" data-tour="dashboard-reminders">
             <h2 className="text-[17px] font-bold leading-[25.5px] text-foreground">
               Lembretes próximos
             </h2>
@@ -456,6 +477,14 @@ export function DashboardScreen({
           </section>
         </div>
       </div>
+
+      <TourOfferDialog
+        open={showOfferDialog}
+        title={offerTitle}
+        description={offerDescription}
+        onDismiss={dismissOffer}
+        onStart={beginTour}
+      />
     </div>
   );
 }

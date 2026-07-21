@@ -1,15 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-
-import {
-  PROFILE_TOUR_ID,
-  startProfileTour,
-} from "@/presentation/tour/profileTour";
-import {
-  markTourOffered,
-  wasTourOffered,
-} from "@/presentation/tour/tourStorage";
+import { usePageTour } from "@/presentation/hooks/usePageTour";
+import { PROFILE_TOUR_ID } from "@/presentation/tour/profileTour";
+import { profileTourSteps } from "@/presentation/tour/profileTourSteps";
 
 interface UseProfileTourOptions {
   userId?: string;
@@ -20,33 +13,13 @@ export function useProfileTour({
   userId,
   interfaceMode = "advanced",
 }: UseProfileTourOptions) {
-  const [showOfferDialog, setShowOfferDialog] = useState(false);
-
-  const beginTour = useCallback(() => {
-    if (!userId) return;
-    setShowOfferDialog(false);
-    startProfileTour(userId);
-  }, [userId]);
-
-  useEffect(() => {
-    if (!userId || interfaceMode !== "basic") return;
-    if (wasTourOffered(userId, PROFILE_TOUR_ID)) return;
-
-    const timer = window.setTimeout(() => {
-      setShowOfferDialog(true);
-      markTourOffered(userId, PROFILE_TOUR_ID);
-    }, 400);
-
-    return () => window.clearTimeout(timer);
-  }, [interfaceMode, userId]);
-
-  const dismissOffer = useCallback(() => {
-    setShowOfferDialog(false);
-  }, []);
-
-  return {
-    showOfferDialog,
-    beginTour,
-    dismissOffer,
-  };
+  return usePageTour({
+    tourId: PROFILE_TOUR_ID,
+    userId,
+    interfaceMode,
+    steps: profileTourSteps,
+    offerTitle: "Quer um tour guiado do perfil?",
+    offerDescription:
+      "Em poucos passos, mostramos cada área do perfil — foto, dados, notificações, segurança e onde pedir ajuda.",
+  });
 }

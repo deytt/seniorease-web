@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
 import { useAccessibility } from "@/presentation/hooks/useAccessibility";
+import { consumePendingTourIf } from "@/presentation/tour/pendingTour";
 import { Card, CardContent } from "@/presentation/components/ui/card";
 import { Button } from "@/presentation/components/ui/button";
 import {
@@ -219,6 +220,14 @@ export default function AccessibilityCenterPage() {
   const togglesRef = useRef<HTMLDivElement>(null);
 
   const sectionRefs = [fontRef, modeRef, spacingRef, togglesRef];
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    if (!consumePendingTourIf("accessibility")) return;
+
+    const timer = window.setTimeout(() => setTourStep(0), 0);
+    return () => window.clearTimeout(timer);
+  }, [isLoaded]);
 
   useEffect(() => {
     if (!isSaving && isLoaded) {

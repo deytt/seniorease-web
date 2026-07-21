@@ -20,6 +20,11 @@ import {
   getGuidedProgressPercent,
   getMaxNavigableStepIndex,
 } from "@/presentation/components/tasks/guidedTaskUtils";
+import { useGuidedTaskTour } from "@/presentation/hooks/useGuidedTaskTour";
+import {
+  TourHelpButton,
+  TourOfferDialog,
+} from "@/presentation/tour/TourChrome";
 
 interface GuidedTaskScreenProps {
   task: Task;
@@ -31,6 +36,8 @@ interface GuidedTaskScreenProps {
   isCompleting?: boolean;
   isAdvancing?: boolean;
   showCelebration?: boolean;
+  userId?: string;
+  interfaceMode?: "basic" | "advanced";
 }
 
 function CompletedStepCheck({ className }: { className?: string }) {
@@ -125,8 +132,17 @@ export function GuidedTaskScreen({
   isCompleting = false,
   isAdvancing = false,
   showCelebration = false,
+  userId,
+  interfaceMode = "advanced",
 }: GuidedTaskScreenProps) {
   const steps = task.steps ?? [];
+  const {
+    showOfferDialog,
+    beginTour,
+    dismissOffer,
+    offerTitle,
+    offerDescription,
+  } = useGuidedTaskTour({ userId, interfaceMode });
   const hasSteps = steps.length > 0;
   const currentStep = hasSteps ? steps[currentStepIndex] : null;
   const isLastStep = hasSteps && currentStepIndex === steps.length - 1;
@@ -147,7 +163,7 @@ export function GuidedTaskScreen({
         <Button
           variant="ghost"
           size="sm"
-          className="h-11 min-h-11 w-fit shrink-0 px-1 text-sm text-muted-foreground hover:text-foreground sm:text-base"
+          className="h-11 min-h-11 w-fit shrink-0 bg-transparent px-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground sm:text-base"
           asChild
         >
           <Link href="/tasks" aria-label="Sair do Modo Guiado">
@@ -157,12 +173,18 @@ export function GuidedTaskScreen({
           </Link>
         </Button>
 
-        <span
-          className="inline-flex w-full min-w-0 items-center justify-center rounded-full bg-secondary px-4 py-2 text-base font-semibold leading-snug text-secondary-foreground sm:w-auto sm:max-w-sm sm:justify-start sm:text-lg"
-          title={task.title}
-        >
-          <span className="truncate">{task.title}</span>
-        </span>
+        <div className="flex w-full min-w-0 items-center justify-center gap-2 sm:w-auto sm:justify-end">
+          <span
+            className="inline-flex w-full min-w-0 items-center justify-center rounded-full bg-secondary px-4 py-2 text-base font-semibold leading-snug text-secondary-foreground sm:w-auto sm:max-w-sm sm:justify-start sm:text-lg"
+            title={task.title}
+          >
+            <span className="truncate">{task.title}</span>
+          </span>
+          <TourHelpButton
+            onClick={beginTour}
+            label="Abrir tour guiado do Modo Guiado"
+          />
+        </div>
       </div>
 
       {showCelebration && (
@@ -222,7 +244,7 @@ export function GuidedTaskScreen({
         </Card>
       ) : (
         <>
-          <div className="mt-4 space-y-2 sm:mt-6">
+          <div className="mt-4 space-y-2 sm:mt-6" data-tour="guided-progress">
             <div className="flex items-center justify-between gap-3 text-sm font-medium text-muted-foreground">
               <span aria-live="polite" className="shrink-0">
                 Passo {currentStepIndex + 1} de {steps.length}
@@ -254,7 +276,10 @@ export function GuidedTaskScreen({
             />
           </div>
 
-          <Card className="mt-6 border-border bg-card shadow-card sm:mt-8">
+          <Card
+            className="mt-6 border-border bg-card shadow-card sm:mt-8"
+            data-tour="guided-step-card"
+          >
             <CardContent className="flex flex-col items-center px-4 py-8 text-center sm:px-10 sm:py-[2.5625rem]">
               <div
                 className={cn(
@@ -298,6 +323,7 @@ export function GuidedTaskScreen({
           <div
             className="mt-4 flex gap-3 rounded-xl border border-primary/20 bg-primary-light px-3 py-3 text-sm text-foreground sm:mt-6 sm:px-4"
             role="note"
+            data-tour="guided-tip"
           >
             <Info
               className="mt-0.5 size-5 shrink-0 text-primary"
@@ -310,7 +336,10 @@ export function GuidedTaskScreen({
             </p>
           </div>
 
-          <div className="sticky bottom-0 z-10 -mx-3 mt-4 border-t border-border bg-background/95 px-3 py-4 backdrop-blur-sm supports-[padding:max(0px)]:pb-[max(1rem,env(safe-area-inset-bottom))] sm:static sm:mx-0 sm:mt-6 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none">
+          <div
+            className="sticky bottom-0 z-10 -mx-3 mt-4 border-t border-border bg-background/95 px-3 py-4 backdrop-blur-sm supports-[padding:max(0px)]:pb-[max(1rem,env(safe-area-inset-bottom))] sm:static sm:mx-0 sm:mt-6 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none"
+            data-tour="guided-nav"
+          >
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
               <button
                 type="button"
@@ -360,6 +389,14 @@ export function GuidedTaskScreen({
           </div>
         </>
       )}
+
+      <TourOfferDialog
+        open={showOfferDialog}
+        title={offerTitle}
+        description={offerDescription}
+        onDismiss={dismissOffer}
+        onStart={beginTour}
+      />
     </div>
   );
 }
