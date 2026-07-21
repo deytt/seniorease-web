@@ -6,7 +6,6 @@ import { EditProfileForm } from "@/presentation/components/profile/editProfileFo
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
 import { usePreferences } from "@/presentation/hooks/usePreferences";
 import { usePersonalInfoTour } from "@/presentation/hooks/usePersonalInfoTour";
-import { useAddressTour } from "@/presentation/hooks/useAddressTour";
 import {
   TourHelpButton,
   TourOfferDialog,
@@ -18,11 +17,6 @@ export default function EditProfilePage() {
   const personalTour = usePersonalInfoTour({
     userId: user?.id,
     interfaceMode: preferences.interfaceMode,
-  });
-  // Endereço só via Guia / pending — evita dois diálogos de oferta na mesma página
-  useAddressTour({
-    userId: user?.id,
-    interfaceMode: "advanced",
   });
 
   if (loading) {

@@ -89,7 +89,7 @@ export const profileTourSteps: DriveStep[] = [
     popover: {
       title: "Conta e suporte",
       description:
-        "Em Segurança você verifica seu e-mail e altera a senha. Em Sobre, conhece mais sobre o SeniorEase.",
+        "Em Segurança você verifica seu e-mail e altera a senha. Em Guia do aplicativo, revê os tours das telas. Em Sobre, conhece mais sobre o SeniorEase.",
       side: "top",
       align: "start",
     },

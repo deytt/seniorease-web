@@ -5,8 +5,9 @@ import { defaultPreferences } from "@/domain/entities/UserPreferences";
 import { getAccessibilityPreviewSummary } from "@/presentation/components/accessibility/accessibilityLabels";
 import {
   computeDashboardTaskStats,
-  getTodayDashboardTasks,
-  getUpcomingReminders,
+  formatTaskTime,
+  getNextPendingTask,
+  getTodayReminders,
 } from "@/presentation/components/dashboard/dashboardUtils";
 
 function buildTask(overrides: Partial<Task> & Pick<Task, "id">): Task {
@@ -57,37 +58,65 @@ describe("dashboardUtils", () => {
     });
   });
 
-  it("lista tarefas de hoje por dueDate descendente", () => {
+  it("escolhe a próxima tarefa pendente com dueDate mais próxima (ASC)", () => {
     const now = new Date("2026-07-16T12:00:00");
     const tasks = [
       buildTask({
-        id: "earlier",
+        id: "past",
         status: "pending",
         dueDate: new Date("2026-07-16T09:00:00"),
       }),
       buildTask({
         id: "later",
-        status: "completed",
-        completedAt: new Date("2026-07-16T08:00:00"),
-        dueDate: new Date("2026-07-16T15:00:00"),
+        status: "pending",
+        dueDate: new Date("2026-07-16T18:00:00"),
       }),
       buildTask({
-        id: "no-date",
+        id: "soon",
+        status: "pending",
+        dueDate: new Date("2026-07-16T14:00:00"),
+      }),
+      buildTask({
+        id: "done",
+        status: "completed",
+        dueDate: new Date("2026-07-16T13:00:00"),
+      }),
+    ];
+
+    expect(getNextPendingTask(tasks, now)?.id).toBe("soon");
+  });
+
+  it("faz fallback para a primeira pendente quando não há dueDate futuro", () => {
+    const now = new Date("2026-07-16T12:00:00");
+    const tasks = [
+      buildTask({
+        id: "first-pending",
+        status: "pending",
+        dueDate: new Date("2026-07-16T09:00:00"),
+      }),
+      buildTask({
+        id: "second-pending",
         status: "pending",
       }),
     ];
 
-    expect(getTodayDashboardTasks(tasks, now).map((task) => task.id)).toEqual([
-      "later",
-      "earlier",
-      "no-date",
-    ]);
+    expect(getNextPendingTask(tasks, now)?.id).toBe("first-pending");
   });
 
-  it("retorna lembretes futuros não concluídos em ordem descendente", () => {
+  it("formata horário em 24h com rótulo do dia", () => {
+    const now = new Date("2026-07-16T12:00:00");
+    expect(formatTaskTime(new Date("2026-07-16T15:05:00"), now)).toBe(
+      "15:05 · Hoje",
+    );
+    expect(formatTaskTime(new Date("2026-07-17T09:00:00"), now)).toBe(
+      "09:00 · Amanhã",
+    );
+  });
+
+  it("retorna lembretes do dia civil em ordem ascendente (inclui concluídos)", () => {
     const now = new Date("2026-07-16T12:00:00");
 
-    const reminders = getUpcomingReminders(
+    const reminders = getTodayReminders(
       [
         {
           id: "1",
@@ -114,10 +143,10 @@ describe("dashboardUtils", () => {
         {
           id: "3",
           userId: "user-1",
-          title: "Consulta",
+          title: "Amanhã",
           message: "",
           category: "appointment",
-          scheduledAt: new Date("2026-07-16T18:00:00"),
+          scheduledAt: new Date("2026-07-17T18:00:00"),
           isRead: false,
           notified: false,
           createdAt: now,
@@ -138,7 +167,7 @@ describe("dashboardUtils", () => {
       now,
     );
 
-    expect(reminders.map((reminder) => reminder.id)).toEqual(["3", "1"]);
+    expect(reminders.map((reminder) => reminder.id)).toEqual(["2", "1", "4"]);
   });
 
   it("resume preferências de acessibilidade em português", () => {

@@ -54,22 +54,30 @@ function isTaskForToday(task: Task, today: Date): boolean {
   return task.status === "pending" || task.status === "in_progress";
 }
 
-/** Tempo para ordenação desc: sem dueDate fica no fim (valor mínimo). */
-function getTaskSortTime(task: Task): number {
-  if (task.dueDate) return task.dueDate.getTime();
-  return Number.NEGATIVE_INFINITY;
-}
-
-export function getTodayDashboardTasks(
+/**
+ * Próxima tarefa pendente — paridade com o mobile (`nextPendingTaskProvider`):
+ * 1) incompleta com dueDate >= agora, a mais próxima (ASC);
+ * 2) senão, a primeira incompleta na ordem da lista.
+ */
+export function getNextPendingTask(
   tasks: Task[],
   now: Date = new Date(),
-): Task[] {
-  const today = startOfDay(now);
+): Task | null {
+  const pending = tasks.filter((task) => task.status !== "completed");
+  if (pending.length === 0) return null;
 
-  return tasks
-    .filter((task) => isTaskForToday(task, today))
-    .sort((a, b) => getTaskSortTime(b) - getTaskSortTime(a))
-    .slice(0, 4);
+  const upcoming = pending
+    .filter(
+      (task) =>
+        task.dueDate !== undefined && task.dueDate.getTime() >= now.getTime(),
+    )
+    .sort(
+      (a, b) => (a.dueDate as Date).getTime() - (b.dueDate as Date).getTime(),
+    );
+
+  if (upcoming.length > 0) return upcoming[0] ?? null;
+
+  return pending[0] ?? null;
 }
 
 export function computeDashboardTaskStats(
@@ -113,13 +121,28 @@ export function buildEncouragementMessage(stats: DashboardTaskStats): string {
   return '"Cada passo conta. Vamos organizar o seu dia com calma e clareza."';
 }
 
-export function formatTaskTime(date: Date | undefined): string | null {
+/** Hora 24h + rótulo do dia — paridade com o mobile (`_formatDueDate`). */
+export function formatTaskTime(
+  date: Date | undefined,
+  now: Date = new Date(),
+): string | null {
   if (!date) return null;
 
-  const hours = date.getHours() % 12 || 12;
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const period = date.getHours() < 12 ? "AM" : "PM";
-  return `${hours}:${minutes} ${period}`;
+  const time = date.toLocaleTimeString("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+  if (isSameCalendarDay(date, now)) return `${time} · Hoje`;
+
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  if (isSameCalendarDay(date, tomorrow)) return `${time} · Amanhã`;
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  return `${time} · ${day}/${month}`;
 }
 
 export function getTaskActionHref(task: Task): string {
@@ -140,24 +163,35 @@ export function getTaskActionLabel(task: Task): string {
   return "Iniciar";
 }
 
-export function getUpcomingReminders(
+/**
+ * Lembretes de hoje — paridade com o mobile (`todayRemindersProvider`):
+ * dia civil atual (inclui concluídos), ordenação ASC, limite 3.
+ */
+export function getTodayReminders(
   reminders: Reminder[],
   limit = 3,
   now: Date = new Date(),
 ): Reminder[] {
+  const dayStart = startOfDay(now);
+  const dayEnd = new Date(dayStart);
+  dayEnd.setDate(dayEnd.getDate() + 1);
+
   return reminders
-    .filter((reminder) => !reminder.isRead && new Date(reminder.scheduledAt) >= now)
+    .filter((reminder) => {
+      const scheduled = new Date(reminder.scheduledAt).getTime();
+      return scheduled >= dayStart.getTime() && scheduled < dayEnd.getTime();
+    })
     .sort(
       (a, b) =>
-        new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime(),
+        new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime(),
     )
     .slice(0, limit);
 }
 
 export function formatReminderListTime(date: Date): string {
   return date.toLocaleTimeString("pt-BR", {
-    hour: "numeric",
+    hour: "2-digit",
     minute: "2-digit",
-    hour12: true,
+    hour12: false,
   });
 }

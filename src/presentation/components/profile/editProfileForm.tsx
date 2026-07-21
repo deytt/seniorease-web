@@ -336,33 +336,34 @@ export function EditProfileForm({ onSuccess }: EditProfileFormProps) {
         </div>
       </div>
 
-      <Button
-        type="submit"
-        className="w-full cursor-pointer rounded-[14px]"
-        size="lg"
-        disabled={isSubmitting}
-        aria-busy={isSubmitting}
-        data-tour="edit-save"
-      >
-        {isSubmitting ? (
-          <>
-            <Loader2 className="size-5 animate-spin" aria-hidden />
-            <span className="sr-only">Salvando informações pessoais</span>
-          </>
-        ) : (
-          "Salvar alterações"
-        )}
-      </Button>
+      <div data-tour="edit-save" className="space-y-3">
+        <Button
+          type="submit"
+          className="w-full cursor-pointer rounded-[14px]"
+          size="lg"
+          disabled={isSubmitting}
+          aria-busy={isSubmitting}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="size-5 animate-spin" aria-hidden />
+              <span className="sr-only">Salvando informações pessoais</span>
+            </>
+          ) : (
+            "Salvar alterações"
+          )}
+        </Button>
 
-      <Button
-        type="button"
-        variant="outline"
-        className="w-full cursor-pointer rounded-[14px]"
-        onClick={() => router.push("/profile")}
-        disabled={isSubmitting}
-      >
-        Cancelar
-      </Button>
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full cursor-pointer rounded-[14px]"
+          onClick={() => router.push("/profile")}
+          disabled={isSubmitting}
+        >
+          Cancelar
+        </Button>
+      </div>
     </form>
   );
 }

@@ -28,9 +28,9 @@ export const personalInfoTourSteps: DriveStep[] = [
     popover: {
       title: "Salvar alterações",
       description:
-        "Quando terminar, toque em salvar para guardar as mudanças com segurança.",
+        "Quando terminar, toque em Salvar alterações para guardar as mudanças com segurança.",
       side: "top",
-      align: "start",
+      align: "center",
     },
   },
 ];

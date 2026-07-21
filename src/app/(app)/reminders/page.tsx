@@ -222,25 +222,19 @@ export default function RemindersPage() {
           className="mb-2 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
           data-tour="reminders-header"
         >
-          <div className="flex min-w-0 items-start gap-3">
-            <div className="min-w-0">
-              <h1 className="text-2xl font-bold text-[#0f172a] sm:text-3xl">
-                Central de Lembretes
-              </h1>
-              <p className="mt-1 text-base text-[#64748b]">
-                {pendingTodayCount === 0
-                  ? "Nenhum lembrete pendente para hoje"
-                  : pendingTodayCount === 1
-                    ? "1 lembrete restante hoje"
-                    : `${pendingTodayCount} lembretes restantes hoje`}
-              </p>
-            </div>
-            <TourHelpButton
-              onClick={beginTour}
-              label="Abrir tour guiado dos lembretes"
-            />
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold text-[#0f172a] sm:text-3xl">
+              Central de Lembretes
+            </h1>
+            <p className="mt-1 text-base text-[#64748b]">
+              {pendingTodayCount === 0
+                ? "Nenhum lembrete pendente para hoje"
+                : pendingTodayCount === 1
+                  ? "1 lembrete restante hoje"
+                  : `${pendingTodayCount} lembretes restantes hoje`}
+            </p>
           </div>
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
             <Button
               type="button"
               variant="outline"
@@ -269,6 +263,10 @@ export default function RemindersPage() {
                 Novo Lembrete
               </Link>
             </Button>
+            <TourHelpButton
+              onClick={beginTour}
+              label="Abrir tour guiado dos lembretes"
+            />
           </div>
         </div>
 

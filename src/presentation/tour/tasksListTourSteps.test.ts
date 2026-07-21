@@ -6,7 +6,7 @@ import {
 } from "@/presentation/tour/tasksListTourSteps";
 
 describe("tasksListTourSteps", () => {
-  it("define passos incluindo o CTA Nova Tarefa", () => {
+  it("define passos na ordem visual: filtro, criar, pesquisar, lista", () => {
     expect(tasksListTourSteps).toHaveLength(5);
     expect(TASKS_LIST_TOUR_STEP_TARGETS).toHaveLength(5);
   });
@@ -16,9 +16,9 @@ describe("tasksListTourSteps", () => {
 
     expect(selectors).toEqual([
       "[data-tour='tasks-header']",
+      "[data-tour='tasks-filter']",
       "[data-tour='tasks-create']",
       "[data-tour='tasks-search']",
-      "[data-tour='tasks-filter']",
       "[data-tour='tasks-list']",
     ]);
   });

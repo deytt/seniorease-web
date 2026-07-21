@@ -444,21 +444,15 @@ export default function TaskListPage() {
         className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6"
         data-tour="tasks-header"
       >
-        <div className="flex items-center gap-3">
-          <div>
-            <h1 className="text-3xl font-bold">Minhas Tarefas</h1>
-            {stats.scheduledToday > 0 && (
-              <p className="text-sm text-muted-foreground mt-1">
-                {stats.completedToday} de {stats.scheduledToday} concluídas hoje
-              </p>
-            )}
-          </div>
-          <TourHelpButton
-            onClick={beginTour}
-            label="Abrir tour guiado das tarefas"
-          />
+        <div>
+          <h1 className="text-3xl font-bold">Minhas Tarefas</h1>
+          {stats.scheduledToday > 0 && (
+            <p className="text-sm text-muted-foreground mt-1">
+              {stats.completedToday} de {stats.scheduledToday} concluídas hoje
+            </p>
+          )}
         </div>
-        <div className="flex flex-col md:flex-row gap-2">
+        <div className="flex flex-col md:flex-row gap-2 md:items-center">
           <Button
             variant="outline"
             size="sm"
@@ -480,6 +474,10 @@ export default function TaskListPage() {
               Nova Tarefa
             </Link>
           </Button>
+          <TourHelpButton
+            onClick={beginTour}
+            label="Abrir tour guiado das tarefas"
+          />
         </div>
       </div>
 

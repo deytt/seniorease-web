@@ -32,6 +32,10 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "SeniorEase",
   description: "Accessibility-first platform for elderly users",
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: ["/icon.svg"],
+  },
 };
 
 export default function RootLayout({
