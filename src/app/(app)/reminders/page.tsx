@@ -7,6 +7,11 @@ import { Bell, Filter, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
 import { usePreferences } from "@/presentation/hooks/usePreferences";
+import { useRemindersListTour } from "@/presentation/hooks/useRemindersListTour";
+import {
+  TourHelpButton,
+  TourOfferDialog,
+} from "@/presentation/tour/TourChrome";
 import { getRemindersDi } from "@/lib/di/remindersDi";
 import { Button } from "@/presentation/components/ui/button";
 import {
@@ -54,6 +59,16 @@ export default function RemindersPage() {
     markReminderAsReadUseCase,
     deleteReminderUseCase,
   } = getRemindersDi();
+  const {
+    showOfferDialog,
+    beginTour,
+    dismissOffer,
+    offerTitle,
+    offerDescription,
+  } = useRemindersListTour({
+    userId: user?.id,
+    interfaceMode: preferences.interfaceMode,
+  });
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -203,18 +218,27 @@ export default function RemindersPage() {
           isBasicMode={isBasicMode}
         />
 
-        <div className="mb-2 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-            <h1 className="text-2xl font-bold text-[#0f172a] sm:text-3xl">
-              Central de Lembretes
-            </h1>
-            <p className="mt-1 text-base text-[#64748b]">
-              {pendingTodayCount === 0
-                ? "Nenhum lembrete pendente para hoje"
-                : pendingTodayCount === 1
-                  ? "1 lembrete restante hoje"
-                  : `${pendingTodayCount} lembretes restantes hoje`}
-            </p>
+        <div
+          className="mb-2 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
+          data-tour="reminders-header"
+        >
+          <div className="flex min-w-0 items-start gap-3">
+            <div className="min-w-0">
+              <h1 className="text-2xl font-bold text-[#0f172a] sm:text-3xl">
+                Central de Lembretes
+              </h1>
+              <p className="mt-1 text-base text-[#64748b]">
+                {pendingTodayCount === 0
+                  ? "Nenhum lembrete pendente para hoje"
+                  : pendingTodayCount === 1
+                    ? "1 lembrete restante hoje"
+                    : `${pendingTodayCount} lembretes restantes hoje`}
+              </p>
+            </div>
+            <TourHelpButton
+              onClick={beginTour}
+              label="Abrir tour guiado dos lembretes"
+            />
           </div>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
             <Button
@@ -224,6 +248,7 @@ export default function RemindersPage() {
               className="relative min-h-11 w-full cursor-pointer rounded-[14px] sm:w-auto"
               onClick={() => setIsFilterOpen(true)}
               aria-label="Filtrar lembretes"
+              data-tour="reminders-filter"
             >
               <Filter className="size-4" aria-hidden />
               Filtrar
@@ -237,6 +262,7 @@ export default function RemindersPage() {
               asChild
               size="sm"
               className="min-h-11 w-full shrink-0 cursor-pointer rounded-[14px] sm:w-auto"
+              data-tour="reminders-create"
             >
               <Link href="/reminders/create">
                 <Plus className="size-4" aria-hidden />
@@ -285,69 +311,79 @@ export default function RemindersPage() {
           </div>
         )}
 
-        {filteredReminders.length === 0 ? (
-          <div className="rounded-2xl border border-border bg-card p-10 text-center shadow-card">
-            <Bell
-              className="mx-auto mb-3 size-10 text-muted-foreground"
-              aria-hidden
-            />
-            <p className="mb-1 font-semibold text-[#0f172a]">
-              {reminders.length === 0
-                ? "Nenhum lembrete ainda"
-                : "Nenhum lembrete neste filtro"}
-            </p>
-            <p className="mb-4 text-sm text-[#64748b]">
-              {reminders.length === 0
-                ? "Crie seu primeiro lembrete para receber avisos no horário certo."
-                : "Tente outro filtro para ver mais lembretes."}
-            </p>
-            {reminders.length === 0 ? (
-              <Button
-                asChild
-                variant="outline"
-                size="sm"
-                className="cursor-pointer rounded-[14px]"
-              >
-                <Link href="/reminders/create">
-                  <Plus className="size-4" aria-hidden />
-                  Criar Lembrete
-                </Link>
-              </Button>
-            ) : (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="cursor-pointer rounded-[14px]"
-                onClick={() => setFilter(EMPTY_REMINDER_LIST_FILTER)}
-              >
-                Ver todos
-              </Button>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {filteredReminders.map((reminder) => (
-              <div
-                key={reminder.id}
-                className={
-                  busyId === reminder.id
-                    ? "pointer-events-none opacity-70"
-                    : undefined
-                }
-              >
-                <ReminderCard
-                  reminder={reminder}
-                  onMarkDone={handleMarkAsRead}
-                  onEdit={handleEdit}
-                  onDelete={setReminderToDelete}
-                  showDate={!filter.today}
-                />
-              </div>
-            ))}
-          </div>
-        )}
+        <div data-tour="reminders-list">
+          {filteredReminders.length === 0 ? (
+            <div className="rounded-2xl border border-border bg-card p-10 text-center shadow-card">
+              <Bell
+                className="mx-auto mb-3 size-10 text-muted-foreground"
+                aria-hidden
+              />
+              <p className="mb-1 font-semibold text-[#0f172a]">
+                {reminders.length === 0
+                  ? "Nenhum lembrete ainda"
+                  : "Nenhum lembrete neste filtro"}
+              </p>
+              <p className="mb-4 text-sm text-[#64748b]">
+                {reminders.length === 0
+                  ? "Crie seu primeiro lembrete para receber avisos no horário certo."
+                  : "Tente outro filtro para ver mais lembretes."}
+              </p>
+              {reminders.length === 0 ? (
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="cursor-pointer rounded-[14px]"
+                >
+                  <Link href="/reminders/create">
+                    <Plus className="size-4" aria-hidden />
+                    Criar Lembrete
+                  </Link>
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="cursor-pointer rounded-[14px]"
+                  onClick={() => setFilter(EMPTY_REMINDER_LIST_FILTER)}
+                >
+                  Ver todos
+                </Button>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {filteredReminders.map((reminder) => (
+                <div
+                  key={reminder.id}
+                  className={
+                    busyId === reminder.id
+                      ? "pointer-events-none opacity-70"
+                      : undefined
+                  }
+                >
+                  <ReminderCard
+                    reminder={reminder}
+                    onMarkDone={handleMarkAsRead}
+                    onEdit={handleEdit}
+                    onDelete={setReminderToDelete}
+                    showDate={!filter.today}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
+
+      <TourOfferDialog
+        open={showOfferDialog}
+        title={offerTitle}
+        description={offerDescription}
+        onDismiss={dismissOffer}
+        onStart={beginTour}
+      />
     </div>
   );
 }

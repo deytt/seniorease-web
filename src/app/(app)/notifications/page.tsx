@@ -2,10 +2,12 @@
 
 import { NotificationsScreen } from "@/presentation/components/notifications/notificationsScreen";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
+import { usePreferences } from "@/presentation/hooks/usePreferences";
 import { useNotificationHistory } from "@/presentation/hooks/useNotificationHistory";
 
 export default function NotificationsPage() {
   const { user, loading: authLoading } = useAuthContext();
+  const { preferences } = usePreferences();
   const { notifications, loading } = useNotificationHistory(user?.id ?? null);
 
   if (authLoading || !user) {
@@ -21,6 +23,11 @@ export default function NotificationsPage() {
   }
 
   return (
-    <NotificationsScreen notifications={notifications} loading={loading} />
+    <NotificationsScreen
+      notifications={notifications}
+      loading={loading}
+      userId={user.id}
+      interfaceMode={preferences.interfaceMode}
+    />
   );
 }

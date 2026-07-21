@@ -3,6 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
+import { usePreferences } from "@/presentation/hooks/usePreferences";
+import { useTasksListTour } from "@/presentation/hooks/useTasksListTour";
+import {
+  TourHelpButton,
+  TourOfferDialog,
+} from "@/presentation/tour/TourChrome";
 import { Button } from "@/presentation/components/ui/button";
 import {
   Dialog,
@@ -24,8 +30,19 @@ import { Task, TaskCategory } from "@/domain/entities/Task";
 
 export default function TaskListPage() {
   const { user } = useAuthContext();
+  const { preferences } = usePreferences();
   const taskRepository = getTasksDi().taskRepository;
   const { tasks, loading, fetchTasks } = useTasks(taskRepository);
+  const {
+    showOfferDialog,
+    beginTour,
+    dismissOffer,
+    offerTitle,
+    offerDescription,
+  } = useTasksListTour({
+    userId: user?.id,
+    interfaceMode: preferences.interfaceMode,
+  });
 
   const [filterToday, setFilterToday] = useState(false);
   const [filterCategory, setFilterCategory] = useState<TaskCategory | null>(
@@ -423,14 +440,23 @@ export default function TaskListPage() {
       </Dialog>
 
       {/* Header - Responsive Layout */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Minhas Tarefas</h1>
-          {stats.scheduledToday > 0 && (
-            <p className="text-sm text-muted-foreground mt-1">
-              {stats.completedToday} de {stats.scheduledToday} concluídas hoje
-            </p>
-          )}
+      <div
+        className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6"
+        data-tour="tasks-header"
+      >
+        <div className="flex items-center gap-3">
+          <div>
+            <h1 className="text-3xl font-bold">Minhas Tarefas</h1>
+            {stats.scheduledToday > 0 && (
+              <p className="text-sm text-muted-foreground mt-1">
+                {stats.completedToday} de {stats.scheduledToday} concluídas hoje
+              </p>
+            )}
+          </div>
+          <TourHelpButton
+            onClick={beginTour}
+            label="Abrir tour guiado das tarefas"
+          />
         </div>
         <div className="flex flex-col md:flex-row gap-2">
           <Button
@@ -438,6 +464,7 @@ export default function TaskListPage() {
             size="sm"
             className="flex items-center justify-center gap-2"
             onClick={() => setIsFilterOpen(true)}
+            data-tour="tasks-filter"
           >
             <Filter className="size-4" />
             Filtrar
@@ -456,7 +483,7 @@ export default function TaskListPage() {
       </div>
 
       {/* Search */}
-      <div className="relative mb-5">
+      <div className="relative mb-5" data-tour="tasks-search">
         <Search
           aria-hidden="true"
           className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground"
@@ -514,29 +541,39 @@ export default function TaskListPage() {
       )}
 
       {/* Task List */}
-      {filteredTasks.length === 0 ? (
-        <div className="rounded-xl border bg-muted/30 p-10 text-center">
-          <AlertCircle className="size-10 mx-auto mb-3 text-muted-foreground" />
-          <p className="font-semibold mb-1">Nenhuma tarefa encontrada</p>
-          <p className="text-sm text-muted-foreground mb-4">
-            {searchQuery
-              ? "Tente outros termos de busca."
-              : "Crie sua primeira tarefa para começar."}
-          </p>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/tasks/create">
-              <Plus className="size-4 mr-1" />
-              Nova Tarefa
-            </Link>
-          </Button>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {filteredTasks.map((task) => (
-            <TaskCard key={task.id} task={task} />
-          ))}
-        </div>
-      )}
+      <div data-tour="tasks-list">
+        {filteredTasks.length === 0 ? (
+          <div className="rounded-xl border bg-muted/30 p-10 text-center">
+            <AlertCircle className="size-10 mx-auto mb-3 text-muted-foreground" />
+            <p className="font-semibold mb-1">Nenhuma tarefa encontrada</p>
+            <p className="text-sm text-muted-foreground mb-4">
+              {searchQuery
+                ? "Tente outros termos de busca."
+                : "Crie sua primeira tarefa para começar."}
+            </p>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/tasks/create">
+                <Plus className="size-4 mr-1" />
+                Nova Tarefa
+              </Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filteredTasks.map((task) => (
+              <TaskCard key={task.id} task={task} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <TourOfferDialog
+        open={showOfferDialog}
+        title={offerTitle}
+        description={offerDescription}
+        onDismiss={dismissOffer}
+        onStart={beginTour}
+      />
     </div>
   );
 }

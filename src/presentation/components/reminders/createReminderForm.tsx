@@ -141,65 +141,67 @@ export function CreateReminderForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="title">Título do lembrete *</Label>
-        <Controller
-          name="title"
-          control={control}
-          render={({ field }) => (
-            <>
-              <Input
-                id="title"
-                placeholder="Ex: Tomar medicamento"
-                maxLength={TITLE_MAX}
-                value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                name={field.name}
-                ref={field.ref}
-                disabled={isSubmitting}
-                className="rounded-[14px]"
-              />
-              <div className="flex items-center justify-between gap-2">
-                {errors.title ? (
-                  <p className="flex items-center gap-2 text-sm text-destructive">
-                    <AlertCircle className="size-4" aria-hidden />
-                    {errors.title.message}
-                  </p>
-                ) : (
+      <div className="space-y-6" data-tour="create-reminder-basics">
+        <div className="space-y-2">
+          <Label htmlFor="title">Título do lembrete *</Label>
+          <Controller
+            name="title"
+            control={control}
+            render={({ field }) => (
+              <>
+                <Input
+                  id="title"
+                  placeholder="Ex: Tomar medicamento"
+                  maxLength={TITLE_MAX}
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  name={field.name}
+                  ref={field.ref}
+                  disabled={isSubmitting}
+                  className="rounded-[14px]"
+                />
+                <div className="flex items-center justify-between gap-2">
+                  {errors.title ? (
+                    <p className="flex items-center gap-2 text-sm text-destructive">
+                      <AlertCircle className="size-4" aria-hidden />
+                      {errors.title.message}
+                    </p>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">
+                      Use um nome curto e claro
+                    </span>
+                  )}
                   <span className="text-xs text-muted-foreground">
-                    Use um nome curto e claro
+                    {field.value.length}/{TITLE_MAX}
                   </span>
-                )}
-                <span className="text-xs text-muted-foreground">
-                  {field.value.length}/{TITLE_MAX}
-                </span>
-              </div>
-            </>
+                </div>
+              </>
+            )}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="message">Mensagem *</Label>
+          <textarea
+            id="message"
+            placeholder="Ex: Tomar com alimento"
+            rows={3}
+            maxLength={200}
+            className="w-full rounded-[14px] border border-input px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:bg-muted"
+            {...register("message")}
+            disabled={isSubmitting}
+          />
+          {errors.message && (
+            <p className="flex items-center gap-2 text-sm text-destructive">
+              <AlertCircle className="size-4" aria-hidden />
+              {errors.message.message}
+            </p>
           )}
-        />
+        </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="message">Mensagem *</Label>
-        <textarea
-          id="message"
-          placeholder="Ex: Tomar com alimento"
-          rows={3}
-          maxLength={200}
-          className="w-full rounded-[14px] border border-input px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:bg-muted"
-          {...register("message")}
-          disabled={isSubmitting}
-        />
-        {errors.message && (
-          <p className="flex items-center gap-2 text-sm text-destructive">
-            <AlertCircle className="size-4" aria-hidden />
-            {errors.message.message}
-          </p>
-        )}
-      </div>
-
-      <div className="space-y-2">
+      <div className="space-y-2" data-tour="create-reminder-category">
         <Label id="category-label">Categoria *</Label>
         <Controller
           name="category"
@@ -242,7 +244,7 @@ export function CreateReminderForm({
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2" data-tour="create-reminder-schedule">
         <Label htmlFor="scheduledAt" className="flex items-center gap-2">
           <Clock className="size-4" aria-hidden />
           Data e hora *
@@ -268,6 +270,7 @@ export function CreateReminderForm({
         size="sm"
         disabled={isSubmitting}
         aria-busy={isSubmitting}
+        data-tour="create-reminder-submit"
       >
         {isSubmitting ? (
           <>
