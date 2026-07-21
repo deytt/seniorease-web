@@ -6,6 +6,7 @@ import {
   PROFILE_TOUR_ID,
   startProfileTour,
 } from "@/presentation/tour/profileTour";
+import { consumePendingTourIf } from "@/presentation/tour/pendingTour";
 import {
   markTourOffered,
   wasTourOffered,
@@ -29,7 +30,16 @@ export function useProfileTour({
   }, [userId]);
 
   useEffect(() => {
-    if (!userId || interfaceMode !== "basic") return;
+    if (!userId) return;
+
+    if (consumePendingTourIf(PROFILE_TOUR_ID)) {
+      const timer = window.setTimeout(() => {
+        startProfileTour(userId);
+      }, 350);
+      return () => window.clearTimeout(timer);
+    }
+
+    if (interfaceMode !== "basic") return;
     if (wasTourOffered(userId, PROFILE_TOUR_ID)) return;
 
     const timer = window.setTimeout(() => {

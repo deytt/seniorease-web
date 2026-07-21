@@ -6,6 +6,7 @@ import {
   HISTORY_TOUR_ID,
   startHistoryTour,
 } from "@/presentation/tour/historyTour";
+import { consumePendingTourIf } from "@/presentation/tour/pendingTour";
 import {
   markTourOffered,
   wasTourOffered,
@@ -29,7 +30,16 @@ export function useHistoryTour({
   }, [userId]);
 
   useEffect(() => {
-    if (!userId || interfaceMode !== "basic") return;
+    if (!userId) return;
+
+    if (consumePendingTourIf(HISTORY_TOUR_ID)) {
+      const timer = window.setTimeout(() => {
+        startHistoryTour(userId);
+      }, 350);
+      return () => window.clearTimeout(timer);
+    }
+
+    if (interfaceMode !== "basic") return;
     if (wasTourOffered(userId, HISTORY_TOUR_ID)) return;
 
     const timer = window.setTimeout(() => {
