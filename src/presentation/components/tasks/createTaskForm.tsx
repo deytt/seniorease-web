@@ -359,6 +359,7 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
         <Button
           type="submit"
           size="sm"
+          data-tour="create-task-submit"
           className="w-full cursor-pointer rounded-[14px]"
           disabled={isSubmitting}
         >

@@ -17,8 +17,8 @@ export function useDashboardTour({
     userId,
     interfaceMode,
     steps: dashboardTourSteps,
-    offerTitle: "Quer um tour guiado do painel?",
+    offerTitle: "Quer um tour guiado do Dashboard?",
     offerDescription:
-      "Em poucos passos, mostramos as tarefas de hoje, as ações rápidas e os lembretes próximos.",
+      "Em poucos passos, mostramos as tarefas de hoje, as ações rápidas, o status de acessibilidade e os lembretes próximos.",
   });
 }

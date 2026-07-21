@@ -27,6 +27,8 @@ import { useTasks } from "@/presentation/hooks/useTasks";
 import type { Task } from "@/domain/entities/Task";
 import type { TaskStep } from "@/domain/entities/TaskStep";
 import { useSeniorFeedback } from "@/lib/feedback/useSeniorFeedback";
+import { backNavButtonClassName } from "@/presentation/lib/backNavButtonClassName";
+import { cn } from "@/lib/utils";
 
 export default function TaskDetailsPage({
   params,
@@ -238,7 +240,11 @@ export default function TaskDetailsPage({
 
       {/* Header - Back Button */}
       <Link href="/tasks">
-        <Button variant="ghost" size="sm" className="mb-6">
+        <Button
+          variant="ghost"
+          size="sm"
+          className={cn("mb-6", backNavButtonClassName)}
+        >
           <ChevronLeft className="size-4 mr-2" />
           Voltar para Tarefas
         </Button>

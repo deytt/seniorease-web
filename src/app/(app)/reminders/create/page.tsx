@@ -12,6 +12,8 @@ import { Button } from "@/presentation/components/ui/button";
 import { Card, CardContent } from "@/presentation/components/ui/card";
 import { ChevronLeft } from "lucide-react";
 import { CreateReminderForm } from "@/presentation/components/reminders/createReminderForm";
+import { backNavButtonClassName } from "@/presentation/lib/backNavButtonClassName";
+import { cn } from "@/lib/utils";
 
 export default function CreateReminderPage() {
   const { user } = useAuthContext();
@@ -33,14 +35,17 @@ export default function CreateReminderPage() {
         <Button
           variant="ghost"
           size="sm"
-          className="mb-6 cursor-pointer rounded-[14px]"
+          className={cn("mb-6", backNavButtonClassName)}
         >
           <ChevronLeft className="size-4 mr-2" />
           Voltar para Lembretes
         </Button>
       </Link>
 
-      <div className="mb-8 flex items-start justify-between gap-4">
+      <div
+        className="mb-8 flex items-start justify-between gap-4"
+        data-tour="create-reminder-header"
+      >
         <div>
           <h1 className="mb-2 text-3xl font-bold text-[#0f172a]">Novo Lembrete</h1>
           <p className="text-base text-[#64748b]">

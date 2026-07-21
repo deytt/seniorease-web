@@ -2,6 +2,7 @@ import type { DriveStep } from "driver.js";
 
 export const TASKS_LIST_TOUR_STEP_TARGETS = [
   "tasks-header",
+  "tasks-create",
   "tasks-search",
   "tasks-filter",
   "tasks-list",
@@ -15,9 +16,19 @@ export const tasksListTourSteps: DriveStep[] = [
     popover: {
       title: "Minhas Tarefas",
       description:
-        "Esta é a lista completa das suas tarefas. Toque em Nova Tarefa para adicionar mais uma.",
+        "Esta é a lista completa das suas tarefas. Use o tour para conhecer a pesquisa, os filtros e como criar uma nova.",
       side: "bottom",
       align: "start",
+    },
+  },
+  {
+    element: "[data-tour='tasks-create']",
+    popover: {
+      title: "Nova Tarefa",
+      description:
+        "Toque aqui para criar uma nova tarefa com título, data e passos.",
+      side: "bottom",
+      align: "end",
     },
   },
   {

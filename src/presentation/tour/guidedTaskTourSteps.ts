@@ -1,6 +1,7 @@
 import type { DriveStep } from "driver.js";
 
 export const GUIDED_TASK_TOUR_STEP_TARGETS = [
+  "guided-header",
   "guided-progress",
   "guided-step-card",
   "guided-tip",
@@ -10,6 +11,16 @@ export const GUIDED_TASK_TOUR_STEP_TARGETS = [
 export type GuidedTaskTourStepTarget = (typeof GUIDED_TASK_TOUR_STEP_TARGETS)[number];
 
 export const guidedTaskTourSteps: DriveStep[] = [
+  {
+    element: "[data-tour='guided-header']",
+    popover: {
+      title: "Modo Guiado",
+      description:
+        "Nesta tela você faz a tarefa um passo de cada vez, com calma. O título acima mostra qual tarefa está em andamento.",
+      side: "bottom",
+      align: "start",
+    },
+  },
   {
     element: "[data-tour='guided-progress']",
     popover: {
@@ -43,7 +54,7 @@ export const guidedTaskTourSteps: DriveStep[] = [
   {
     element: "[data-tour='guided-nav']",
     popover: {
-      title: "Navegação",
+      title: "Continuar ou concluir",
       description:
         "Use Passo Anterior para voltar ou o botão da direita para avançar até concluir a tarefa.",
       side: "top",

@@ -33,4 +33,14 @@ export const notificationPrefsTourSteps: DriveStep[] = [
       align: "start",
     },
   },
+  {
+    element: "[data-tour='notif-save']",
+    popover: {
+      title: "Salvar alterações",
+      description:
+        "Quando terminar de ajustar, toque aqui para guardar as preferências.",
+      side: "top",
+      align: "start",
+    },
+  },
 ];

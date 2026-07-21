@@ -1,6 +1,7 @@
 import type { DriveStep } from "driver.js";
 
 export const CREATE_REMINDER_TOUR_STEP_TARGETS = [
+  "create-reminder-header",
   "create-reminder-basics",
   "create-reminder-category",
   "create-reminder-schedule",
@@ -10,6 +11,16 @@ export const CREATE_REMINDER_TOUR_STEP_TARGETS = [
 export type CreateReminderTourStepTarget = (typeof CREATE_REMINDER_TOUR_STEP_TARGETS)[number];
 
 export const createReminderTourSteps: DriveStep[] = [
+  {
+    element: "[data-tour='create-reminder-header']",
+    popover: {
+      title: "Novo Lembrete",
+      description:
+        "Nesta página você cria um lembrete. Vamos passar pelos campos e pelo botão de salvar.",
+      side: "bottom",
+      align: "start",
+    },
+  },
   {
     element: "[data-tour='create-reminder-basics']",
     popover: {

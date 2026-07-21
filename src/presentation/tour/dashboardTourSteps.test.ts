@@ -6,9 +6,9 @@ import {
 } from "@/presentation/tour/dashboardTourSteps";
 
 describe("dashboardTourSteps", () => {
-  it("define 4 passos cobrindo as seções do painel", () => {
-    expect(dashboardTourSteps).toHaveLength(4);
-    expect(DASHBOARD_TOUR_STEP_TARGETS).toHaveLength(4);
+  it("define passos cobrindo header, CTA, ações e status de acessibilidade", () => {
+    expect(dashboardTourSteps).toHaveLength(6);
+    expect(DASHBOARD_TOUR_STEP_TARGETS).toHaveLength(6);
   });
 
   it("aponta para os data-tour corretos em ordem de leitura", () => {
@@ -17,8 +17,10 @@ describe("dashboardTourSteps", () => {
     expect(selectors).toEqual([
       "[data-tour='dashboard-header']",
       "[data-tour='dashboard-today-tasks']",
+      "[data-tour='dashboard-add-task']",
       "[data-tour='dashboard-quick-actions']",
       "[data-tour='dashboard-reminders']",
+      "[data-tour='dashboard-accessibility']",
     ]);
   });
 
@@ -27,5 +29,9 @@ describe("dashboardTourSteps", () => {
       expect(step.popover?.title?.trim()).toBeTruthy();
       expect(step.popover?.description?.trim()).toBeTruthy();
     }
+  });
+
+  it("usa Dashboard no overview (não Painel)", () => {
+    expect(dashboardTourSteps[0]?.popover?.title).toContain("Dashboard");
   });
 });

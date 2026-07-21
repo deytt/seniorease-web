@@ -22,6 +22,7 @@ import {
   usePreferencesStore,
 } from "@/presentation/providers/PreferencesProvider";
 import { cn } from "@/lib/utils";
+import { backNavButtonClassName } from "@/presentation/lib/backNavButtonClassName";
 
 const OFFSET_OPTIONS: Array<{ value: NotificationOffset; label: string }> = [
   { value: "15m", label: "15 minutos antes" },
@@ -93,7 +94,12 @@ export default function NotificationPreferencesPage() {
 
   return (
     <div className="mx-auto max-w-3xl pb-20">
-      <Button asChild variant="ghost" size="sm" className="mb-4">
+      <Button
+        asChild
+        variant="ghost"
+        size="sm"
+        className={cn("mb-4", backNavButtonClassName)}
+      >
         <Link href="/profile">
           <ArrowLeft className="size-4" />
           Voltar

@@ -473,6 +473,7 @@ export default function TaskListPage() {
             asChild
             size="sm"
             className="flex items-center justify-center"
+            data-tour="tasks-create"
           >
             <Link href="/tasks/create">
               <Plus className="size-4 mr-1" />
