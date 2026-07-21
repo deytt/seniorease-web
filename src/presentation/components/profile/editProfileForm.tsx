@@ -131,6 +131,7 @@ export function EditProfileForm({ onSuccess }: EditProfileFormProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="space-y-6" data-tour="edit-personal">
       <div className="space-y-2">
         <Label htmlFor="name" className="flex items-center gap-2">
           <User className="size-4" aria-hidden />
@@ -235,8 +236,12 @@ export function EditProfileForm({ onSuccess }: EditProfileFormProps) {
           />
         </div>
       ) : null}
+      </div>
 
-      <div className="space-y-4 rounded-[14px] border border-[#e2e8f0] p-4">
+      <div
+        className="space-y-4 rounded-[14px] border border-[#e2e8f0] p-4"
+        data-tour="edit-address"
+      >
         <div className="flex items-center gap-2">
           <MapPin className="size-4 text-primary" aria-hidden />
           <h3 className="text-base font-semibold text-[#0f172a]">Endereço</h3>
@@ -337,6 +342,7 @@ export function EditProfileForm({ onSuccess }: EditProfileFormProps) {
         size="lg"
         disabled={isSubmitting}
         aria-busy={isSubmitting}
+        data-tour="edit-save"
       >
         {isSubmitting ? (
           <>
