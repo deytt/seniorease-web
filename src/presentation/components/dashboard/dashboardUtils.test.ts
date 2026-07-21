@@ -57,29 +57,34 @@ describe("dashboardUtils", () => {
     });
   });
 
-  it("lista tarefas de hoje com concluídas primeiro", () => {
+  it("lista tarefas de hoje por dueDate descendente", () => {
     const now = new Date("2026-07-16T12:00:00");
     const tasks = [
       buildTask({
-        id: "pending",
+        id: "earlier",
         status: "pending",
+        dueDate: new Date("2026-07-16T09:00:00"),
+      }),
+      buildTask({
+        id: "later",
+        status: "completed",
+        completedAt: new Date("2026-07-16T08:00:00"),
         dueDate: new Date("2026-07-16T15:00:00"),
       }),
       buildTask({
-        id: "done",
-        status: "completed",
-        completedAt: new Date("2026-07-16T08:00:00"),
-        dueDate: new Date("2026-07-16T08:00:00"),
+        id: "no-date",
+        status: "pending",
       }),
     ];
 
     expect(getTodayDashboardTasks(tasks, now).map((task) => task.id)).toEqual([
-      "done",
-      "pending",
+      "later",
+      "earlier",
+      "no-date",
     ]);
   });
 
-  it("retorna lembretes futuros não concluídos", () => {
+  it("retorna lembretes futuros não concluídos em ordem descendente", () => {
     const now = new Date("2026-07-16T12:00:00");
 
     const reminders = getUpcomingReminders(
@@ -106,13 +111,34 @@ describe("dashboardUtils", () => {
           notified: false,
           createdAt: now,
         },
+        {
+          id: "3",
+          userId: "user-1",
+          title: "Consulta",
+          message: "",
+          category: "appointment",
+          scheduledAt: new Date("2026-07-16T18:00:00"),
+          isRead: false,
+          notified: false,
+          createdAt: now,
+        },
+        {
+          id: "4",
+          userId: "user-1",
+          title: "Já lido",
+          message: "",
+          category: "hydration",
+          scheduledAt: new Date("2026-07-16T20:00:00"),
+          isRead: true,
+          notified: false,
+          createdAt: now,
+        },
       ],
       3,
       now,
     );
 
-    expect(reminders).toHaveLength(1);
-    expect(reminders[0]?.id).toBe("1");
+    expect(reminders.map((reminder) => reminder.id)).toEqual(["3", "1"]);
   });
 
   it("resume preferências de acessibilidade em português", () => {

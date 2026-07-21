@@ -54,10 +54,10 @@ function isTaskForToday(task: Task, today: Date): boolean {
   return task.status === "pending" || task.status === "in_progress";
 }
 
+/** Tempo para ordenação desc: sem dueDate fica no fim (valor mínimo). */
 function getTaskSortTime(task: Task): number {
   if (task.dueDate) return task.dueDate.getTime();
-  if (task.completedAt) return task.completedAt.getTime();
-  return Number.MAX_SAFE_INTEGER;
+  return Number.NEGATIVE_INFINITY;
 }
 
 export function getTodayDashboardTasks(
@@ -68,12 +68,7 @@ export function getTodayDashboardTasks(
 
   return tasks
     .filter((task) => isTaskForToday(task, today))
-    .sort((a, b) => {
-      const aCompleted = a.status === "completed" ? 0 : 1;
-      const bCompleted = b.status === "completed" ? 0 : 1;
-      if (aCompleted !== bCompleted) return aCompleted - bCompleted;
-      return getTaskSortTime(a) - getTaskSortTime(b);
-    })
+    .sort((a, b) => getTaskSortTime(b) - getTaskSortTime(a))
     .slice(0, 4);
 }
 
@@ -154,7 +149,7 @@ export function getUpcomingReminders(
     .filter((reminder) => !reminder.isRead && new Date(reminder.scheduledAt) >= now)
     .sort(
       (a, b) =>
-        new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime(),
+        new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime(),
     )
     .slice(0, limit);
 }
