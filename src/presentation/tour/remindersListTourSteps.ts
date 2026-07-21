@@ -2,8 +2,8 @@ import type { DriveStep } from "driver.js";
 
 export const REMINDERS_LIST_TOUR_STEP_TARGETS = [
   "reminders-header",
-  "reminders-filter",
   "reminders-create",
+  "reminders-filter",
   "reminders-list",
 ] as const;
 
@@ -21,22 +21,22 @@ export const remindersListTourSteps: DriveStep[] = [
     },
   },
   {
-    element: "[data-tour='reminders-filter']",
-    popover: {
-      title: "Filtrar lembretes",
-      description:
-        "Toque aqui para ver só os lembretes de hoje ou de uma categoria específica.",
-      side: "bottom",
-      align: "start",
-    },
-  },
-  {
     element: "[data-tour='reminders-create']",
     popover: {
       title: "Novo lembrete",
       description: "Toque aqui para criar um lembrete novo.",
       side: "bottom",
       align: "end",
+    },
+  },
+  {
+    element: "[data-tour='reminders-filter']",
+    popover: {
+      title: "Filtrar lembretes",
+      description:
+        "Escolha Hoje, Medicação ou Consultas. Só um filtro fica ativo de cada vez, como no aplicativo do celular.",
+      side: "bottom",
+      align: "start",
     },
   },
   {

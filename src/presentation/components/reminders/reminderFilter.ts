@@ -1,22 +1,28 @@
 import type { ReminderCategory } from "@/domain/entities/ReminderCategory";
 
-export type ReminderListFilter = {
-  today: boolean;
-  category: ReminderCategory | null;
-};
+/**
+ * Filtro exclusivo da lista de lembretes — paridade com o mobile
+ * (`ReminderListFilter`: today | medication | appointments).
+ */
+export type ReminderListFilter = "today" | "medication" | "appointments";
 
-export const EMPTY_REMINDER_LIST_FILTER: ReminderListFilter = {
-  today: false,
-  category: null,
-};
+export const DEFAULT_REMINDER_LIST_FILTER: ReminderListFilter = "today";
 
-export const BASIC_MODE_REMINDER_CATEGORIES: ReminderCategory[] = [
-  "medication",
-  "appointment",
+export const REMINDER_LIST_FILTER_OPTIONS: Array<{
+  id: ReminderListFilter;
+  label: string;
+}> = [
+  { id: "today", label: "Hoje" },
+  { id: "medication", label: "Medicação" },
+  { id: "appointments", label: "Consultas" },
 ];
 
-export function isReminderListFilterActive(filter: ReminderListFilter): boolean {
-  return filter.today || filter.category !== null;
+export function reminderListFilterCategory(
+  filter: ReminderListFilter,
+): ReminderCategory | null {
+  if (filter === "medication") return "medication";
+  if (filter === "appointments") return "appointment";
+  return null;
 }
 
 export function matchesReminderListFilter(
@@ -24,9 +30,10 @@ export function matchesReminderListFilter(
   filter: ReminderListFilter,
   isToday: (scheduledAt: Date | string) => boolean,
 ): boolean {
-  if (filter.today && !isToday(reminder.scheduledAt)) return false;
-  if (filter.category !== null && reminder.category !== filter.category) {
-    return false;
+  if (filter === "today") {
+    return isToday(reminder.scheduledAt);
   }
-  return true;
+
+  const category = reminderListFilterCategory(filter);
+  return category !== null && reminder.category === category;
 }

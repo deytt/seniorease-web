@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bell, Filter, Plus, X } from "lucide-react";
+import { Bell, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
 import { usePreferences } from "@/presentation/hooks/usePreferences";
@@ -24,12 +24,10 @@ import {
   DialogTitle,
 } from "@/presentation/components/ui/dialog";
 import { Reminder } from "@/domain/entities/Reminder";
-import { REMINDER_CATEGORY_LABELS } from "@/domain/entities/ReminderCategory";
 import { ReminderCard } from "@/presentation/components/reminders/reminderCard";
-import { ReminderFilterDialog } from "@/presentation/components/reminders/reminderFilterDialog";
+import { ReminderFilterChips } from "@/presentation/components/reminders/reminderFilterChips";
 import {
-  EMPTY_REMINDER_LIST_FILTER,
-  isReminderListFilterActive,
+  DEFAULT_REMINDER_LIST_FILTER,
   matchesReminderListFilter,
   type ReminderListFilter,
 } from "@/presentation/components/reminders/reminderFilter";
@@ -48,12 +46,10 @@ export default function RemindersPage() {
   );
   const [isDeleting, setIsDeleting] = useState(false);
   const [filter, setFilter] = useState<ReminderListFilter>(
-    EMPTY_REMINDER_LIST_FILTER,
+    DEFAULT_REMINDER_LIST_FILTER,
   );
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const feedback = useSeniorFeedback();
 
-  const isBasicMode = preferences.interfaceMode === "basic";
   const {
     getRemindersUseCase,
     markReminderAsReadUseCase,
@@ -110,10 +106,6 @@ export default function RemindersPage() {
         .length,
     [reminders],
   );
-
-  const filterActive = isReminderListFilterActive(filter);
-  const activeFilterCount =
-    (filter.today ? 1 : 0) + (filter.category ? 1 : 0);
 
   const handleMarkAsRead = async (reminderId: string) => {
     try {
@@ -210,14 +202,6 @@ export default function RemindersPage() {
           </DialogContent>
         </Dialog>
 
-        <ReminderFilterDialog
-          open={isFilterOpen}
-          onOpenChange={setIsFilterOpen}
-          value={filter}
-          onApply={setFilter}
-          isBasicMode={isBasicMode}
-        />
-
         <div
           className="mb-2 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
           data-tour="reminders-header"
@@ -236,23 +220,6 @@ export default function RemindersPage() {
           </div>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
             <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="relative min-h-11 w-full cursor-pointer rounded-[14px] sm:w-auto"
-              onClick={() => setIsFilterOpen(true)}
-              aria-label="Filtrar lembretes"
-              data-tour="reminders-filter"
-            >
-              <Filter className="size-4" aria-hidden />
-              Filtrar
-              {filterActive ? (
-                <span className="ml-1 inline-flex size-5 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">
-                  {activeFilterCount}
-                </span>
-              ) : null}
-            </Button>
-            <Button
               asChild
               size="sm"
               className="min-h-11 w-full shrink-0 cursor-pointer rounded-[14px] sm:w-auto"
@@ -270,44 +237,9 @@ export default function RemindersPage() {
           </div>
         </div>
 
-        {filterActive && (
-          <div className="mb-6 mt-4 flex flex-wrap items-center gap-2 rounded-lg border border-primary/20 bg-primary/10 p-3">
-            <span className="text-sm text-muted-foreground">Filtrando por:</span>
-            {filter.today && (
-              <button
-                type="button"
-                onClick={() =>
-                  setFilter((current) => ({ ...current, today: false }))
-                }
-                className="inline-flex min-h-11 cursor-pointer items-center gap-1 rounded-full bg-primary px-3 py-1 text-sm font-medium text-primary-foreground"
-                aria-label="Remover filtro de hoje"
-              >
-                Hoje
-                <X className="size-3.5" aria-hidden />
-              </button>
-            )}
-            {filter.category && (
-              <button
-                type="button"
-                onClick={() =>
-                  setFilter((current) => ({ ...current, category: null }))
-                }
-                className="inline-flex min-h-11 cursor-pointer items-center gap-1 rounded-full bg-primary px-3 py-1 text-sm font-medium text-primary-foreground"
-                aria-label={`Remover filtro ${REMINDER_CATEGORY_LABELS[filter.category]}`}
-              >
-                {REMINDER_CATEGORY_LABELS[filter.category]}
-                <X className="size-3.5" aria-hidden />
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => setFilter(EMPTY_REMINDER_LIST_FILTER)}
-              className="ml-auto min-h-11 cursor-pointer text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Limpar filtros
-            </button>
-          </div>
-        )}
+        <div className="mb-6 mt-4">
+          <ReminderFilterChips value={filter} onChange={setFilter} />
+        </div>
 
         <div data-tour="reminders-list">
           {filteredReminders.length === 0 ? (
@@ -324,7 +256,7 @@ export default function RemindersPage() {
               <p className="mb-4 text-sm text-[#64748b]">
                 {reminders.length === 0
                   ? "Crie seu primeiro lembrete para receber avisos no horário certo."
-                  : "Tente outro filtro para ver mais lembretes."}
+                  : "Toque em outro filtro para ver mais lembretes."}
               </p>
               {reminders.length === 0 ? (
                 <Button
@@ -338,17 +270,17 @@ export default function RemindersPage() {
                     Criar Lembrete
                   </Link>
                 </Button>
-              ) : (
+              ) : filter !== "today" ? (
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   className="cursor-pointer rounded-[14px]"
-                  onClick={() => setFilter(EMPTY_REMINDER_LIST_FILTER)}
+                  onClick={() => setFilter("today")}
                 >
-                  Ver todos
+                  Ver lembretes de hoje
                 </Button>
-              )}
+              ) : null}
             </div>
           ) : (
             <div className="space-y-3">
@@ -366,7 +298,7 @@ export default function RemindersPage() {
                     onMarkDone={handleMarkAsRead}
                     onEdit={handleEdit}
                     onDelete={setReminderToDelete}
-                    showDate={!filter.today}
+                    showDate={filter !== "today"}
                   />
                 </div>
               ))}
