@@ -21,17 +21,14 @@ export class FirebaseReminderRepository implements IReminderRepository {
   private collectionName = "reminders";
 
   async getReminders(userId: string): Promise<Reminder[]> {
-    // ASC usa o índice composto já publicado; DESC no cliente evita exigir índice DESC.
+    // ASC — paridade com o mobile; usa o índice composto já publicado.
     const q = query(
       collection(db, this.collectionName),
       where("userId", "==", userId),
       orderBy("scheduledAt", "asc"),
     );
     const snapshot = await getDocs(q);
-    const reminders = snapshot.docs.map((document) =>
-      this.mapDocumentToReminder(document),
-    );
-    return reminders.reverse();
+    return snapshot.docs.map((document) => this.mapDocumentToReminder(document));
   }
 
   async getReminderById(reminderId: string): Promise<Reminder | null> {

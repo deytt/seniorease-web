@@ -50,7 +50,7 @@ export const TOUR_CATALOG: TourCatalogItem[] = [
   {
     id: "remindersList",
     title: "Central de Lembretes",
-    description: "Veja como filtrar, criar e gerenciar seus lembretes.",
+    description: "Veja como filtrar por Hoje, Medicação ou Consultas e gerenciar seus lembretes.",
     route: "/reminders",
   },
   {
