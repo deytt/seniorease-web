@@ -24,7 +24,7 @@ export class FirebaseReminderRepository implements IReminderRepository {
     const q = query(
       collection(db, this.collectionName),
       where("userId", "==", userId),
-      orderBy("scheduledAt", "asc"),
+      orderBy("scheduledAt", "desc"),
     );
     const snapshot = await getDocs(q);
     return snapshot.docs.map((document) => this.mapDocumentToReminder(document));
