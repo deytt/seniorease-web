@@ -26,6 +26,13 @@ describe("profileTourSteps", () => {
     ]);
   });
 
+  it("menciona o Guia do aplicativo no passo de Conta e suporte", () => {
+    const supportStep = profileTourSteps.find(
+      (step) => step.element === "[data-tour='profile-account-support']",
+    );
+    expect(supportStep?.popover?.description).toMatch(/Guia do aplicativo/i);
+  });
+
   it("define título e descrição em português simples para cada passo", () => {
     for (const step of profileTourSteps) {
       expect(step.popover?.title?.trim()).toBeTruthy();

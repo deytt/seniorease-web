@@ -25,9 +25,9 @@ export const dashboardTourSteps: DriveStep[] = [
   {
     element: "[data-tour='dashboard-today-tasks']",
     popover: {
-      title: "Tarefas de hoje",
+      title: "Próxima atividade",
       description:
-        "Veja as tarefas marcadas para hoje e o atalho para a lista completa.",
+        "Aqui aparece a próxima tarefa pendente para você começar. Também há atalho para criar ou ver todas as tarefas.",
       side: "bottom",
       align: "start",
     },
@@ -55,9 +55,9 @@ export const dashboardTourSteps: DriveStep[] = [
   {
     element: "[data-tour='dashboard-reminders']",
     popover: {
-      title: "Lembretes próximos",
+      title: "Lembretes de hoje",
       description:
-        "Os próximos lembretes aparecem aqui. Toque em Gerenciar lembretes para ver ou criar novos.",
+        "Os lembretes do dia aparecem aqui. Toque em Gerenciar lembretes para ver ou criar novos.",
       side: "top",
       align: "start",
     },

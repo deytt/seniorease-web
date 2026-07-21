@@ -19,6 +19,6 @@ export function useDashboardTour({
     steps: dashboardTourSteps,
     offerTitle: "Quer um tour guiado do Dashboard?",
     offerDescription:
-      "Em poucos passos, mostramos as tarefas de hoje, as ações rápidas, o status de acessibilidade e os lembretes próximos.",
+      "Em poucos passos, mostramos a próxima atividade, as ações rápidas, o status de acessibilidade e os lembretes de hoje.",
   });
 }

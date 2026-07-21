@@ -26,7 +26,7 @@ export const TOUR_CATALOG: TourCatalogItem[] = [
     id: "dashboard",
     title: "Dashboard",
     description:
-      "Conheça as tarefas de hoje, as ações rápidas, o status de acessibilidade e os lembretes próximos.",
+      "Conheça a próxima atividade, as ações rápidas, o status de acessibilidade e os lembretes de hoje.",
     route: "/dashboard",
   },
   {
@@ -93,12 +93,6 @@ export const TOUR_CATALOG: TourCatalogItem[] = [
     id: "personalInfo",
     title: "Informações Pessoais",
     description: "Aprenda a atualizar nome, telefone e outros dados pessoais.",
-    route: "/profile/edit",
-  },
-  {
-    id: "address",
-    title: "Endereço",
-    description: "Veja onde preencher o endereço na edição do perfil.",
     route: "/profile/edit",
   },
   {

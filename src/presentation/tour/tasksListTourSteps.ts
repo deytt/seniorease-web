@@ -2,9 +2,9 @@ import type { DriveStep } from "driver.js";
 
 export const TASKS_LIST_TOUR_STEP_TARGETS = [
   "tasks-header",
+  "tasks-filter",
   "tasks-create",
   "tasks-search",
-  "tasks-filter",
   "tasks-list",
 ] as const;
 
@@ -16,9 +16,19 @@ export const tasksListTourSteps: DriveStep[] = [
     popover: {
       title: "Minhas Tarefas",
       description:
-        "Esta é a lista completa das suas tarefas. Use o tour para conhecer a pesquisa, os filtros e como criar uma nova.",
+        "Esta é a lista completa das suas tarefas. Use o tour para conhecer os filtros, a criação e a pesquisa.",
       side: "bottom",
       align: "start",
+    },
+  },
+  {
+    element: "[data-tour='tasks-filter']",
+    popover: {
+      title: "Filtrar tarefas",
+      description:
+        "Toque aqui para mostrar só as tarefas de hoje, ou filtrar por categoria e prioridade.",
+      side: "bottom",
+      align: "end",
     },
   },
   {
@@ -37,16 +47,6 @@ export const tasksListTourSteps: DriveStep[] = [
       title: "Pesquisar tarefas",
       description:
         "Digite parte do título de uma tarefa aqui para encontrá-la rapidamente.",
-      side: "bottom",
-      align: "start",
-    },
-  },
-  {
-    element: "[data-tour='tasks-filter']",
-    popover: {
-      title: "Filtrar tarefas",
-      description:
-        "Toque aqui para mostrar só as tarefas de hoje, ou filtrar por categoria e prioridade.",
       side: "bottom",
       align: "start",
     },

@@ -26,8 +26,8 @@ import {
   getDashboardGreetingEmoji,
   getTaskActionHref,
   getTaskActionLabel,
-  getTodayDashboardTasks,
-  getUpcomingReminders,
+  getNextPendingTask,
+  getTodayReminders,
 } from "@/presentation/components/dashboard/dashboardUtils";
 import { NotificationBell } from "@/presentation/components/notifications/notificationBell";
 import { getReminderCategoryVisual } from "@/presentation/components/reminders/reminderVisuals";
@@ -207,8 +207,8 @@ export function DashboardScreen({
 }: DashboardScreenProps) {
   const firstName = userName.split(" ")[0] || "Usuário";
   const stats = computeDashboardTaskStats(tasks);
-  const todayTasks = getTodayDashboardTasks(tasks);
-  const upcomingReminders = getUpcomingReminders(reminders);
+  const nextTask = getNextPendingTask(tasks);
+  const todayReminders = getTodayReminders(reminders);
   const accessibility = getAccessibilityPreviewSummary(preferences);
   const { showOfferDialog, beginTour, dismissOffer, offerTitle, offerDescription } =
     useDashboardTour({
@@ -280,7 +280,7 @@ export function DashboardScreen({
         <DashboardCard className="p-[25px]" data-tour="dashboard-today-tasks">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-xl font-bold leading-7 text-foreground">
-              Tarefas de hoje
+              Próxima atividade
             </h2>
             <Button
               asChild
@@ -296,20 +296,18 @@ export function DashboardScreen({
 
           {loading ? (
             <p className="mt-5 text-base text-muted-foreground">Carregando tarefas...</p>
-          ) : todayTasks.length === 0 ? (
+          ) : !nextTask ? (
             <div className="mt-5 rounded-[14px] border border-dashed border-border p-8 text-center">
               <p className="text-base font-medium text-foreground">
-                Nenhuma tarefa para hoje
+                Nenhuma atividade agendada
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Que tal adicionar uma nova atividade?
+                Crie uma tarefa para começar.
               </p>
             </div>
           ) : (
             <div className="mt-5 flex flex-col gap-3">
-              {todayTasks.map((task) => (
-                <DashboardTaskRow key={task.id} task={task} />
-              ))}
+              <DashboardTaskRow task={nextTask} />
             </div>
           )}
 
@@ -370,20 +368,21 @@ export function DashboardScreen({
 
           <DashboardCard className="p-[21px]" data-tour="dashboard-reminders">
             <h2 className="text-[17px] font-bold leading-[25.5px] text-foreground">
-              Lembretes próximos
+              Lembretes de hoje
             </h2>
             {loading ? (
               <p className="mt-4 text-sm text-muted-foreground">Carregando lembretes...</p>
-            ) : upcomingReminders.length === 0 ? (
+            ) : todayReminders.length === 0 ? (
               <p className="mt-4 py-4 text-center text-sm text-muted-foreground">
-                Nenhum lembrete próximo
+                Nenhum lembrete para hoje
               </p>
             ) : (
               <div className="mt-4 flex flex-col gap-3">
-                {upcomingReminders.map((reminder) => {
+                {todayReminders.map((reminder) => {
                   const visual = getReminderCategoryVisual(reminder.category);
                   const Icon = visual.Icon;
                   const scheduledAt = new Date(reminder.scheduledAt);
+                  const isDone = reminder.isRead;
 
                   return (
                     <div
@@ -399,10 +398,20 @@ export function DashboardScreen({
                         <Icon className={cn("size-[18px]", visual.iconClassName)} />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-foreground">
+                        <p
+                          className={cn(
+                            "text-sm font-semibold text-foreground",
+                            isDone && "text-muted-foreground line-through",
+                          )}
+                        >
                           {formatReminderListTime(scheduledAt)}
                         </p>
-                        <p className="truncate text-xs text-muted-foreground">
+                        <p
+                          className={cn(
+                            "truncate text-xs text-muted-foreground",
+                            isDone && "line-through",
+                          )}
+                        >
                           {reminder.title}
                         </p>
                       </div>
