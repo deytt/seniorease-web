@@ -221,14 +221,17 @@ export function ProfileScreen({
                 {getProfilePhoneDisplay(user)}
               </p>
 
-              <button
+              <Button
                 type="button"
                 onClick={onPhotoClick}
-                disabled={isUploadingPhoto}
-                className="mt-4 inline-flex h-[42px] w-full max-w-[278px] cursor-pointer items-center justify-center rounded-[14px] border border-border text-sm font-semibold text-primary transition-colors hover:bg-primary-light disabled:cursor-not-allowed disabled:opacity-60"
+                variant="outline"
+                size="sm"
+                loading={isUploadingPhoto}
+                loadingText="Enviando..."
+                className="mt-4 w-full max-w-[278px] rounded-[14px]"
               >
-                {isUploadingPhoto ? "Enviando..." : "Editar Foto de Perfil"}
-              </button>
+                Editar Foto de Perfil
+              </Button>
             </div>
           </ProfileCard>
 

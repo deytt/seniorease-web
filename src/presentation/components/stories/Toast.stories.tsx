@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { toast } from "sonner";
+import { toast } from "@/presentation/lib/feedbackToast";
 
 import { Toaster } from "@/presentation/components/ui/sonner";
 import { Button } from "@/presentation/components/ui/button";
@@ -13,7 +13,8 @@ import { Button } from "@/presentation/components/ui/button";
  * ## Como usar
  * - Renderize `<Toaster />` **uma única vez**, próximo à raiz do app
  *   (ex.: no layout principal) — não a cada tela.
- * - Dispare toasts chamando `toast.success(...)`, `toast.error(...)`,
+ * - Importe `toast` de `@/presentation/lib/feedbackToast` e use
+ *   `toast.success(...)`, `toast.error(...)`,
  *   `toast.info(...)`, `toast.warning(...)` ou `toast.loading(...)` de
  *   qualquer lugar do código, sem precisar de contexto/hooks adicionais.
  * - Use mensagens curtas e específicas ("Task marked as done", não apenas

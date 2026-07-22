@@ -8,10 +8,11 @@ import { Input } from "@/presentation/components/ui/input";
 import { Label } from "@/presentation/components/ui/label";
 import { AlertCircle, Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { toast } from "@/presentation/lib/feedbackToast";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
 import { getTasksDi } from "@/lib/di/tasksDi";
 import { useState } from "react";
+import { setTaskNavigationFeedback } from "./taskNavigationFeedback";
 
 const createTaskSchema = z.object({
   title: z
@@ -59,6 +60,7 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
   const [stepTitle, setStepTitle] = useState("");
   const [stepInstruction, setStepInstruction] = useState("");
   const [stepsError, setStepsError] = useState<string | null>(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const {
     register,
@@ -102,7 +104,7 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
   };
 
   async function onSubmit(values: CreateTaskFormValues) {
-    if (!user) return;
+    if (!user || isRedirecting) return;
 
     if (steps.length === 0) {
       setStepsError("Adicione pelo menos 1 passo à tarefa");
@@ -121,10 +123,12 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
       });
 
       reset();
-      toast.success("Tarefa criada com sucesso!");
       if (onSuccess) {
+        toast.success("Tarefa criada com sucesso!");
         onSuccess();
       } else {
+        setIsRedirecting(true);
+        setTaskNavigationFeedback("created");
         router.push("/tasks");
       }
     } catch (err) {
@@ -253,7 +257,7 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
           id="dueDate"
           type="datetime-local"
           {...register("dueDate")}
-          disabled={isSubmitting}
+          disabled={isSubmitting || isRedirecting}
         />
         {errors.dueDate && (
           <p className="text-sm text-destructive flex items-center gap-2">
@@ -355,7 +359,7 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
           size="sm"
           className="w-full cursor-pointer rounded-[14px]"
           onClick={() => router.back()}
-          disabled={isSubmitting}
+          disabled={isSubmitting || isRedirecting}
         >
           Cancelar
         </Button>
@@ -364,9 +368,10 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
           size="sm"
           data-tour="create-task-submit"
           className="w-full cursor-pointer rounded-[14px]"
-          disabled={isSubmitting}
+          loading={isSubmitting || isRedirecting}
+          loadingText="Criando tarefa..."
         >
-          {isSubmitting ? "Criando..." : "Criar Tarefa"}
+          Criar Tarefa
         </Button>
       </div>
     </form>

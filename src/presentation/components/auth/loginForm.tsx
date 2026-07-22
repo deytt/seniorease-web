@@ -14,6 +14,7 @@ import { Label } from "@/presentation/components/ui/label";
 import { Checkbox } from "@/presentation/components/ui/checkbox";
 import { useAuth } from "@/presentation/hooks/useAuth";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
+import { toast } from "@/presentation/lib/feedbackToast";
 
 const loginSchema = z.object({
   email: z
@@ -53,6 +54,10 @@ export function LoginForm() {
       router.push("/dashboard");
     }
   }, [user?.id, loading, router]);
+
+  useEffect(() => {
+    if (signInError) toast.error(signInError);
+  }, [signInError]);
 
   async function onSubmit(values: LoginFormValues) {
     await signIn(values.email, values.password);
@@ -155,9 +160,15 @@ export function LoginForm() {
         </p>
       )}
 
-      <Button type="submit" size="lg" className="w-full" disabled={isSigningIn}>
+      <Button
+        type="submit"
+        size="lg"
+        className="w-full"
+        loading={isSigningIn}
+        loadingText="Entrando..."
+      >
         <LogIn aria-hidden="true" />
-        {isSigningIn ? "Entrando..." : "Entrar"}
+        Entrar
       </Button>
 
       <div className="relative my-1 text-center text-sm text-muted-foreground">
@@ -184,6 +195,8 @@ export function LoginForm() {
         className="w-full"
         onClick={() => signInWithGoogle()}
         disabled={isSigningIn || isSigningInWithGoogle}
+        loading={isSigningInWithGoogle}
+        loadingText="Conectando..."
       >
         <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
           <path
@@ -203,7 +216,7 @@ export function LoginForm() {
             fill="#EA4335"
           />
         </svg>
-        {isSigningInWithGoogle ? "Conectando..." : "Entrar com Google"}
+        Entrar com Google
       </Button>
 
       <Button asChild variant="outline" size="lg" className="w-full">

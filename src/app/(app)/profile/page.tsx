@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { toast } from "@/presentation/lib/feedbackToast";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
 import { usePreferences } from "@/presentation/hooks/usePreferences";
 import { getHistoryDi } from "@/lib/di/historyDi";

@@ -28,7 +28,7 @@ export function useAccessibility() {
   );
 
   const resetToDefaults = useCallback(() => {
-    void update(defaultPreferences(userId ?? "guest"));
+    return update(defaultPreferences(userId ?? "guest"));
   }, [update, userId]);
 
   return {

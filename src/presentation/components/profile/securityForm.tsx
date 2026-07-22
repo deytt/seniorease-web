@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { AlertCircle, Loader2, Lock } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/presentation/lib/feedbackToast";
 import { Button } from "@/presentation/components/ui/button";
 import { Input } from "@/presentation/components/ui/input";
 import { Label } from "@/presentation/components/ui/label";
@@ -193,17 +193,10 @@ export function SecurityForm({ onSuccess }: SecurityFormProps) {
         type="submit"
         className="w-full cursor-pointer rounded-[14px]"
         size="lg"
-        disabled={isSubmitting}
-        aria-busy={isSubmitting}
+        loading={isSubmitting}
+        loadingText="Salvando..."
       >
-        {isSubmitting ? (
-          <>
-            <Loader2 className="size-5 animate-spin" aria-hidden />
-            <span className="sr-only">Alterando senha</span>
-          </>
-        ) : (
-          "Salvar alterações"
-        )}
+        Salvar alterações
       </Button>
 
       <Button

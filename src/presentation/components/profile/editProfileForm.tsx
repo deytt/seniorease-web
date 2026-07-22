@@ -5,8 +5,8 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { AlertCircle, Calendar, Loader2, MapPin, Phone, User } from "lucide-react";
-import { toast } from "sonner";
+import { AlertCircle, Calendar, MapPin, Phone, User } from "lucide-react";
+import { toast } from "@/presentation/lib/feedbackToast";
 import { emptyAddress } from "@/domain/entities/Address";
 import { Button } from "@/presentation/components/ui/button";
 import { Input } from "@/presentation/components/ui/input";
@@ -341,17 +341,10 @@ export function EditProfileForm({ onSuccess }: EditProfileFormProps) {
           type="submit"
           className="w-full cursor-pointer rounded-[14px]"
           size="lg"
-          disabled={isSubmitting}
-          aria-busy={isSubmitting}
+          loading={isSubmitting}
+          loadingText="Salvando..."
         >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="size-5 animate-spin" aria-hidden />
-              <span className="sr-only">Salvando informações pessoais</span>
-            </>
-          ) : (
-            "Salvar alterações"
-          )}
+          Salvar alterações
         </Button>
 
         <Button

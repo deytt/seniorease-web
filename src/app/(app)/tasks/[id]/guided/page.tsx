@@ -15,7 +15,7 @@ import {
 } from "@/presentation/components/tasks/guidedTaskUtils";
 import type { Task } from "@/domain/entities/Task";
 import { useSeniorFeedback } from "@/lib/feedback/useSeniorFeedback";
-import { toast } from "sonner";
+import { toast } from "@/presentation/lib/feedbackToast";
 
 export default function GuidedTaskPage({
   params,

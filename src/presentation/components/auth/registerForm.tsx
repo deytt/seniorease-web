@@ -233,9 +233,15 @@ export function RegisterForm() {
         </p>
       )}
 
-      <Button type="submit" size="lg" className="w-full" disabled={isSigningUp}>
+      <Button
+        type="submit"
+        size="lg"
+        className="w-full"
+        loading={isSigningUp}
+        loadingText="Criando conta..."
+      >
         <UserPlus aria-hidden="true" />
-        {isSigningUp ? "Criando conta..." : "Criar conta"}
+        Criar conta
       </Button>
 
       <p className="text-center text-base text-muted-foreground">

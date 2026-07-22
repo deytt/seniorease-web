@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { Check } from "lucide-react";
+import { toast } from "@/presentation/lib/feedbackToast";
 import {
   NOTIFICATION_OFFSET_OPTIONS,
   type NotificationOffset,
@@ -133,17 +133,10 @@ export function EditNotificationPreferencesForm() {
         data-tour="notif-save"
         className="w-full cursor-pointer rounded-[14px]"
         size="lg"
-        disabled={isSaving}
-        aria-busy={isSaving}
+        loading={isSaving}
+        loadingText="Salvando..."
       >
-        {isSaving ? (
-          <>
-            <Loader2 className="size-5 animate-spin" aria-hidden />
-            <span className="sr-only">Salvando preferências</span>
-          </>
-        ) : (
-          "Salvar alterações"
-        )}
+        Salvar alterações
       </Button>
 
       <Button

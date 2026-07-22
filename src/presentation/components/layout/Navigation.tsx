@@ -29,6 +29,7 @@ import {
 } from "@/presentation/components/ui/dialog";
 import { Button } from "@/presentation/components/ui/button";
 import { cn } from "@/lib/utils";
+import { toast } from "@/presentation/lib/feedbackToast";
 
 const navigationItems = [
   { label: "Dashboard", href: "/dashboard", icon: Home },
@@ -110,6 +111,7 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
       await signOut();
     } catch (err) {
       console.error(err);
+      toast.error("Não foi possível sair da conta. Tente novamente.");
     } finally {
       setIsSignOutDialogOpen(false);
       setIsMobileOpen(false);
@@ -151,10 +153,11 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
               type="button"
               variant="destructive"
               className="min-h-11 cursor-pointer rounded-[14px] bg-destructive text-white hover:bg-destructive/90 hover:text-white"
-              disabled={isSigningOut}
+              loading={isSigningOut}
+              loadingText="Saindo..."
               onClick={handleSignOut}
             >
-              {isSigningOut ? "Saindo..." : "Sair"}
+              Sair
             </Button>
           </DialogFooter>
         </DialogContent>

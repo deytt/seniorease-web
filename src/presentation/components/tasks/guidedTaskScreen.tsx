@@ -242,10 +242,12 @@ export function GuidedTaskScreen({
               size="lg"
               className="w-full"
               onClick={onComplete}
-              disabled={isBusy}
+              disabled={isAdvancing}
+              loading={isCompleting}
+              loadingText="Concluindo..."
             >
               <CheckCircle2 className="size-5" aria-hidden="true" />
-              {isCompleting ? "Concluindo..." : "Marcar como Concluída"}
+              Marcar como Concluída
             </Button>
           </CardContent>
         </Card>
@@ -370,15 +372,15 @@ export function GuidedTaskScreen({
                   size="lg"
                   className="min-h-11 rounded-2xl bg-primary py-4 text-base font-bold text-primary-foreground hover:bg-primary/90 sm:min-h-[4.375rem] sm:py-5 sm:text-lg"
                   onClick={onComplete}
-                  disabled={isBusy}
+                  disabled={isAdvancing}
+                  loading={isCompleting}
+                  loadingText="Concluindo..."
                 >
-                  {isCompleting ? "Concluindo..." : "Concluir Tarefa"}
-                  {!isCompleting && (
-                    <CheckCircle2
-                      className="size-5 sm:size-6"
-                      aria-hidden="true"
-                    />
-                  )}
+                  Concluir Tarefa
+                  <CheckCircle2
+                    className="size-5 sm:size-6"
+                    aria-hidden="true"
+                  />
                 </Button>
               ) : (
                 <Button
@@ -386,9 +388,11 @@ export function GuidedTaskScreen({
                   size="lg"
                   className="min-h-11 rounded-2xl bg-primary py-4 text-base font-bold text-primary-foreground hover:bg-primary/90 sm:min-h-[4.375rem] sm:py-5 sm:text-lg"
                   onClick={onNext}
-                  disabled={isBusy}
+                  disabled={isCompleting}
+                  loading={isAdvancing}
+                  loadingText="Salvando..."
                 >
-                  {isAdvancing ? "Salvando..." : "Próximo Passo"}
+                  Próximo Passo
                   <ArrowRight className="size-5 sm:size-6" aria-hidden="true" />
                 </Button>
               )}
