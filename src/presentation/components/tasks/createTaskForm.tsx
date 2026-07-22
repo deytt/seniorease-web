@@ -8,6 +8,7 @@ import { Input } from "@/presentation/components/ui/input";
 import { Label } from "@/presentation/components/ui/label";
 import { AlertCircle, Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
 import { getTasksDi } from "@/lib/di/tasksDi";
 import { useState } from "react";
@@ -120,6 +121,7 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
       });
 
       reset();
+      toast.success("Tarefa criada com sucesso!");
       if (onSuccess) {
         onSuccess();
       } else {
@@ -127,6 +129,7 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
       }
     } catch (err) {
       console.error("Erro ao criar tarefa:", err);
+      toast.error("Não foi possível criar a tarefa. Tente novamente.");
     }
   }
 

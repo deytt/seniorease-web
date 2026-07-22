@@ -15,6 +15,7 @@ import {
 } from "@/presentation/components/tasks/guidedTaskUtils";
 import type { Task } from "@/domain/entities/Task";
 import { useSeniorFeedback } from "@/lib/feedback/useSeniorFeedback";
+import { toast } from "sonner";
 
 export default function GuidedTaskPage({
   params,
@@ -98,6 +99,7 @@ export default function GuidedTaskPage({
       );
     } catch (err) {
       console.error("Erro ao avançar passo:", err);
+      toast.error("Não foi possível concluir este passo. Tente novamente.");
     } finally {
       setIsAdvancing(false);
     }
@@ -128,6 +130,7 @@ export default function GuidedTaskPage({
       }, 4000);
     } catch (err) {
       console.error("Erro ao completar tarefa:", err);
+      toast.error("Não foi possível concluir a tarefa. Tente novamente.");
       setIsCompleting(false);
     }
   };

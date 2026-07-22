@@ -4,14 +4,15 @@ import {
   collection,
   query,
   where,
+  orderBy,
   getDocs,
   getDoc,
   doc,
-  addDoc,
   updateDoc,
-  deleteDoc,
   serverTimestamp,
   Timestamp,
+  writeBatch,
+  deleteField,
   type DocumentSnapshot,
 } from "firebase/firestore";
 import { db } from "./config";
@@ -45,7 +46,9 @@ export class FirebaseTaskRepository implements ITaskRepository {
       where("userId", "==", userId),
     );
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((document) => this.mapDocumentToTask(document));
+    return Promise.all(
+      snapshot.docs.map((document) => this.mapDocumentToTask(document)),
+    );
   }
 
   async getTaskById(taskId: string): Promise<Task | null> {
@@ -64,7 +67,6 @@ export class FirebaseTaskRepository implements ITaskRepository {
       userId: task.userId,
       title: task.title,
       description: task.description,
-      steps: task.steps,
       status: task.status,
       priority: task.priority,
       category: task.category,
@@ -80,11 +82,32 @@ export class FirebaseTaskRepository implements ITaskRepository {
       updatedAt: serverTimestamp(),
     });
 
-    const docRef = await addDoc(collection(db, this.collectionName), taskData);
+    const docRef = doc(collection(db, this.collectionName));
+    const batch = writeBatch(db);
+    batch.set(docRef, taskData);
+
+    const createdSteps = task.steps.map((step, index) => {
+      const stepRef = doc(collection(docRef, "steps"));
+      batch.set(stepRef, {
+        order: index + 1,
+        title: step.title,
+        instruction: step.instruction,
+        isCompleted: step.isCompleted,
+      });
+      return {
+        ...step,
+        id: stepRef.id,
+        taskId: docRef.id,
+        order: index + 1,
+      };
+    });
+
+    await batch.commit();
 
     return {
       ...task,
       id: docRef.id,
+      steps: createdSteps,
       notified: task.notified ?? false,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -99,7 +122,6 @@ export class FirebaseTaskRepository implements ITaskRepository {
 
     if (task.title !== undefined) payload.title = task.title;
     if (task.description !== undefined) payload.description = task.description;
-    if (task.steps !== undefined) payload.steps = task.steps;
     if (task.status !== undefined) payload.status = task.status;
     if (task.priority !== undefined) payload.priority = task.priority;
     if (task.category !== undefined) payload.category = task.category;
@@ -115,7 +137,37 @@ export class FirebaseTaskRepository implements ITaskRepository {
       }
     }
 
-    await updateDoc(docRef, stripUndefined(payload));
+    if (task.steps !== undefined) {
+      const batch = writeBatch(db);
+      const currentSteps = await getDocs(collection(docRef, "steps"));
+      const desiredStepIds = new Set(
+        task.steps.map((step) => step.id).filter(Boolean),
+      );
+      currentSteps.docs.forEach((stepDocument) => {
+        if (!desiredStepIds.has(stepDocument.id)) {
+          batch.delete(stepDocument.ref);
+        }
+      });
+
+      task.steps.forEach((step, index) => {
+        const stepRef = step.id
+          ? doc(collection(docRef, "steps"), step.id)
+          : doc(collection(docRef, "steps"));
+        batch.set(stepRef, {
+          order: index + 1,
+          title: step.title,
+          instruction: step.instruction,
+          isCompleted: step.isCompleted,
+        });
+      });
+
+      // Remove o formato legado em array ao migrar uma tarefa existente.
+      payload.steps = deleteField();
+      batch.update(docRef, stripUndefined(payload));
+      await batch.commit();
+    } else {
+      await updateDoc(docRef, stripUndefined(payload));
+    }
 
     const updated = await getDoc(docRef);
     return this.mapDocumentToTask(updated);
@@ -123,29 +175,85 @@ export class FirebaseTaskRepository implements ITaskRepository {
 
   async deleteTask(taskId: string): Promise<void> {
     const docRef = doc(db, this.collectionName, taskId);
-    await deleteDoc(docRef);
+    const steps = await getDocs(collection(docRef, "steps"));
+    const batch = writeBatch(db);
+    steps.docs.forEach((stepDocument) => batch.delete(stepDocument.ref));
+    batch.delete(docRef);
+    await batch.commit();
   }
 
   async completeTask(taskId: string): Promise<Task> {
     const docRef = doc(db, this.collectionName, taskId);
-    await updateDoc(docRef, {
+    const taskSnapshot = await getDoc(docRef);
+    const legacySteps = (taskSnapshot.data()?.["steps"] as Task["steps"] | undefined) ?? [];
+    const steps = await getDocs(collection(docRef, "steps"));
+    const batch = writeBatch(db);
+    if (steps.empty && legacySteps.length > 0) {
+      legacySteps.forEach((step, index) => {
+        const stepRef = doc(collection(docRef, "steps"));
+        batch.set(stepRef, {
+          order: index + 1,
+          title: step.title,
+          instruction: step.instruction,
+          isCompleted: true,
+        });
+      });
+    } else {
+      steps.docs.forEach((stepDocument) =>
+        batch.update(stepDocument.ref, { isCompleted: true }),
+      );
+    }
+    batch.update(docRef, {
       status: "completed",
       completedAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
+      ...(legacySteps.length > 0 ? { steps: deleteField() } : {}),
     });
+    await batch.commit();
 
     const updated = await getDoc(docRef);
     return this.mapDocumentToTask(updated);
   }
 
-  private mapDocumentToTask(document: DocumentSnapshot): Task {
+  private async getTaskSteps(
+    taskId: string,
+    legacySteps: Task["steps"] | undefined,
+  ): Promise<Task["steps"]> {
+    const stepsQuery = query(
+      collection(db, this.collectionName, taskId, "steps"),
+      orderBy("order", "asc"),
+    );
+    const snapshot = await getDocs(stepsQuery);
+
+    if (snapshot.empty) {
+      return legacySteps ?? [];
+    }
+
+    return snapshot.docs.map((stepDocument) => {
+      const data = stepDocument.data();
+      return {
+        id: stepDocument.id,
+        taskId,
+        order: (data["order"] as number | undefined) ?? 0,
+        title: (data["title"] as string | undefined) ?? "",
+        instruction: (data["instruction"] as string | undefined) ?? "",
+        isCompleted: (data["isCompleted"] as boolean | undefined) ?? false,
+      };
+    });
+  }
+
+  private async mapDocumentToTask(document: DocumentSnapshot): Promise<Task> {
     const data = document.data() ?? {};
+    const steps = await this.getTaskSteps(
+      document.id,
+      data["steps"] as Task["steps"] | undefined,
+    );
     return {
       id: document.id,
       userId: data["userId"] as string,
       title: data["title"] as string,
       description: data["description"] as string,
-      steps: (data["steps"] as Task["steps"]) || [],
+      steps,
       status: data["status"] as TaskStatus,
       priority: data["priority"] as Task["priority"],
       category: data["category"] as Task["category"],

@@ -13,6 +13,7 @@ import {
   Bell,
   User,
   History,
+  Accessibility,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -40,6 +41,7 @@ const navigationItems = [
       pathname === "/tasks/guided" || /\/tasks\/[^/]+\/guided$/.test(pathname),
   },
   { label: "Lembretes", href: "/reminders", icon: Bell },
+  { label: "Acessibilidade", href: "/acessibility", icon: Accessibility },
   { label: "Histórico", href: "/history", icon: History },
   { label: "Perfil", href: "/profile", icon: User },
 ];
