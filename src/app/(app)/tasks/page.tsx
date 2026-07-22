@@ -27,7 +27,10 @@ import {
 import { getTasksDi } from "@/lib/di/tasksDi";
 import { useTasks } from "@/presentation/hooks/useTasks";
 import { Task, TaskCategory } from "@/domain/entities/Task";
-import { sortTasksByDueDateDescending } from "@/presentation/components/tasks/taskListUtils";
+import {
+  countTasksCompletedOnDate,
+  sortTasksByDueDateDescending,
+} from "@/presentation/components/tasks/taskListUtils";
 import { formatTaskTime } from "@/presentation/components/dashboard/dashboardUtils";
 
 export default function TaskListPage() {
@@ -107,12 +110,7 @@ export default function TaskListPage() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const completedToday = tasks.filter((t) => {
-      if (t.status !== "completed" || !t.dueDate) return false;
-      const taskDate = new Date(t.dueDate);
-      taskDate.setHours(0, 0, 0, 0);
-      return taskDate.getTime() === today.getTime();
-    }).length;
+    const completedToday = countTasksCompletedOnDate(tasks, today);
 
     const scheduledToday = tasks.filter((t) => {
       if (!t.dueDate) return false;
