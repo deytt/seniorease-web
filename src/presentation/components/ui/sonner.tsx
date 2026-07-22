@@ -17,6 +17,10 @@ type ToastPosition = NonNullable<ToasterProps["position"]>;
  * Toaster global — desktop: canto inferior direito;
  * mobile: canto inferior (centralizado).
  * Usa richColors com CSS variables do design system (Figma).
+ *
+ * Padrão de feedback (issue #61): posição responsiva, sem botão de fechar e
+ * durações definidas em `feedbackToast.ts`. Toasts de sucesso só acompanham
+ * ações sem modal ou celebração; erros usam mensagens simples em português.
  */
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme();
@@ -67,6 +71,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
         } as CSSProperties
       }
       toastOptions={{
+        duration: 3000,
         classNames: {
           toast: "cn-toast",
         },

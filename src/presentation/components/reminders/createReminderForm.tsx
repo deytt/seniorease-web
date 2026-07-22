@@ -6,8 +6,8 @@ import { z } from "zod";
 import { Button } from "@/presentation/components/ui/button";
 import { Input } from "@/presentation/components/ui/input";
 import { Label } from "@/presentation/components/ui/label";
-import { AlertCircle, Clock, Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { AlertCircle, Clock } from "lucide-react";
+import { toast } from "@/presentation/lib/feedbackToast";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
 import { usePreferences } from "@/presentation/hooks/usePreferences";
@@ -143,7 +143,9 @@ export function CreateReminderForm({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-6" data-tour="create-reminder-basics">
         <div className="space-y-2">
-          <Label htmlFor="title">Título do lembrete *</Label>
+          <Label htmlFor="title">
+            Título do lembrete <span className="text-destructive">*</span>
+          </Label>
           <Controller
             name="title"
             control={control}
@@ -182,7 +184,9 @@ export function CreateReminderForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="message">Mensagem *</Label>
+          <Label htmlFor="message">
+            Mensagem <span className="text-destructive">*</span>
+          </Label>
           <textarea
             id="message"
             placeholder="Ex: Tomar com alimento"
@@ -202,7 +206,9 @@ export function CreateReminderForm({
       </div>
 
       <div className="space-y-2" data-tour="create-reminder-category">
-        <Label id="category-label">Categoria *</Label>
+        <Label id="category-label">
+          Categoria <span className="text-destructive">*</span>
+        </Label>
         <Controller
           name="category"
           control={control}
@@ -247,7 +253,7 @@ export function CreateReminderForm({
       <div className="space-y-2" data-tour="create-reminder-schedule">
         <Label htmlFor="scheduledAt" className="flex items-center gap-2">
           <Clock className="size-4" aria-hidden />
-          Data e hora *
+          Data e hora <span className="text-destructive">*</span>
         </Label>
         <Input
           id="scheduledAt"
@@ -268,22 +274,11 @@ export function CreateReminderForm({
         type="submit"
         className="w-full cursor-pointer rounded-[14px]"
         size="sm"
-        disabled={isSubmitting}
-        aria-busy={isSubmitting}
+        loading={isSubmitting}
+        loadingText={isEditing ? "Salvando..." : "Criando lembrete..."}
         data-tour="create-reminder-submit"
       >
-        {isSubmitting ? (
-          <>
-            <Loader2 className="size-5 animate-spin" aria-hidden />
-            <span className="sr-only">
-              {isEditing ? "Salvando lembrete" : "Criando lembrete"}
-            </span>
-          </>
-        ) : isEditing ? (
-          "Salvar alterações"
-        ) : (
-          "Criar Lembrete"
-        )}
+        {isEditing ? "Salvar alterações" : "Criar Lembrete"}
       </Button>
 
       <Button

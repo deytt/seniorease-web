@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, Loader2, Mail, RefreshCw } from "lucide-react";
-import { toast } from "sonner";
+import { CheckCircle2, Mail, RefreshCw } from "lucide-react";
+import { toast } from "@/presentation/lib/feedbackToast";
 import { Button } from "@/presentation/components/ui/button";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
 import {
@@ -135,17 +135,11 @@ export function EmailVerificationForm({ onSuccess }: EmailVerificationFormProps)
         className="w-full cursor-pointer rounded-[14px]"
         size="lg"
         onClick={handleSendVerification}
-        disabled={isSending || isChecking}
-        aria-busy={isSending}
+        disabled={isChecking}
+        loading={isSending}
+        loadingText="Enviando..."
       >
-        {isSending ? (
-          <>
-            <Loader2 className="size-5 animate-spin" aria-hidden />
-            <span className="sr-only">Enviando e-mail de verificação</span>
-          </>
-        ) : (
-          "Enviar e-mail de verificação"
-        )}
+        Enviar e-mail de verificação
       </Button>
 
       <Button
@@ -153,20 +147,12 @@ export function EmailVerificationForm({ onSuccess }: EmailVerificationFormProps)
         variant="outline"
         className="w-full cursor-pointer rounded-[14px]"
         onClick={handleCheckVerification}
-        disabled={isSending || isChecking}
-        aria-busy={isChecking}
+        disabled={isSending}
+        loading={isChecking}
+        loadingText="Verificando..."
       >
-        {isChecking ? (
-          <>
-            <Loader2 className="size-5 animate-spin" aria-hidden />
-            <span className="sr-only">Verificando e-mail</span>
-          </>
-        ) : (
-          <>
-            <RefreshCw className="size-4" aria-hidden />
-            Já confirmei — verificar agora
-          </>
-        )}
+        <RefreshCw className="size-4" aria-hidden />
+        Já confirmei — verificar agora
       </Button>
 
       <Button

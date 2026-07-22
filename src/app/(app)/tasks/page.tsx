@@ -32,6 +32,8 @@ import {
   sortTasksByDueDateDescending,
 } from "@/presentation/components/tasks/taskListUtils";
 import { formatTaskTime } from "@/presentation/components/dashboard/dashboardUtils";
+import { toast } from "@/presentation/lib/feedbackToast";
+import { consumeTaskNavigationFeedback } from "@/presentation/components/tasks/taskNavigationFeedback";
 
 export default function TaskListPage() {
   const { user } = useAuthContext();
@@ -70,6 +72,16 @@ export default function TaskListPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
+
+  useEffect(() => {
+    const feedback = consumeTaskNavigationFeedback();
+
+    if (feedback === "created") {
+      toast.success("Tarefa criada com sucesso!");
+    } else if (feedback === "deleted") {
+      toast.success("Tarefa excluída com sucesso!");
+    }
+  }, []);
 
   const filteredTasks = useMemo(() => {
     let result = tasks;

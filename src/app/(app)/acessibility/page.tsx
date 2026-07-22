@@ -95,6 +95,11 @@ export default function AccessibilityCenterPage() {
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
+  const handleReset = async () => {
+    await resetToDefaults();
+    setIsResetDialogOpen(false);
+  };
+
   useEffect(() => {
     if (!isSaving && isLoaded) {
       const t = setTimeout(() => {
@@ -399,10 +404,9 @@ export default function AccessibilityCenterPage() {
                 type="button"
                 variant="destructive"
                 className="min-h-11"
-                onClick={() => {
-                  resetToDefaults();
-                  setIsResetDialogOpen(false);
-                }}
+                onClick={handleReset}
+                loading={isSaving}
+                loadingText="Redefinindo..."
               >
                 Redefinir
               </Button>

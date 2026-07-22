@@ -63,6 +63,15 @@ const meta = {
       control: "boolean",
       description: "Desabilita interação e aplica opacidade reduzida.",
     },
+    loading: {
+      control: "boolean",
+      description:
+        "Exibe spinner e texto de espera, desabilita novos cliques e informa o estado a leitores de tela.",
+    },
+    loadingText: {
+      control: "text",
+      description: "Texto apresentado enquanto a ação está em andamento.",
+    },
   },
   args: {
     children: "Button",
@@ -152,4 +161,13 @@ export const FullWidth: Story = {
 /** Estado desabilitado. */
 export const Disabled: Story = {
   args: { disabled: true, children: "Disabled" },
+};
+
+/** Estado de uma ação assíncrona, sem alterar o tamanho do alvo de toque. */
+export const Loading: Story = {
+  args: {
+    loading: true,
+    loadingText: "Salvando...",
+    children: "Salvar alterações",
+  },
 };
