@@ -99,10 +99,11 @@ export function ForgotPasswordForm() {
         type="submit"
         size="lg"
         className="w-full"
-        disabled={isRequestingReset}
+        loading={isRequestingReset}
+        loadingText="Enviando..."
       >
         <Mail aria-hidden="true" />
-        {isRequestingReset ? "Enviando..." : "Enviar link de redefinição"}
+        Enviar link de redefinição
       </Button>
 
       <Button asChild variant="outline" size="lg" className="w-full">

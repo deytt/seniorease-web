@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Bell, Plus } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/presentation/lib/feedbackToast";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
 import { usePreferences } from "@/presentation/hooks/usePreferences";
 import { useRemindersListTour } from "@/presentation/hooks/useRemindersListTour";
@@ -193,10 +193,11 @@ export default function RemindersPage() {
                 type="button"
                 variant="destructive"
                 className="min-h-11 cursor-pointer rounded-[14px] bg-destructive text-white hover:bg-destructive/90 hover:text-white"
-                disabled={isDeleting}
+                loading={isDeleting}
+                loadingText="Excluindo..."
                 onClick={handleConfirmDelete}
               >
-                {isDeleting ? "Excluindo..." : "Excluir"}
+                Excluir
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -299,6 +300,7 @@ export default function RemindersPage() {
                     onEdit={handleEdit}
                     onDelete={setReminderToDelete}
                     showDate={filter !== "today"}
+                    completing={busyId === reminder.id}
                   />
                 </div>
               ))}

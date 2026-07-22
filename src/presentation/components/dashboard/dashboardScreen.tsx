@@ -330,11 +330,12 @@ export function DashboardScreen({
                 <Button
                   type="button"
                   variant="outline"
-                  disabled={seeding}
+                  loading={seeding}
+                  loadingText="Carregando exemplos..."
                   onClick={onSeedDemoData}
                   className="min-h-11 rounded-[10px] border-border text-xs font-medium text-muted-foreground"
                 >
-                  {seeding ? "Carregando exemplos..." : "Carregar exemplos"}
+                  Carregar exemplos
                 </Button>
               ) : null}
             </div>

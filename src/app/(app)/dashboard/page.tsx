@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/presentation/lib/feedbackToast";
 import type { Reminder } from "@/domain/entities/Reminder";
 import type { Task } from "@/domain/entities/Task";
 import { defaultPreferences } from "@/domain/entities/UserPreferences";

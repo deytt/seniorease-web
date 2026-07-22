@@ -29,7 +29,8 @@ import type { TaskStep } from "@/domain/entities/TaskStep";
 import { useSeniorFeedback } from "@/lib/feedback/useSeniorFeedback";
 import { backNavButtonClassName } from "@/presentation/lib/backNavButtonClassName";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
+import { toast } from "@/presentation/lib/feedbackToast";
+import { setTaskNavigationFeedback } from "@/presentation/components/tasks/taskNavigationFeedback";
 
 export default function TaskDetailsPage({
   params,
@@ -104,7 +105,7 @@ export default function TaskDetailsPage({
       setIsDeleting(true);
       const deleteUseCase = getTasksDi().deleteTaskUseCase;
       await deleteUseCase.execute(taskId);
-      toast.success("Tarefa excluída com sucesso!");
+      setTaskNavigationFeedback("deleted");
       router.push("/tasks");
     } catch (error) {
       console.error("Erro ao deletar tarefa:", error);
@@ -239,10 +240,11 @@ export default function TaskDetailsPage({
               type="button"
               variant="destructive"
               className="w-full"
-              disabled={isDeleting}
+              loading={isDeleting}
+              loadingText="Excluindo..."
               onClick={handleDelete}
             >
-              {isDeleting ? "Excluindo..." : "Excluir"}
+              Excluir
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -448,11 +450,12 @@ export default function TaskDetailsPage({
               )}
               <Button
                 onClick={handleMarkAsComplete}
-                disabled={isCompleting}
+                loading={isCompleting}
+                loadingText="Concluindo..."
                 className="min-h-11 bg-green-600 text-white hover:bg-green-700"
               >
                 <CheckCircle2 className="size-4 mr-2" />
-                {isCompleting ? "Concluindo..." : "Concluir Tarefa"}
+                Concluir Tarefa
               </Button>
             </div>
           )}

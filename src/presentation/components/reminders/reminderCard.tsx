@@ -21,6 +21,7 @@ interface ReminderCardProps {
   onDelete?: (reminder: Reminder) => void;
   showDate?: boolean;
   className?: string;
+  completing?: boolean;
 }
 
 function ReminderActions({
@@ -30,6 +31,7 @@ function ReminderActions({
   onEdit,
   onDelete,
   stacked,
+  completing,
 }: {
   reminder: Reminder;
   isCompleted: boolean;
@@ -37,6 +39,7 @@ function ReminderActions({
   onEdit?: (reminder: Reminder) => void;
   onDelete?: (reminder: Reminder) => void;
   stacked?: boolean;
+  completing?: boolean;
 }) {
   return (
     <div
@@ -61,6 +64,8 @@ function ReminderActions({
             )}
             onClick={() => onMarkDone?.(reminder.id)}
             aria-label={`Marcar ${reminder.title} como concluído`}
+            loading={completing}
+            loadingText="Concluindo..."
           >
             <span className="sm:hidden">Concluir</span>
             <span className="hidden sm:inline">Marcar como concluído</span>
@@ -134,6 +139,7 @@ export function ReminderCard({
   onDelete,
   showDate = false,
   className,
+  completing = false,
 }: ReminderCardProps) {
   const { Icon, iconClassName, bgClassName } = getReminderCategoryVisual(
     reminder.category,
@@ -207,6 +213,7 @@ export function ReminderCard({
               onMarkDone={onMarkDone}
               onEdit={onEdit}
               onDelete={onDelete}
+              completing={completing}
             />
           </div>
         </div>
@@ -219,6 +226,7 @@ export function ReminderCard({
             onEdit={onEdit}
             onDelete={onDelete}
             stacked
+            completing={completing}
           />
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { toast } from "sonner";
+import { toast } from "@/presentation/lib/feedbackToast";
 import { ArrowLeft, Bell, ClipboardList, Save } from "lucide-react";
 
 import type {
@@ -151,10 +151,11 @@ export default function NotificationPreferencesPage() {
           size="lg"
           className="w-full"
           onClick={handleSave}
-          disabled={isSaving}
+          loading={isSaving}
+          loadingText="Salvando..."
         >
           <Save className="size-5" />
-          {isSaving ? "Salvando..." : "Salvar configurações"}
+          Salvar configurações
         </Button>
       </div>
     </div>
