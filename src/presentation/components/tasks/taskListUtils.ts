@@ -1,5 +1,26 @@
 import type { Task } from "@/domain/entities/Task";
 
+function isSameCalendarDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
+/** Conta tarefas efetivamente concluídas no dia civil informado. */
+export function countTasksCompletedOnDate(
+  tasks: Task[],
+  date: Date = new Date(),
+): number {
+  return tasks.filter(
+    (task) =>
+      task.status === "completed" &&
+      task.completedAt !== undefined &&
+      isSameCalendarDay(task.completedAt, date),
+  ).length;
+}
+
 /**
  * Ordena pela data da tarefa, da mais recente para a mais antiga.
  * Tarefas sem data ficam no fim e usam a criação como desempate.

@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import type { Task } from "@/domain/entities/Task";
-import { sortTasksByDueDateDescending } from "./taskListUtils";
+import {
+  countTasksCompletedOnDate,
+  sortTasksByDueDateDescending,
+} from "./taskListUtils";
 
 function buildTask(id: string, dueDate?: Date, createdAt?: Date): Task {
   return {
@@ -47,5 +50,41 @@ describe("sortTasksByDueDateDescending", () => {
       "sem-data-antiga",
     ]);
     expect(tasks[0]?.id).toBe("sem-data-antiga");
+  });
+});
+
+describe("countTasksCompletedOnDate", () => {
+  it("usa completedAt, independentemente da data agendada da tarefa", () => {
+    const today = new Date(2026, 6, 22, 12);
+    const tasks = [
+      {
+        ...buildTask("agendada-ontem", new Date(2026, 6, 21, 9)),
+        status: "completed" as const,
+        completedAt: new Date(2026, 6, 22, 8),
+      },
+      {
+        ...buildTask("agendada-hoje", new Date(2026, 6, 22, 10)),
+        status: "completed" as const,
+        completedAt: new Date(2026, 6, 21, 18),
+      },
+    ];
+
+    expect(countTasksCompletedOnDate(tasks, today)).toBe(1);
+  });
+
+  it("ignora tarefa não concluída e tarefa concluída sem completedAt", () => {
+    const today = new Date(2026, 6, 22, 12);
+    const tasks = [
+      {
+        ...buildTask("pendente"),
+        completedAt: new Date(2026, 6, 22, 9),
+      },
+      {
+        ...buildTask("legada"),
+        status: "completed" as const,
+      },
+    ];
+
+    expect(countTasksCompletedOnDate(tasks, today)).toBe(0);
   });
 });
