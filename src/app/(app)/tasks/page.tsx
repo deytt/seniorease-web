@@ -27,6 +27,8 @@ import {
 import { getTasksDi } from "@/lib/di/tasksDi";
 import { useTasks } from "@/presentation/hooks/useTasks";
 import { Task, TaskCategory } from "@/domain/entities/Task";
+import { sortTasksByDueDateDescending } from "@/presentation/components/tasks/taskListUtils";
+import { formatTaskTime } from "@/presentation/components/dashboard/dashboardUtils";
 
 export default function TaskListPage() {
   const { user } = useAuthContext();
@@ -98,7 +100,7 @@ export default function TaskListPage() {
       );
     }
 
-    return result;
+    return sortTasksByDueDateDescending(result);
   }, [tasks, filterToday, filterCategory, filterPriority, searchQuery]);
 
   const stats = useMemo(() => {
@@ -190,15 +192,6 @@ export default function TaskListPage() {
       },
     };
     return category ? map[category] : null;
-  };
-
-  const formatTaskTime = (dueDate?: Date | string) => {
-    if (!dueDate) return null;
-    const date = typeof dueDate === "string" ? new Date(dueDate) : dueDate;
-    return date.toLocaleTimeString("pt-BR", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
   };
 
   const getCategoryLabel = (category: TaskCategory): string => {
@@ -307,7 +300,7 @@ export default function TaskListPage() {
       {/* Filter Modal */}
       <Dialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
         <DialogContent
-          className="max-h-[80vh] overflow-y-auto"
+          className="max-h-[80vh] overflow-y-auto pr-6"
           showCloseButton={false}
         >
           <DialogHeader className="flex flex-row items-center justify-between space-y-0">

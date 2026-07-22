@@ -29,6 +29,7 @@ import type { TaskStep } from "@/domain/entities/TaskStep";
 import { useSeniorFeedback } from "@/lib/feedback/useSeniorFeedback";
 import { backNavButtonClassName } from "@/presentation/lib/backNavButtonClassName";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function TaskDetailsPage({
   params,
@@ -59,6 +60,8 @@ export default function TaskDetailsPage({
   const [error, setError] = useState<string | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
+  const [isCompletionDialogOpen, setIsCompletionDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!taskId) return;
@@ -82,12 +85,17 @@ export default function TaskDetailsPage({
 
   const handleMarkAsComplete = async () => {
     try {
+      setIsCompleting(true);
       const completeUseCase = getTasksDi().completeTaskUseCase;
-      await completeUseCase.execute(taskId);
+      const completedTask = await completeUseCase.execute(taskId);
       feedback.success();
-      if (task) setTask({ ...task, status: "completed" });
+      setTask(completedTask);
+      setIsCompletionDialogOpen(true);
     } catch (error) {
       console.error("Erro ao marcar como concluída:", error);
+      toast.error("Não foi possível concluir a tarefa. Tente novamente.");
+    } finally {
+      setIsCompleting(false);
     }
   };
 
@@ -96,9 +104,11 @@ export default function TaskDetailsPage({
       setIsDeleting(true);
       const deleteUseCase = getTasksDi().deleteTaskUseCase;
       await deleteUseCase.execute(taskId);
+      toast.success("Tarefa excluída com sucesso!");
       router.push("/tasks");
     } catch (error) {
       console.error("Erro ao deletar tarefa:", error);
+      toast.error("Não foi possível excluir a tarefa. Tente novamente.");
       setIsDeleting(false);
       setIsDeleteDialogOpen(false);
     }
@@ -233,6 +243,31 @@ export default function TaskDetailsPage({
               onClick={handleDelete}
             >
               {isDeleting ? "Excluindo..." : "Excluir"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Informação exibida após conclusão fora do modo guiado */}
+      <Dialog
+        open={isCompletionDialogOpen}
+        onOpenChange={setIsCompletionDialogOpen}
+      >
+        <DialogContent showCloseButton={false} className="sm:max-w-md">
+          <DialogHeader className="gap-3 text-left">
+            <DialogTitle>Tarefa concluída!</DialogTitle>
+            <DialogDescription className="text-base leading-relaxed">
+              Muito bem! A tarefa &quot;{task.title}&quot; foi marcada como
+              concluída.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              className="min-h-11 w-full sm:w-auto"
+              onClick={() => setIsCompletionDialogOpen(false)}
+            >
+              Entendi
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -391,54 +426,40 @@ export default function TaskDetailsPage({
                   ))}
                 </div>
 
-                {/* Action Buttons */}
-                <div
-                  className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-4"
-                  data-tour="task-details-actions"
-                >
-                  {task.steps &&
-                    task.steps.length > 0 &&
-                    task.status !== "completed" && (
-                      <Button
-                        asChild
-                        className="bg-teal-500 hover:bg-teal-600 text-white"
-                      >
-                        <Link href={`/tasks/${taskId}/guided`}>
-                          <Play className="size-4 mr-2" />
-                          Modo Guiado
-                        </Link>
-                      </Button>
-                    )}
-                  {task.status !== "completed" && (
-                    <Button
-                      onClick={handleMarkAsComplete}
-                      className="bg-green-600 hover:bg-green-700 text-white"
-                    >
-                      <CheckCircle2 className="size-4 mr-2" />
-                      Concluir Tarefa
-                    </Button>
-                  )}
-                </div>
               </CardContent>
             </Card>
+          )}
+
+          {task.status !== "completed" && (
+            <div
+              className="grid grid-cols-1 gap-3 md:grid-cols-2"
+              data-tour="task-details-actions"
+            >
+              {task.steps.length > 0 && (
+                <Button
+                  asChild
+                  className="min-h-11 bg-teal-500 text-white hover:bg-teal-600"
+                >
+                  <Link href={`/tasks/${taskId}/guided`}>
+                    <Play className="size-4 mr-2" />
+                    Modo Guiado
+                  </Link>
+                </Button>
+              )}
+              <Button
+                onClick={handleMarkAsComplete}
+                disabled={isCompleting}
+                className="min-h-11 bg-green-600 text-white hover:bg-green-700"
+              >
+                <CheckCircle2 className="size-4 mr-2" />
+                {isCompleting ? "Concluindo..." : "Concluir Tarefa"}
+              </Button>
+            </div>
           )}
         </div>
 
         {/* Right Column - Sidebar */}
         <div className="space-y-4">
-          {/* Task Notes Card */}
-          <Card>
-            <CardContent className="pt-6 space-y-3">
-              <h3 className="font-semibold text-base">Notas da Tarefa</h3>
-              <textarea
-                defaultValue={task.description || ""}
-                placeholder="Adicionar notas sobre esta tarefa..."
-                readOnly
-                className="w-full h-24 p-3 border rounded-lg bg-muted/50 text-sm resize-none"
-              />
-            </CardContent>
-          </Card>
-
           {/* Notification Card — aviso baseado no dueDate (ADR-020) */}
           {task.dueDate && (
             <Card className="border-warning/40 bg-warning-light">
@@ -448,10 +469,7 @@ export default function TaskDetailsPage({
                   Notificação
                 </h3>
                 <div className="rounded-lg border border-warning/30 bg-card p-3">
-                  <p className="text-sm font-semibold text-foreground">
-                    {formatTime(task.dueDate)}
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
+                  <p className="text-sm text-muted-foreground">
                     O aviso é enviado conforme as preferências de notificação de
                     tarefas (antecedência configurada no perfil).
                   </p>
