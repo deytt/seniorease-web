@@ -4,10 +4,10 @@ import { CheckCircle2, LayoutDashboard } from "lucide-react";
 import { Button } from "@/presentation/components/ui/button";
 
 const readyItems = [
-  "Seu painel com as tarefas de hoje",
-  "Notificações de lembretes já ativas",
-  "Familiares podem ser adicionados nas configurações",
-  "Contatos de emergência prontos para configurar",
+  "Seu painel pronto para organizar o dia",
+  "Você pode criar tarefas e lembretes quando quiser",
+  "Preferências de acessibilidade disponíveis nas configurações",
+  "Contatos e perfil podem ser completados a qualquer momento",
 ];
 
 interface SuccessScreenProps {
@@ -21,7 +21,7 @@ export function SuccessScreen({ userName }: SuccessScreenProps) {
 
       <p className="text-lg text-muted-foreground">
         Bem-vindo(a) ao SeniorEase{userName ? `, ${userName}` : ""}. Sua conta
-        está pronta e tudo já foi configurado para você.
+        foi criada com sucesso. Vamos começar com o que você precisar.
       </p>
 
       <ul className="w-full rounded-2xl border border-border bg-muted p-6 text-left">

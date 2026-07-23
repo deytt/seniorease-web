@@ -9,9 +9,8 @@ import type {
 const MOCK_USER_STORAGE_KEY = "mock_auth_user";
 
 /**
- * Mock de autenticação para desenvolvimento local
- * Simula um usuário logado sem depender de credenciais Firebase reais
- * Persiste dados em localStorage para manter a sessão entre recarregamentos
+ * Mock de autenticação para desenvolvimento local.
+ * Sessão em localStorage (independente de "Lembrar de mim").
  */
 export class MockAuthRepository implements IAuthRepository {
   private createMockUser(email: string, name?: string): User {
@@ -36,7 +35,7 @@ export class MockAuthRepository implements IAuthRepository {
       const stored = localStorage.getItem(MOCK_USER_STORAGE_KEY);
       if (stored) {
         try {
-          return JSON.parse(stored);
+          return JSON.parse(stored) as User;
         } catch {
           return null;
         }
@@ -52,7 +51,6 @@ export class MockAuthRepository implements IAuthRepository {
   }
 
   async signIn(credentials: SignInCredentials): Promise<User> {
-    // Simula qualquer email/senha válida
     if (!credentials.email || !credentials.password) {
       throw new Error("Email e senha são obrigatórios");
     }
@@ -82,14 +80,16 @@ export class MockAuthRepository implements IAuthRepository {
     return user;
   }
 
+  async completeGoogleRedirect(): Promise<User | null> {
+    return null;
+  }
+
   async getCurrentUser(): Promise<User | null> {
-    // Retorna o usuário persistido no localStorage
     return this.getUserFromStorage();
   }
 
   async sendPasswordReset(email: string): Promise<void> {
     void email;
-    // Mock de reset de senha
   }
 
   async updateUser(userId: string, input: UpdateUserInput): Promise<User> {
