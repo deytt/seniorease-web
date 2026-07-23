@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 const buttonVariants = cva(
   [
     "inline-flex items-center justify-center gap-2 whitespace-nowrap",
-    "cursor-pointer rounded-lg font-medium transition-colors",
+    "cursor-pointer rounded-[14px] font-medium transition-colors",
     "disabled:pointer-events-none disabled:opacity-50",
     "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-offset-2",
     "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-5",

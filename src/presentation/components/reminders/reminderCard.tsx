@@ -75,7 +75,7 @@ function ReminderActions({
               type="button"
               variant="outline"
               size="icon-sm"
-              className="size-11 shrink-0 cursor-pointer rounded-[10px] border-border"
+              className="size-11 shrink-0 border-border"
               onClick={() => onEdit(reminder)}
               aria-label={`Editar lembrete ${reminder.title}`}
             >
@@ -89,7 +89,7 @@ function ReminderActions({
           type="button"
           variant="outline"
           size="icon-sm"
-          className="size-11 shrink-0 cursor-pointer rounded-[10px] border-destructive/40 text-destructive hover:bg-destructive-light hover:text-destructive"
+          className="size-11 shrink-0 border-destructive/40 text-destructive hover:bg-destructive-light hover:text-destructive"
           onClick={() => onDelete(reminder)}
           aria-label={`Excluir lembrete ${reminder.title}`}
         >

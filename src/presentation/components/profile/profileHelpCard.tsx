@@ -8,7 +8,7 @@ export function ProfileHelpCard() {
           <CircleHelp className="size-5" aria-hidden />
         </div>
         <div>
-          <h2 className="text-lg font-bold leading-7 text-primary-foreground">
+          <h2 className="card-title text-primary-foreground">
             Precisa de Ajuda?
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-primary-foreground/80">

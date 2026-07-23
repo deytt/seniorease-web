@@ -273,7 +273,7 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
         data-tour="create-task-steps"
       >
         <div>
-          <h3 className="font-semibold">
+          <h3 className="card-title">
             Passos da Tarefa <span className="text-destructive">*</span>
           </h3>
           <p className="mt-1 text-sm text-muted-foreground">

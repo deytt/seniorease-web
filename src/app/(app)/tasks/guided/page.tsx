@@ -68,7 +68,7 @@ export default function GuidedTaskHubPage() {
           <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-primary-light">
             <ListOrdered className="size-8 text-primary" aria-hidden="true" />
           </div>
-          <h1 className="mb-2 text-2xl font-bold">Modo Guiado</h1>
+          <h1 className="page-title mb-2">Modo Guiado</h1>
           <p className="mb-6 text-muted-foreground">
             Não há tarefas com passos disponíveis no momento. Crie uma tarefa
             com etapas para usar o modo passo a passo.

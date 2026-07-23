@@ -244,7 +244,7 @@ export function EditProfileForm({ onSuccess }: EditProfileFormProps) {
       >
         <div className="flex items-center gap-2">
           <MapPin className="size-4 text-primary" aria-hidden />
-          <h3 className="text-base font-semibold text-foreground">Endereço</h3>
+          <h3 className="card-title">Endereço</h3>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

@@ -211,7 +211,7 @@ export function GuidedTaskScreen({
               />
               <h2
                 id="guided-celebration-title"
-                className="mb-2 text-2xl font-bold"
+                className="section-title mb-2"
               >
                 Parabéns!
               </h2>
@@ -233,7 +233,7 @@ export function GuidedTaskScreen({
               className="mx-auto mb-4 size-12 text-success"
               aria-hidden="true"
             />
-            <h2 className="mb-2 text-xl font-bold">Tarefa sem passos</h2>
+            <h2 className="section-title mb-2">Tarefa sem passos</h2>
             <p className="mb-6 text-muted-foreground">
               Esta tarefa não possui instruções passo a passo. Você pode
               marcá-la como concluída diretamente.

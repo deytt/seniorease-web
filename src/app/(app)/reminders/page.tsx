@@ -14,6 +14,7 @@ import {
 } from "@/presentation/tour/TourChrome";
 import { getRemindersDi } from "@/lib/di/remindersDi";
 import { Button } from "@/presentation/components/ui/button";
+import { PageHeader } from "@/presentation/components/ui/pageHeader";
 import {
   Dialog,
   DialogClose,
@@ -252,23 +253,21 @@ function RemindersPageContent() {
           </DialogContent>
         </Dialog>
 
-        <div
-          className="mb-2 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
-          data-tour="reminders-header"
-        >
-          <div className="min-w-0">
-            <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
-              Central de Lembretes
-            </h1>
-            <p className="mt-1 text-base text-muted-foreground">
-              {pendingTodayCount === 0
-                ? "Nenhum lembrete pendente para hoje"
-                : pendingTodayCount === 1
-                  ? "1 lembrete restante hoje"
-                  : `${pendingTodayCount} lembretes restantes hoje`}
-            </p>
-          </div>
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+        <PageHeader
+          title="Central de Lembretes"
+          description={
+            pendingTodayCount === 0
+              ? "Nenhum lembrete pendente para hoje"
+              : pendingTodayCount === 1
+                ? "1 lembrete restante hoje"
+                : `${pendingTodayCount} lembretes restantes hoje`
+          }
+          backHref="/dashboard"
+          backLabel="Voltar ao Dashboard"
+          className="mb-2"
+          dataTour="reminders-header"
+          actions={
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
             <Button
               asChild
               size="sm"
@@ -284,8 +283,9 @@ function RemindersPageContent() {
               onClick={beginTour}
               label="Abrir tour guiado dos lembretes"
             />
-          </div>
-        </div>
+            </div>
+          }
+        />
 
         <div className="mb-6 mt-4">
           <ReminderFilterChips value={listFilter} onChange={setFilter} />

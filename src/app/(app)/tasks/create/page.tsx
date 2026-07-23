@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRef } from "react";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
 import { usePreferences } from "@/presentation/hooks/usePreferences";
@@ -9,12 +8,9 @@ import {
   TourHelpButton,
   TourOfferDialog,
 } from "@/presentation/tour/TourChrome";
-import { Button } from "@/presentation/components/ui/button";
+import { BackNavigationButton } from "@/presentation/components/ui/backNavigationButton";
 import { Card, CardContent } from "@/presentation/components/ui/card";
-import { ChevronLeft } from "lucide-react";
 import { CreateTaskForm } from "@/presentation/components/tasks/createTaskForm";
-import { backNavButtonClassName } from "@/presentation/lib/backNavButtonClassName";
-import { cn } from "@/lib/utils";
 
 export default function CreateTaskPage() {
   const formRef = useRef<HTMLFormElement>(null);
@@ -34,21 +30,16 @@ export default function CreateTaskPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 pb-20">
       {/* Header with Back Button */}
-      <Link href="/tasks">
-        <Button
-          variant="ghost"
-          size="sm"
-          className={cn("mb-6", backNavButtonClassName)}
-        >
-          <ChevronLeft className="size-4 mr-2" />
-          Voltar para Tarefas
-        </Button>
-      </Link>
+      <BackNavigationButton
+        href="/tasks"
+        label="Voltar para Tarefas"
+        className="mb-6"
+      />
 
       {/* Title and Instructions */}
       <div className="mb-8 flex items-start justify-between gap-4" data-tour="create-task-header">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Nova Tarefa</h1>
+          <h1 className="page-title mb-2">Nova Tarefa</h1>
           <p className="text-muted-foreground">
             Preencha os detalhes abaixo. Todos os campos marcados com * são
             obrigatórios.

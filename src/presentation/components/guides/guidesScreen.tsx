@@ -42,7 +42,7 @@ export function GuidesScreen() {
   return (
     <div className="mx-auto w-full max-w-6xl pb-16">
       <header className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
+        <h1 className="page-title">
           Guia do aplicativo
         </h1>
         <p className="mt-1 text-base text-muted-foreground">
@@ -56,7 +56,7 @@ export function GuidesScreen() {
             <BookOpen className="size-5 text-primary" aria-hidden />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-foreground">Como funciona</h2>
+            <h2 className="card-title">Como funciona</h2>
             <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
               Toque em um guia abaixo. Vamos abrir a tela certa e destacar cada
               parte importante. Você pode sair a qualquer momento.

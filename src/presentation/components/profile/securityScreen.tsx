@@ -85,7 +85,7 @@ export function SecurityScreen() {
       >
         <div className="space-y-8">
           <section className="space-y-4" data-tour="security-verify">
-            <h2 className="text-lg font-bold text-foreground">Verificar conta</h2>
+            <h2 className="section-title">Verificar conta</h2>
 
             <button
               type="button"
@@ -140,7 +140,7 @@ export function SecurityScreen() {
             className="space-y-4 border-t border-border pt-8"
             data-tour="security-password"
           >
-            <h2 className="text-lg font-bold text-foreground">Alterar senha</h2>
+            <h2 className="section-title">Alterar senha</h2>
             <SecurityForm onSuccess={() => router.push("/profile")} />
           </section>
         </div>

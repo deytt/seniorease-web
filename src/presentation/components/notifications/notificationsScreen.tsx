@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Bell, CheckSquare2 } from "lucide-react";
+import { Bell, CheckSquare2 } from "lucide-react";
 
 import type { NotificationItem } from "@/domain/entities/NotificationItem";
 import { cn } from "@/lib/utils";
-import { backNavButtonClassName } from "@/presentation/lib/backNavButtonClassName";
-import { Button } from "@/presentation/components/ui/button";
+import { BackNavigationButton } from "@/presentation/components/ui/backNavigationButton";
 import {
   formatNotificationTime,
   getNotificationEntityHref,
@@ -85,20 +84,12 @@ export function NotificationsScreen({
         className="mb-6 flex items-center gap-4"
         data-tour="notifications-header"
       >
-        <Button
-          asChild
-          variant="ghost"
-          className={cn(
-            "min-w-11 rounded-[14px] px-0",
-            backNavButtonClassName,
-          )}
-        >
-          <Link href="/dashboard" aria-label="Voltar ao Dashboard">
-            <ArrowLeft className="size-5" />
-          </Link>
-        </Button>
+        <BackNavigationButton
+          href="/dashboard"
+          label="Voltar ao Dashboard"
+        />
         <div className="flex-1">
-          <h1 className="text-[30px] font-bold leading-9 text-foreground">
+          <h1 className="page-title">
             Notificações
           </h1>
           <p className="mt-1 text-base text-muted-foreground">

@@ -27,7 +27,7 @@ export function AuthLayout({
           <span className="font-heading text-xl font-bold">SE</span>
         </div>
 
-        <h1 className="text-center font-heading text-3xl font-bold text-foreground">
+        <h1 className="page-title text-center">
           {title}
         </h1>
 

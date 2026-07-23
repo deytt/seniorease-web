@@ -28,6 +28,14 @@ import {
   DialogClose,
 } from "@/presentation/components/ui/dialog";
 import { Button } from "@/presentation/components/ui/button";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+  SheetTrigger,
+} from "@/presentation/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { toast } from "@/presentation/lib/feedbackToast";
 
@@ -42,7 +50,7 @@ const navigationItems = [
       pathname === "/tasks/guided" || /\/tasks\/[^/]+\/guided$/.test(pathname),
   },
   { label: "Lembretes", href: "/reminders", icon: Bell },
-  { label: "Acessibilidade", href: "/acessibility", icon: Accessibility },
+  { label: "Acessibilidade", href: "/accessibility", icon: Accessibility },
   { label: "Histórico", href: "/history", icon: History },
   { label: "Perfil", href: "/profile", icon: User },
 ];
@@ -92,19 +100,6 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
     media.addEventListener("change", sync);
     return () => media.removeEventListener("change", sync);
   }, [onCollapsedChange]);
-
-  useEffect(() => {
-    if (!isMobileOpen) return;
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsMobileOpen(false);
-      }
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [isMobileOpen]);
 
   const handleSignOut = async () => {
     try {
@@ -164,9 +159,13 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
       </Dialog>
 
       {/* Mobile / tablet header — até lg */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-slate-900 border-b border-slate-700">
+      <header className="fixed left-0 right-0 top-0 z-40 border-b border-slate-700 bg-slate-900 lg:hidden">
         <div className="flex items-center justify-between px-4 py-3">
-          <Link href="/dashboard" className="flex items-center gap-2 min-w-0">
+          <Link
+            href="/dashboard"
+            className="flex min-w-0 items-center gap-2 rounded-lg focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/60"
+            aria-label="SeniorEase — ir para o Dashboard"
+          >
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
               <span className="font-bold text-sm">SE</span>
             </div>
@@ -174,67 +173,88 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
               SeniorEase
             </span>
           </Link>
-          <button
-            onClick={() => setIsMobileOpen(!isMobileOpen)}
-            className="flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-lg p-3 text-slate-300 hover:bg-slate-700 hover:text-white"
-            aria-label={isMobileOpen ? "Fechar menu" : "Abrir menu"}
-            aria-expanded={isMobileOpen}
-            aria-controls="mobile-nav"
-          >
-            {isMobileOpen ? (
-              <X className="size-6" />
-            ) : (
-              <Menu className="size-6" />
-            )}
-          </button>
-        </div>
-
-        {isMobileOpen && (
-          <nav
-            id="mobile-nav"
-            className="max-h-[calc(100vh-3.5rem)] overflow-y-auto border-t border-slate-700 bg-slate-900"
-          >
-            <div className="space-y-1 px-3 py-3">
-              {navigationItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = isNavItemActive(pathname, item);
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setIsMobileOpen(false)}
-                    className={cn(
-                      "flex min-h-11 items-center gap-3 rounded-xl px-4 py-3 transition-colors",
-                      isActive
-                        ? "bg-primary font-semibold text-primary-foreground"
-                        : "text-slate-300 hover:bg-slate-800 hover:text-white",
-                    )}
-                  >
-                    <Icon className="size-5 shrink-0" />
-                    <span className="text-base">{item.label}</span>
-                  </Link>
-                );
-              })}
+          <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
+            <SheetTrigger asChild>
               <button
-                onClick={() => setIsSignOutDialogOpen(true)}
-                className="flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-xl px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white"
+                type="button"
+                className="flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-lg p-3 text-slate-300 hover:bg-slate-700 hover:text-white focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/60"
+                aria-label="Abrir menu principal"
               >
-                <LogOut className="size-5 shrink-0" />
-                <span className="text-base">Sair</span>
+                <Menu className="size-6" aria-hidden="true" />
               </button>
-            </div>
-          </nav>
-        )}
-      </header>
+            </SheetTrigger>
 
-      {isMobileOpen ? (
-        <button
-          type="button"
-          className="fixed inset-0 z-30 bg-black/40 lg:hidden"
-          aria-label="Fechar menu"
-          onClick={() => setIsMobileOpen(false)}
-        />
-      ) : null}
+            <SheetContent
+              side="right"
+              showCloseButton={false}
+              className="w-[min(88vw,22rem)] border-slate-700 bg-slate-900 p-0 text-white"
+            >
+              <div className="flex min-h-16 items-center justify-between border-b border-slate-700 px-4">
+                <div>
+                  <SheetTitle className="font-sans text-lg font-bold normal-case tracking-normal text-white">
+                    Menu principal
+                  </SheetTitle>
+                  <SheetDescription className="sr-only">
+                    Navegação principal do SeniorEase
+                  </SheetDescription>
+                </div>
+                <SheetClose asChild>
+                  <button
+                    type="button"
+                    className="flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/60"
+                    aria-label="Fechar menu principal"
+                  >
+                    <X className="size-6" aria-hidden="true" />
+                  </button>
+                </SheetClose>
+              </div>
+
+              <nav
+                aria-label="Navegação principal"
+                className="flex-1 overflow-y-auto px-3 py-4"
+              >
+                <div className="space-y-1">
+                  {navigationItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = isNavItemActive(pathname, item);
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setIsMobileOpen(false)}
+                        aria-current={isActive ? "page" : undefined}
+                        className={cn(
+                          "flex min-h-12 items-center gap-3 rounded-xl px-4 py-3 text-base transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/60",
+                          isActive
+                            ? "bg-primary font-semibold text-primary-foreground"
+                            : "text-slate-300 hover:bg-slate-800 hover:text-white",
+                        )}
+                      >
+                        <Icon className="size-5 shrink-0" aria-hidden="true" />
+                        <span>{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </nav>
+
+              <div className="border-t border-slate-700 p-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileOpen(false);
+                    setIsSignOutDialogOpen(true);
+                  }}
+                  className="flex min-h-12 w-full cursor-pointer items-center gap-3 rounded-xl px-4 py-3 text-base text-slate-300 hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/60"
+                >
+                  <LogOut className="size-5 shrink-0" aria-hidden="true" />
+                  <span>Sair</span>
+                </button>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </header>
 
       {/* Desktop sidebar — a partir de lg */}
       <aside

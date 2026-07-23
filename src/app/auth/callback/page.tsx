@@ -47,9 +47,7 @@ export default function AuthCallbackPage() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-foreground">
-          Processando login...
-        </h1>
+        <h1 className="page-title">Processando login...</h1>
         <p className="text-muted-foreground">Por favor, aguarde.</p>
       </div>
     </div>
