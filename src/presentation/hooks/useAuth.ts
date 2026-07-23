@@ -3,13 +3,19 @@
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import type { LoginMethod } from "@/domain/entities/LoginPreferences";
 import {
   signInUseCase,
   signUpUseCase,
   signOutUseCase,
   sendPasswordResetUseCase,
   signInWithGoogleUseCase,
+  saveLoginPreferencesUseCase,
 } from "@/lib/di/authDi";
+import {
+  consumePendingRememberMe,
+  setPendingRememberMe,
+} from "@/infrastructure/auth/LocalLoginPreferencesRepository";
 
 interface ActionState {
   isLoading: boolean;
@@ -24,10 +30,21 @@ function toMessage(err: unknown): string {
     : "Algo deu errado. Tente novamente.";
 }
 
+function persistLoginPreferences(params: {
+  rememberMe: boolean;
+  email: string | null;
+  method: LoginMethod;
+}) {
+  saveLoginPreferencesUseCase.execute({
+    rememberMe: params.rememberMe,
+    lastEmail: params.rememberMe ? params.email : null,
+    lastMethod: params.rememberMe ? params.method : null,
+  });
+}
+
 /**
  * Hook de apresentação para o módulo de Autenticação.
- * Concentra sign in, sign up e reset de senha — consome os casos de uso
- * do Domain, nunca fala com o Firebase diretamente (ver lib/di/authDi.ts).
+ * "Lembrar de mim" persiste só identidade local (paridade mobile), não a sessão.
  */
 export function useAuth() {
   const router = useRouter();
@@ -45,35 +62,78 @@ export function useAuth() {
   });
 
   const signIn = useCallback(
-    async (email: string, password: string) => {
+    async (email: string, password: string, rememberMe = true) => {
       setSignInState({ isLoading: true, error: null });
       try {
         await signInUseCase.execute({ email, password });
-        // Reset loading state before redirect to avoid button being stuck
+        persistLoginPreferences({
+          rememberMe,
+          email,
+          method: "email",
+        });
         setSignInState({ isLoading: false, error: null });
         router.push("/dashboard");
+        return true;
       } catch (err) {
         setSignInState({ isLoading: false, error: toMessage(err) });
+        return false;
       }
     },
     [router],
   );
 
-  const signInWithGoogle = useCallback(async () => {
-    setGoogleSignInState({ isLoading: true, error: null });
-    try {
-      await signInWithGoogleUseCase.execute();
-      // Reset loading state before redirect to avoid button being stuck
-      setGoogleSignInState({ isLoading: false, error: null });
-      router.push("/dashboard");
-    } catch (err) {
-      const message = toMessage(err);
-      // Ignore the canceled popup message
-      if (message.includes("cancelou")) {
+  const signInWithGoogle = useCallback(
+    async (rememberMe = true) => {
+      setGoogleSignInState({ isLoading: true, error: null });
+      setPendingRememberMe(rememberMe);
+      try {
+        const user = await signInWithGoogleUseCase.execute();
+        persistLoginPreferences({
+          rememberMe,
+          email: user.email,
+          method: "google",
+        });
         setGoogleSignInState({ isLoading: false, error: null });
-      } else {
+        router.push("/dashboard");
+        return true;
+      } catch (err) {
+        const message = toMessage(err);
+
+        if (message === "REDIRECT_IN_PROGRESS") {
+          return false;
+        }
+
+        if (message.includes("cancelou")) {
+          setGoogleSignInState({ isLoading: false, error: null });
+          return false;
+        }
+
         setGoogleSignInState({ isLoading: false, error: message });
+        return false;
       }
+    },
+    [router],
+  );
+
+  const completeGoogleRedirect = useCallback(async () => {
+    try {
+      const user = await signInWithGoogleUseCase.completeRedirect();
+      if (!user) return false;
+
+      const pendingRemember = consumePendingRememberMe();
+      const rememberMe = pendingRemember ?? true;
+      persistLoginPreferences({
+        rememberMe,
+        email: user.email,
+        method: "google",
+      });
+
+      setGoogleSignInState({ isLoading: true, error: null });
+      router.push("/dashboard");
+      return true;
+    } catch (err) {
+      setGoogleSignInState({ isLoading: false, error: toMessage(err) });
+      return false;
     }
   }, [router]);
 
@@ -122,6 +182,7 @@ export function useAuth() {
     signInError: signInState.error,
 
     signInWithGoogle,
+    completeGoogleRedirect,
     isSigningInWithGoogle: googleSignInState.isLoading,
     signInWithGoogleError: googleSignInState.error,
 
