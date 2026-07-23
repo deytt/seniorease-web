@@ -104,7 +104,7 @@ function ProfileInfoField({
 }) {
   return (
     <div className="rounded-[14px] bg-muted p-3">
-      <p className="text-xs font-semibold uppercase tracking-[0.3px] text-muted-foreground">
+      <p className="text-sm font-semibold uppercase tracking-[0.3px] text-muted-foreground">
         {label}
       </p>
       <p className="mt-1 text-[15px] font-medium leading-[1.5] text-foreground">

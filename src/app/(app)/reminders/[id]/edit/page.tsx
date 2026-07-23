@@ -104,7 +104,7 @@ export default function EditReminderPage() {
           </Button>
         </div>
       ) : (
-        <Card className="rounded-2xl border border-[#e2e8f0] shadow-[0px_1px_1.5px_rgba(0,0,0,0.1),0px_1px_1px_rgba(0,0,0,0.1)]">
+        <Card className="rounded-2xl border border-border shadow-card">
           <CardContent className="p-6">
             <CreateReminderForm initial={reminder} />
           </CardContent>

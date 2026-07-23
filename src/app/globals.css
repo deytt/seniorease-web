@@ -1,7 +1,15 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-/* @import "./design-tokens.css"; */
+
+/*
+ * Fonte única dos design tokens da aplicação web.
+ *
+ * Este arquivo é consumido pelo layout raiz, Storybook, Tailwind e shadcn.
+ * Cores de tema e preferências de acessibilidade devem ser definidas pelas
+ * custom properties abaixo e consumidas pelas utilities semânticas mapeadas
+ * em `@theme inline`. Não duplique tokens em folhas de estilo paralelas.
+ */
 
 @custom-variant dark (&:is(.dark *));
 
@@ -142,7 +150,7 @@
   --font-size-body-lg: 1.125rem; /* 18-20px */
   --font-size-body: 1rem; /* 16px */
   --font-size-caption: 0.875rem; /* 13-14px */
-  --font-size-badge: 0.75rem; /* 12px uppercase */
+  --font-size-badge: 0.875rem; /* 14px — mínimo legível */
 
   /* ==========================================================================
      Espaçamento — techContext.md

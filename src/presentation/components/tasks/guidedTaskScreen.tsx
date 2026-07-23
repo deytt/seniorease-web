@@ -50,7 +50,7 @@ function CompletedStepCheck({ className }: { className?: string }) {
       )}
       aria-hidden="true"
     >
-      <Check className="size-4 text-white" strokeWidth={3} />
+      <Check className="size-4 text-primary-foreground" strokeWidth={3} />
     </span>
   );
 }

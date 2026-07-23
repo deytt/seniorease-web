@@ -85,13 +85,13 @@ export function SecurityScreen() {
       >
         <div className="space-y-8">
           <section className="space-y-4" data-tour="security-verify">
-            <h2 className="text-lg font-bold text-[#0f172a]">Verificar conta</h2>
+            <h2 className="text-lg font-bold text-foreground">Verificar conta</h2>
 
             <button
               type="button"
               className={cn(
-                "flex min-h-11 w-full items-center justify-between rounded-[14px] border border-[#e2e8f0] p-[17px] text-left transition-colors",
-                !isEmailVerified && "cursor-pointer hover:bg-[#f8fafc]",
+                "flex min-h-11 w-full items-center justify-between rounded-[14px] border border-border p-[17px] text-left transition-colors",
+                !isEmailVerified && "cursor-pointer hover:bg-muted",
               )}
               onClick={() => {
                 if (!isEmailVerified) {
@@ -103,7 +103,7 @@ export function SecurityScreen() {
             >
               <span className="flex items-center gap-3">
                 <Mail className="size-[18px] shrink-0 text-primary" aria-hidden />
-                <span className="text-base font-medium text-[#0f172a]">
+                <span className="text-base font-medium text-foreground">
                   Verificar conta (e-mail)
                 </span>
               </span>
@@ -113,7 +113,7 @@ export function SecurityScreen() {
                 {!isEmailVerified ? (
                   <ChevronRight
                     className={cn(
-                      "size-[18px] shrink-0 text-[#64748b] transition-transform",
+                      "size-[18px] shrink-0 text-muted-foreground transition-transform",
                       showEmailPanel && "rotate-90",
                     )}
                     aria-hidden
@@ -123,24 +123,24 @@ export function SecurityScreen() {
             </button>
 
             {isEmailVerified ? (
-              <p className="text-sm leading-relaxed text-[#64748b]">
+              <p className="text-sm leading-relaxed text-muted-foreground">
                 Seu e-mail está confirmado. Sua conta está protegida.
               </p>
             ) : showEmailPanel ? (
               <EmailVerificationForm />
             ) : (
-              <p className="text-sm leading-relaxed text-[#64748b]">
+              <p className="text-sm leading-relaxed text-muted-foreground">
                 Toque na opção acima para enviar o link de verificação para{" "}
-                <strong className="font-medium text-[#0f172a]">{user.email}</strong>.
+                <strong className="font-medium text-foreground">{user.email}</strong>.
               </p>
             )}
           </section>
 
           <section
-            className="space-y-4 border-t border-[#e2e8f0] pt-8"
+            className="space-y-4 border-t border-border pt-8"
             data-tour="security-password"
           >
-            <h2 className="text-lg font-bold text-[#0f172a]">Alterar senha</h2>
+            <h2 className="text-lg font-bold text-foreground">Alterar senha</h2>
             <SecurityForm onSuccess={() => router.push("/profile")} />
           </section>
         </div>

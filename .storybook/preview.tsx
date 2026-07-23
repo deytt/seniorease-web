@@ -27,7 +27,7 @@ const preview: Preview = {
   decorators: [
     (Story) => (
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-        <div className="p-8 bg-white">
+        <div className="bg-background p-4 text-foreground">
           <Story />
         </div>
       </ThemeProvider>

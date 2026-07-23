@@ -31,7 +31,7 @@ export function NotificationBell({ userId, className }: NotificationBellProps) {
     >
       <Bell className="size-5" aria-hidden />
       {badgeLabel ? (
-        <span className="absolute -right-1 -top-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-[#ef4444] px-1 text-[11px] font-bold leading-none text-white">
+        <span className="absolute -right-1 -top-1 flex min-h-6 min-w-6 items-center justify-center rounded-full bg-destructive px-1 text-sm font-bold leading-none text-destructive-foreground">
           {badgeLabel}
         </span>
       ) : null}

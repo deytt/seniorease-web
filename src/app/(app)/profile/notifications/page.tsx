@@ -208,7 +208,7 @@ function NotificationSection({
             <p className="text-sm font-semibold text-foreground">
               Avisar antes de {title.toLowerCase()}
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               {enabled ? "Os avisos estão ativados." : "Os avisos estão pausados."}
             </p>
           </div>
@@ -228,7 +228,7 @@ function NotificationSection({
           <p className="text-sm font-semibold text-foreground">
             Antecedência do aviso
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-sm text-muted-foreground">
             Quanto tempo antes quer ser avisado.
           </p>
 

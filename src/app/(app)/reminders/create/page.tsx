@@ -47,8 +47,8 @@ export default function CreateReminderPage() {
         data-tour="create-reminder-header"
       >
         <div>
-          <h1 className="mb-2 text-3xl font-bold text-[#0f172a]">Novo Lembrete</h1>
-          <p className="text-base text-[#64748b]">
+          <h1 className="mb-2 text-3xl font-bold text-foreground">Novo Lembrete</h1>
+          <p className="text-base text-muted-foreground">
             Configure um lembrete para ajudá-lo a ficar no caminho certo. Todos os
             campos marcados com * são obrigatórios.
           </p>
@@ -60,7 +60,7 @@ export default function CreateReminderPage() {
       </div>
 
       {/* Mesmo padrão visual dos cards da Central (Figma 16px + sombra suave) */}
-      <Card className="rounded-2xl border border-[#e2e8f0] shadow-[0px_1px_1.5px_rgba(0,0,0,0.1),0px_1px_1px_rgba(0,0,0,0.1)]">
+      <Card className="rounded-2xl border border-border shadow-card">
         <CardContent className="p-6">
           <CreateReminderForm />
         </CardContent>

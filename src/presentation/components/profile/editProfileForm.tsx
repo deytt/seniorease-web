@@ -164,7 +164,7 @@ export function EditProfileForm({ onSuccess }: EditProfileFormProps) {
             value={user?.email ?? ""}
             readOnly
             disabled
-            className="rounded-[14px] bg-[#f8fafc] text-[#64748b]"
+            className="rounded-[14px] bg-muted text-muted-foreground"
           />
         </div>
       ) : null}
@@ -239,12 +239,12 @@ export function EditProfileForm({ onSuccess }: EditProfileFormProps) {
       </div>
 
       <div
-        className="space-y-4 rounded-[14px] border border-[#e2e8f0] p-4"
+        className="space-y-4 rounded-[14px] border border-border p-4"
         data-tour="edit-address"
       >
         <div className="flex items-center gap-2">
           <MapPin className="size-4 text-primary" aria-hidden />
-          <h3 className="text-base font-semibold text-[#0f172a]">Endereço</h3>
+          <h3 className="text-base font-semibold text-foreground">Endereço</h3>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

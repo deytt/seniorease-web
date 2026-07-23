@@ -128,13 +128,13 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
       <Dialog open={isSignOutDialogOpen} onOpenChange={setIsSignOutDialogOpen}>
         <DialogContent
           showCloseButton={false}
-          className="gap-5 rounded-2xl border border-[#e2e8f0] bg-white p-6 shadow-[0px_8px_24px_rgba(0,0,0,0.12)] sm:max-w-md"
+          className="gap-5 rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-modal sm:max-w-md"
         >
           <DialogHeader className="gap-3 text-left">
-            <DialogTitle className="font-sans text-xl font-bold normal-case tracking-normal text-[#0f172a]">
+            <DialogTitle className="font-sans text-xl font-bold normal-case tracking-normal text-foreground">
               Sair da conta?
             </DialogTitle>
-            <DialogDescription className="text-base leading-relaxed text-[#64748b]">
+            <DialogDescription className="text-base leading-relaxed text-muted-foreground">
               Você será desconectado do SeniorEase. Deseja continuar?
             </DialogDescription>
           </DialogHeader>
@@ -143,7 +143,7 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
               <Button
                 type="button"
                 variant="outline"
-                className="min-h-11 cursor-pointer rounded-[14px] border-[#e2e8f0]"
+                className="min-h-11 cursor-pointer rounded-[14px] border-border"
                 disabled={isSigningOut}
               >
                 Cancelar
@@ -152,7 +152,7 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
             <Button
               type="button"
               variant="destructive"
-              className="min-h-11 cursor-pointer rounded-[14px] bg-destructive text-white hover:bg-destructive/90 hover:text-white"
+              className="min-h-11 cursor-pointer rounded-[14px] bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground"
               loading={isSigningOut}
               loadingText="Saindo..."
               onClick={handleSignOut}
@@ -206,7 +206,7 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
                     className={cn(
                       "flex min-h-11 items-center gap-3 rounded-xl px-4 py-3 transition-colors",
                       isActive
-                        ? "bg-primary font-semibold text-white"
+                        ? "bg-primary font-semibold text-primary-foreground"
                         : "text-slate-300 hover:bg-slate-800 hover:text-white",
                     )}
                   >
@@ -256,7 +256,7 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
               !isCollapsed && "flex-1",
             )}
           >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-white">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
               <span className="text-sm font-bold">SE</span>
             </div>
             {!isCollapsed && (
@@ -302,7 +302,7 @@ export function Navigation({ onCollapsedChange }: NavigationProps) {
                     "flex items-center gap-3 rounded-xl transition-colors",
                     isCollapsed ? "justify-center px-0 py-3" : "px-3 py-3",
                     isActive
-                      ? "bg-primary font-semibold text-white"
+                      ? "bg-primary font-semibold text-primary-foreground"
                       : "text-slate-300 hover:bg-slate-800 hover:text-white",
                   )}
                 >

@@ -170,11 +170,11 @@ export function CreateReminderForm({
                       {errors.title.message}
                     </p>
                   ) : (
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-sm text-muted-foreground">
                       Use um nome curto e claro
                     </span>
                   )}
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-sm text-muted-foreground">
                     {field.value.length}/{TITLE_MAX}
                   </span>
                 </div>
@@ -232,7 +232,7 @@ export function CreateReminderForm({
                       "min-h-11 cursor-pointer rounded-[14px] border px-4 py-2 text-sm font-semibold transition-colors",
                       selected
                         ? "border-primary bg-primary text-primary-foreground"
-                        : "border-[#e2e8f0] bg-white text-[#64748b] hover:border-primary/50 hover:text-foreground",
+                        : "border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground",
                     )}
                   >
                     {REMINDER_CATEGORY_LABELS[category]}

@@ -55,7 +55,7 @@ function ToggleRow({
         <div>
           <p className="font-medium text-sm">{label}</p>
           {description && (
-            <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
+            <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>
           )}
         </div>
       </div>
@@ -68,8 +68,10 @@ function ToggleRow({
       >
         <div
           className={cn(
-            "absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-md transition-transform",
-            checked ? "translate-x-6" : "translate-x-0.5",
+            "absolute top-0.5 w-5 h-5 rounded-full shadow-md transition-transform",
+            checked
+              ? "translate-x-6 bg-primary-foreground"
+              : "translate-x-0.5 bg-background",
           )}
         />
       </div>
@@ -191,7 +193,7 @@ export default function AccessibilityCenterPage() {
               </label>
               <p
                 id="font-size-desc"
-                className="text-xs text-muted-foreground mt-1"
+                className="mt-1 text-sm text-muted-foreground"
               >
                 Atual: {fontSizeLabel}
               </p>
@@ -219,7 +221,7 @@ export default function AccessibilityCenterPage() {
                 className="font-size-slider w-full h-2 rounded-full appearance-none cursor-pointer bg-input accent-primary"
               />
               <div
-                className="flex justify-between text-xs text-muted-foreground"
+                className="flex justify-between text-sm text-muted-foreground"
                 aria-hidden="true"
               >
                 <span>Pequena</span>
@@ -237,7 +239,7 @@ export default function AccessibilityCenterPage() {
               <legend className="text-sm font-semibold text-foreground mb-1">
                 Modo de Interface
               </legend>
-              <p className="text-xs text-muted-foreground mb-3">
+              <p className="mb-3 text-sm text-muted-foreground">
                 O Modo Básico simplifica a interface, ocultando elementos menos
                 essenciais.
               </p>
@@ -269,7 +271,7 @@ export default function AccessibilityCenterPage() {
               <legend className="text-sm font-semibold text-foreground mb-1">
                 Espaçamento entre Elementos
               </legend>
-              <p className="text-xs text-muted-foreground mt-1 mb-3">
+              <p className="mb-3 mt-1 text-sm text-muted-foreground">
                 Controla o espaço entre botões, cards e campos do formulário.
               </p>
               <div className="grid grid-cols-3 gap-3" role="group">
@@ -310,8 +312,8 @@ export default function AccessibilityCenterPage() {
                     <span className="text-xl" aria-hidden="true">
                       {emoji}
                     </span>
-                    <span className="text-xs font-semibold">{label}</span>
-                    <span className="text-[10px] text-muted-foreground">
+                    <span className="text-sm font-semibold">{label}</span>
+                    <span className="text-sm text-muted-foreground">
                       {sublabel}
                     </span>
                   </button>

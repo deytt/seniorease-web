@@ -108,11 +108,11 @@ export default function ProfilePage() {
   if (authLoading || !user) {
     return (
       <div
-        className="flex min-h-[60vh] items-center justify-center bg-[#f8fafc]"
+        className="flex min-h-[60vh] items-center justify-center bg-background"
         role="status"
         aria-live="polite"
       >
-        <p className="text-base text-[#64748b]">Carregando perfil...</p>
+        <p className="text-base text-muted-foreground">Carregando perfil...</p>
       </div>
     );
   }

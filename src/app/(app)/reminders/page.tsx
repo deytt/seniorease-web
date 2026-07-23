@@ -183,7 +183,7 @@ export default function RemindersPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="min-h-11 cursor-pointer rounded-[14px] border-[#e2e8f0]"
+                  className="min-h-11 cursor-pointer rounded-[14px] border-border"
                   disabled={isDeleting}
                 >
                   Cancelar
@@ -192,7 +192,7 @@ export default function RemindersPage() {
               <Button
                 type="button"
                 variant="destructive"
-                className="min-h-11 cursor-pointer rounded-[14px] bg-destructive text-white hover:bg-destructive/90 hover:text-white"
+                className="min-h-11 cursor-pointer rounded-[14px] bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground"
                 loading={isDeleting}
                 loadingText="Excluindo..."
                 onClick={handleConfirmDelete}
@@ -208,10 +208,10 @@ export default function RemindersPage() {
           data-tour="reminders-header"
         >
           <div className="min-w-0">
-            <h1 className="text-2xl font-bold text-[#0f172a] sm:text-3xl">
+            <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
               Central de Lembretes
             </h1>
-            <p className="mt-1 text-base text-[#64748b]">
+            <p className="mt-1 text-base text-muted-foreground">
               {pendingTodayCount === 0
                 ? "Nenhum lembrete pendente para hoje"
                 : pendingTodayCount === 1
@@ -249,12 +249,12 @@ export default function RemindersPage() {
                 className="mx-auto mb-3 size-10 text-muted-foreground"
                 aria-hidden
               />
-              <p className="mb-1 font-semibold text-[#0f172a]">
+              <p className="mb-1 font-semibold text-foreground">
                 {reminders.length === 0
                   ? "Nenhum lembrete ainda"
                   : "Nenhum lembrete neste filtro"}
               </p>
-              <p className="mb-4 text-sm text-[#64748b]">
+              <p className="mb-4 text-sm text-muted-foreground">
                 {reminders.length === 0
                   ? "Crie seu primeiro lembrete para receber avisos no horário certo."
                   : "Toque em outro filtro para ver mais lembretes."}

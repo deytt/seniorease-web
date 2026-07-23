@@ -52,12 +52,12 @@ function NotificationCard({ notification }: { notification: NotificationItem }) 
           <p className="text-sm font-semibold text-foreground">
             {notification.title}
           </p>
-          <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-semibold text-primary">
+          <span className="rounded-full bg-primary/15 px-2 py-0.5 text-sm font-semibold text-primary">
             {getNotificationEntityLabel(notification.entityType)}
           </span>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">{notification.body}</p>
-        <p className="mt-2 text-xs font-medium text-muted-foreground">
+        <p className="mt-2 text-sm font-medium text-muted-foreground">
           {formatNotificationTime(notification.sentAt)}
         </p>
       </div>
@@ -118,7 +118,7 @@ export function NotificationsScreen({
           </p>
         ) : notifications.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center">
-            <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#eff6ff] text-[#2563eb]">
+            <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-primary-light text-primary">
               <Bell className="size-6" aria-hidden />
             </div>
             <p className="mt-4 text-base font-semibold text-foreground">

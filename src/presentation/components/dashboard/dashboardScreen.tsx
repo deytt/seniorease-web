@@ -101,7 +101,7 @@ function DashboardTaskRow({ task }: { task: Task }) {
         className={cn(
           "flex size-6 shrink-0 items-center justify-center rounded-full border-2",
           isCompleted
-            ? "border-success bg-success text-white"
+            ? "border-success bg-success text-success-foreground"
             : "border-border bg-card",
         )}
         aria-hidden
@@ -120,7 +120,7 @@ function DashboardTaskRow({ task }: { task: Task }) {
         </p>
         <div className="mt-1 flex flex-wrap items-center gap-3">
           {timeLabel ? (
-            <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground">
+            <span className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground">
               <Clock className="size-3" aria-hidden />
               {timeLabel}
             </span>
@@ -128,7 +128,7 @@ function DashboardTaskRow({ task }: { task: Task }) {
           {categoryBadge ? (
             <span
               className={cn(
-                "rounded-full px-2.5 py-0.5 text-xs font-semibold",
+                "rounded-full px-2.5 py-0.5 text-sm font-semibold",
                 categoryBadge.className,
               )}
             >
@@ -138,7 +138,7 @@ function DashboardTaskRow({ task }: { task: Task }) {
           {priorityBadge ? (
             <span
               className={cn(
-                "rounded-full px-2.5 py-0.5 text-xs font-semibold",
+                "rounded-full px-2.5 py-0.5 text-sm font-semibold",
                 priorityBadge.className,
               )}
             >
@@ -150,7 +150,7 @@ function DashboardTaskRow({ task }: { task: Task }) {
 
       <Link
         href={getTaskActionHref(task)}
-        className="a11y-touch-target inline-flex min-h-11 shrink-0 items-center justify-center rounded-[10px] bg-primary-light px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/20"
+        className="a11y-touch-target inline-flex min-h-11 shrink-0 items-center justify-center rounded-[10px] bg-primary-light px-3 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary/20"
       >
         {getTaskActionLabel(task)}
       </Link>
@@ -189,7 +189,7 @@ function QuickActionTile({
           className="size-5"
         />
       </div>
-      <span className="text-xs font-semibold text-foreground">{label}</span>
+      <span className="text-sm font-semibold text-foreground">{label}</span>
     </Link>
   );
 }
@@ -258,19 +258,19 @@ export function DashboardScreen({
               <p className="text-[30px] font-bold leading-9 text-primary-foreground">
                 {stats.completedYesterday}
               </p>
-              <p className="text-xs text-primary-foreground/70">Ontem</p>
+              <p className="text-sm text-primary-foreground/70">Ontem</p>
             </div>
             <div className="text-center">
               <p className="text-[30px] font-bold leading-9 text-primary-foreground">
                 {stats.completedToday}
               </p>
-              <p className="text-xs text-primary-foreground/70">Concluídas hoje</p>
+              <p className="text-sm text-primary-foreground/70">Concluídas hoje</p>
             </div>
             <div className="text-center">
               <p className="text-[30px] font-bold leading-9 text-primary-foreground">
                 {stats.remainingToday}
               </p>
-              <p className="text-xs text-primary-foreground/70">Restantes</p>
+              <p className="text-sm text-primary-foreground/70">Restantes</p>
             </div>
           </div>
         </div>
@@ -333,7 +333,7 @@ export function DashboardScreen({
                   loading={seeding}
                   loadingText="Carregando exemplos..."
                   onClick={onSeedDemoData}
-                  className="min-h-11 rounded-[10px] border-border text-xs font-medium text-muted-foreground"
+                  className="min-h-11 rounded-[10px] border-border text-sm font-medium text-muted-foreground"
                 >
                   Carregar exemplos
                 </Button>
@@ -409,7 +409,7 @@ export function DashboardScreen({
                         </p>
                         <p
                           className={cn(
-                            "truncate text-xs text-muted-foreground",
+                            "truncate text-sm text-muted-foreground",
                             isDone && "line-through",
                           )}
                         >

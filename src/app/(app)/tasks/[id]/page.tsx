@@ -351,7 +351,7 @@ export default function TaskDetailsPage({
                   {/* Due Time */}
                   {task.dueDate && (
                     <div>
-                      <p className="text-xs uppercase text-muted-foreground font-semibold mb-2 tracking-wide">
+                      <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                         Horário de Entrega
                       </p>
                       <p className="text-lg font-semibold text-foreground">
@@ -366,7 +366,7 @@ export default function TaskDetailsPage({
                   {/* Category */}
                   {task.category && (
                     <div>
-                      <p className="text-xs uppercase text-muted-foreground font-semibold mb-2 tracking-wide">
+                      <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                         Categoria
                       </p>
                       <p className="text-lg font-semibold text-foreground">
@@ -395,8 +395,10 @@ export default function TaskDetailsPage({
                       {/* Step Number Circle */}
                       <div className="flex-shrink-0">
                         <div
-                          className={`h-8 w-8 rounded-full flex items-center justify-center font-semibold text-sm text-white ${
-                            step.isCompleted ? "bg-green-500" : "bg-blue-500"
+                          className={`h-8 w-8 rounded-full flex items-center justify-center font-semibold text-sm ${
+                            step.isCompleted
+                              ? "bg-success text-success-foreground"
+                              : "bg-primary text-primary-foreground"
                           }`}
                         >
                           {step.isCompleted ? (
@@ -440,7 +442,7 @@ export default function TaskDetailsPage({
               {task.steps.length > 0 && (
                 <Button
                   asChild
-                  className="min-h-11 bg-teal-500 text-white hover:bg-teal-600"
+                  className="min-h-11 bg-secondary text-secondary-foreground hover:bg-secondary/80"
                 >
                   <Link href={`/tasks/${taskId}/guided`}>
                     <Play className="size-4 mr-2" />
@@ -452,7 +454,7 @@ export default function TaskDetailsPage({
                 onClick={handleMarkAsComplete}
                 loading={isCompleting}
                 loadingText="Concluindo..."
-                className="min-h-11 bg-green-600 text-white hover:bg-green-700"
+                className="min-h-11 bg-success text-success-foreground hover:bg-success-dark"
               >
                 <CheckCircle2 className="size-4 mr-2" />
                 Concluir Tarefa

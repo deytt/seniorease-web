@@ -245,14 +245,14 @@ export default function TaskListPage() {
             </span>
             {priorityBadge && (
               <span
-                className={`text-xs font-medium px-2 py-0.5 rounded-full border ${priorityBadge.className}`}
+                className={`rounded-full border px-2 py-0.5 text-sm font-medium ${priorityBadge.className}`}
               >
                 {priorityBadge.label}
               </span>
             )}
             {categoryBadge && (
               <span
-                className={`text-xs font-medium px-2 py-0.5 rounded-full border ${categoryBadge.className}`}
+                className={`rounded-full border px-2 py-0.5 text-sm font-medium ${categoryBadge.className}`}
               >
                 {categoryBadge.label}
               </span>
@@ -265,7 +265,7 @@ export default function TaskListPage() {
             </p>
           )}
           {/* Meta */}
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
             {task.dueDate && (
               <span className="flex items-center gap-1">
                 <Clock className="size-3" />
@@ -330,7 +330,7 @@ export default function TaskListPage() {
                 />
                 <div className="flex-1">
                   <div className="text-sm font-medium">Tarefas de Hoje</div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-sm text-muted-foreground">
                     Mostrar apenas tarefas agendadas para hoje
                   </div>
                 </div>
@@ -535,7 +535,7 @@ export default function TaskListPage() {
               setFilterCategory(null);
               setFilterPriority(null);
             }}
-            className="ml-auto text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="ml-auto text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             Remover filtro
           </button>
