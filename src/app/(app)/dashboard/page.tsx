@@ -80,6 +80,10 @@ export default function DashboardPage() {
     try {
       await seedDashboardDemoData(userId);
       await reloadDashboardData(userId);
+      toast.success("Exemplos carregados com sucesso!");
+    } catch (error) {
+      console.error("Erro ao carregar exemplos:", error);
+      toast.error("Não foi possível carregar os exemplos. Tente novamente.");
     } finally {
       setSeeding(false);
     }
@@ -94,12 +98,10 @@ export default function DashboardPage() {
       try {
         setLoading(true);
 
-        let { tasksData, remindersData } = await fetchDashboardData(userId);
+        const { tasksData, remindersData } = await fetchDashboardData(userId);
 
-        if (!cancelled && tasksData.length === 0) {
-          await seedDashboardDemoData(userId);
-          ({ tasksData, remindersData } = await fetchDashboardData(userId));
-        }
+        // Dados de exemplo só via botão "Carregar exemplos" (issue #52).
+        // Não semear automaticamente em conta vazia — evita poluir o Firestore.
 
         if (!cancelled) {
           setTasks(tasksData);
