@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Bell, Plus } from "lucide-react";
 import { toast } from "@/presentation/lib/feedbackToast";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
@@ -33,11 +33,32 @@ import {
 } from "@/presentation/components/reminders/reminderFilter";
 import { isReminderToday } from "@/presentation/components/reminders/reminderVisuals";
 import { useSeniorFeedback } from "@/lib/feedback/useSeniorFeedback";
+import { cn } from "@/lib/utils";
 
 export default function RemindersPage() {
+  return (
+    <Suspense
+      fallback={
+        <div
+          className="flex min-h-[40vh] items-center justify-center"
+          role="status"
+          aria-live="polite"
+        >
+          <p className="text-base text-muted-foreground">Carregando lembretes...</p>
+        </div>
+      }
+    >
+      <RemindersPageContent />
+    </Suspense>
+  );
+}
+
+function RemindersPageContent() {
   const { user, loading: authLoading } = useAuthContext();
   const { preferences } = usePreferences();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const highlightId = searchParams.get("highlight");
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -92,12 +113,40 @@ export default function RemindersPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
+  useEffect(() => {
+    if (!highlightId || loading) return;
+
+    const target = reminders.find((r) => r.id === highlightId);
+    if (!target) return;
+
+    const timer = window.setTimeout(() => {
+      const el = document.getElementById(`reminder-${highlightId}`);
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 100);
+
+    const clearHighlight = window.setTimeout(() => {
+      router.replace("/reminders", { scroll: false });
+    }, 2500);
+
+    return () => {
+      window.clearTimeout(timer);
+      window.clearTimeout(clearHighlight);
+    };
+  }, [highlightId, loading, reminders, router]);
+
+  const listFilter = useMemo<ReminderListFilter>(() => {
+    if (!highlightId) return filter;
+    const target = reminders.find((r) => r.id === highlightId);
+    if (target && isReminderToday(target.scheduledAt)) return "today";
+    return filter;
+  }, [filter, highlightId, reminders]);
+
   const filteredReminders = useMemo(
     () =>
       reminders.filter((reminder) =>
-        matchesReminderListFilter(reminder, filter, isReminderToday),
+        matchesReminderListFilter(reminder, listFilter, isReminderToday),
       ),
-    [reminders, filter],
+    [reminders, listFilter],
   );
 
   const pendingTodayCount = useMemo(
@@ -239,7 +288,7 @@ export default function RemindersPage() {
         </div>
 
         <div className="mb-6 mt-4">
-          <ReminderFilterChips value={filter} onChange={setFilter} />
+          <ReminderFilterChips value={listFilter} onChange={setFilter} />
         </div>
 
         <div data-tour="reminders-list">
@@ -288,11 +337,12 @@ export default function RemindersPage() {
               {filteredReminders.map((reminder) => (
                 <div
                   key={reminder.id}
-                  className={
-                    busyId === reminder.id
-                      ? "pointer-events-none opacity-70"
-                      : undefined
-                  }
+                  id={`reminder-${reminder.id}`}
+                  className={cn(
+                    busyId === reminder.id && "pointer-events-none opacity-70",
+                    highlightId === reminder.id &&
+                      "rounded-[16px] ring-2 ring-primary ring-offset-2 ring-offset-background transition-shadow",
+                  )}
                 >
                   <ReminderCard
                     reminder={reminder}

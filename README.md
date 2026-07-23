@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SeniorEase Web
 
-## Getting Started
+Aplicação web do **SeniorEase** — plataforma de acessibilidade e organização de tarefas/lembretes para pessoas idosas (Hackathon FIAP Inclusive).
 
-First, run the development server:
+Stack: **Next.js 16** (App Router) · TypeScript · Tailwind · Firebase · Zustand · Storybook · Vitest.
+
+Arquitetura: Clean Architecture em `src/domain`, `src/infrastructure` e `src/presentation`.
+
+Documentação compartilhada com o mobile: submódulo [`memory-bank/`](./memory-bank).
+
+---
+
+## Pré-requisitos
+
+- Node.js 20+ (recomendado)
+- Conta no projeto Firebase `seniorease-backend`
+- Acesso ao repositório do memory-bank (submódulo)
+
+---
+
+## Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Clonar com submódulo
+git clone --recurse-submodules <url-do-repositorio>
+cd seniorease-web
+
+# Se já clonou sem submódulo:
+git submodule update --init --recursive
+
+# Dependências
+npm install
+
+# Variáveis de ambiente
+cp .env.example .env.local
+# Preencha .env.local com as chaves do Firebase (nunca commitar .env.local)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Branch de trabalho
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+O fluxo do time usa **`develop`** como integração e **`master`** para deploy (Vercel).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+git checkout develop
+git pull origin develop
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Scripts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Comando | Descrição |
+|---|---|
+| `npm run dev` | Servidor de desenvolvimento (Webpack) |
+| `npm run build` | Build de produção |
+| `npm run start` | Serve o build |
+| `npm run lint` | ESLint |
+| `npm run type-check` | TypeScript (`tsc --noEmit`) |
+| `npm test` | Vitest (unitários) |
+| `npm run storybook` | Storybook em http://localhost:6006 |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Variáveis de ambiente
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Veja `.env.example`. Todas as chaves públicas do Firebase usam o prefixo `NEXT_PUBLIC_`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Variável | Uso |
+|---|---|
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | Firebase Web SDK |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Auth |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Projeto |
+| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` | Storage (foto de perfil) |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | FCM |
+| `NEXT_PUBLIC_FIREBASE_APP_ID` | App Web |
+| `NEXT_PUBLIC_FIREBASE_VAPID_KEY` | Push Web (FCM) — obrigatória para registrar token |
+
+O Service Worker de messaging (`public/firebase-messaging-sw.js`) recebe a config via query string montada em runtime a partir dessas variáveis.
+
+---
+
+## Dados de demonstração
+
+O dashboard **não** grava tarefas/lembretes de exemplo automaticamente.
+
+Com a lista vazia, use o botão **“Carregar exemplos”** no dashboard para popular dados de demo no Firestore (ação explícita do usuário).
+
+---
+
+## Estrutura (visão rápida)
+
+```
+src/
+  domain/           # Entidades e casos de uso
+  infrastructure/   # Firebase, repositórios
+  presentation/     # UI, hooks, providers, tours
+  app/              # Rotas Next.js (App Router)
+memory-bank/        # Submódulo: brief, schema, progresso
+```
+
+---
+
+## Memory Bank
+
+Antes de implementar features, leia os arquivos em `memory-bank/` (project brief, padrões, schema Firebase, progresso). Após mudanças de schema/rules, atualize o submódulo e faça bump do pin neste repositório.

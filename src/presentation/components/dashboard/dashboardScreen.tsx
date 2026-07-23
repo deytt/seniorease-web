@@ -386,9 +386,11 @@ export function DashboardScreen({
                   const isDone = reminder.isRead;
 
                   return (
-                    <div
+                    <Link
                       key={reminder.id}
-                      className="flex items-center gap-3 rounded-[14px] bg-muted p-3"
+                      href={`/reminders?highlight=${encodeURIComponent(reminder.id)}`}
+                      className="a11y-touch-target flex min-h-11 items-center gap-3 rounded-[14px] bg-muted p-3 transition-colors hover:bg-muted/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      aria-label={`Abrir lembrete ${reminder.title}`}
                     >
                       <div
                         className={cn(
@@ -416,7 +418,7 @@ export function DashboardScreen({
                           {reminder.title}
                         </p>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
