@@ -4,10 +4,6 @@ import type {
 } from "@/domain/repositories/IAuthRepository";
 import type { User } from "@/domain/entities/User";
 
-/**
- * Caso de uso independente de UI e de framework.
- * Regras de negócio da autenticação vivem aqui, não no componente React.
- */
 export class SignInUseCase {
   constructor(private readonly authRepository: IAuthRepository) {}
 
@@ -18,6 +14,9 @@ export class SignInUseCase {
       throw new Error("Informe seu e-mail e senha para continuar.");
     }
 
-    return this.authRepository.signIn({ email: normalizedEmail, password });
+    return this.authRepository.signIn({
+      email: normalizedEmail,
+      password,
+    });
   }
 }

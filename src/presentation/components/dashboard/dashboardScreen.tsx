@@ -138,7 +138,7 @@ function DashboardTaskRow({ task }: { task: Task }) {
           {priorityBadge ? (
             <span
               className={cn(
-                "rounded-full px-2.5 py-0.5 text-sm font-semibold",
+                "advanced-only rounded-full px-2.5 py-0.5 text-sm font-semibold",
                 priorityBadge.className,
               )}
             >
@@ -333,7 +333,7 @@ export function DashboardScreen({
                   loading={seeding}
                   loadingText="Carregando exemplos..."
                   onClick={onSeedDemoData}
-                  className="min-h-11 rounded-[10px] border-border text-sm font-medium text-muted-foreground"
+                  className="advanced-only min-h-11 rounded-[10px] border-border text-sm font-medium text-muted-foreground"
                 >
                   Carregar exemplos
                 </Button>
@@ -386,9 +386,11 @@ export function DashboardScreen({
                   const isDone = reminder.isRead;
 
                   return (
-                    <div
+                    <Link
                       key={reminder.id}
-                      className="flex items-center gap-3 rounded-[14px] bg-muted p-3"
+                      href={`/reminders?highlight=${encodeURIComponent(reminder.id)}`}
+                      className="a11y-touch-target flex min-h-11 items-center gap-3 rounded-[14px] bg-muted p-3 transition-colors hover:bg-muted/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      aria-label={`Abrir lembrete ${reminder.title}`}
                     >
                       <div
                         className={cn(
@@ -416,7 +418,7 @@ export function DashboardScreen({
                           {reminder.title}
                         </p>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
@@ -431,7 +433,7 @@ export function DashboardScreen({
           </DashboardCard>
 
           <section
-            className="rounded-2xl border border-border bg-card p-[21px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]"
+            className="advanced-only rounded-2xl border border-border bg-card p-[21px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]"
             data-tour="dashboard-accessibility"
           >
             <h2 className="flex items-center gap-2 text-[15px] font-bold leading-[22.5px] text-foreground">

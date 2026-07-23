@@ -245,7 +245,7 @@ export default function TaskListPage() {
             </span>
             {priorityBadge && (
               <span
-                className={`rounded-full border px-2 py-0.5 text-sm font-medium ${priorityBadge.className}`}
+                className={`advanced-only rounded-full border px-2 py-0.5 text-sm font-medium ${priorityBadge.className}`}
               >
                 {priorityBadge.label}
               </span>
@@ -371,8 +371,8 @@ export default function TaskListPage() {
               </div>
             </div>
 
-            {/* Priority Section */}
-            <div className="space-y-3">
+            {/* Priority Section — oculto no Modo Básico */}
+            <div className="advanced-only space-y-3">
               <h3 className="text-sm font-semibold text-foreground">
                 Prioridade
               </h3>

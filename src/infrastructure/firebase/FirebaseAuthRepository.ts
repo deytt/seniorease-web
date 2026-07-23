@@ -10,9 +10,12 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   EmailAuthProvider,
   reauthenticateWithCredential,
   type User as FirebaseUser,
+  type UserCredential,
 } from "firebase/auth";
 import {
   doc,
@@ -107,25 +110,73 @@ function toFriendlyMessage(code: string): string {
       return "Esta conta não permite alterar a senha por aqui. Use o login com Google.";
     case "auth/invalid-verification-code":
       return "Código incorreto. Verifique o app autenticador e tente novamente.";
+    case "auth/popup-blocked":
+      return "O navegador bloqueou a janela do Google. Vamos tentar de outra forma.";
+    case "auth/cancelled-popup-request":
+    case "auth/popup-closed-by-user":
+      return "Você cancelou o login com Google.";
+    case "auth/account-exists-with-different-credential":
+      return "Este e-mail já está cadastrado com outra forma de entrada. Entre com e-mail e senha.";
+    case "auth/unauthorized-domain":
+      return "Este site ainda não está autorizado para login com Google. Avise o suporte.";
     default:
       return "Algo deu errado. Tente novamente em instantes.";
   }
 }
 
+const POPUP_FALLBACK_CODES = new Set([
+  "auth/popup-blocked",
+  "auth/operation-not-supported-in-this-environment",
+]);
+
 export class FirebaseAuthRepository implements IAuthRepository {
+  private async ensureFirestoreUser(firebaseUser: FirebaseUser): Promise<void> {
+    const userRef = doc(db, "users", firebaseUser.uid);
+    const userDoc = await getDoc(userRef);
+    const photoUrl = firebaseUser.photoURL ?? null;
+
+    if (!userDoc.exists()) {
+      await setDoc(userRef, {
+        id: firebaseUser.uid,
+        name: firebaseUser.displayName ?? "",
+        email: firebaseUser.email ?? "",
+        photoUrl,
+        createdAt: serverTimestamp(),
+      });
+      return;
+    }
+
+    const data = userDoc.data();
+    if (!data.photoUrl && photoUrl) {
+      await updateDoc(userRef, { photoUrl });
+    }
+  }
+
+  private toUserFromFirebase(firebaseUser: FirebaseUser, emailFallback = ""): User {
+    return toDomainUser(
+      firebaseUser.uid,
+      firebaseUser.displayName ?? "",
+      firebaseUser.email ?? emailFallback,
+      new Date(),
+      {
+        emailVerified: firebaseUser.emailVerified,
+        photoUrl: firebaseUser.photoURL,
+        usesPasswordAuth: usesPasswordAuth(firebaseUser),
+      },
+    );
+  }
+
+  private async finishGoogleCredential(
+    credential: UserCredential,
+  ): Promise<User> {
+    await this.ensureFirestoreUser(credential.user);
+    return this.toUserFromFirebase(credential.user);
+  }
+
   async signIn({ email, password }: SignInCredentials): Promise<User> {
     try {
       const { user } = await signInWithEmailAndPassword(auth, email, password);
-      return toDomainUser(
-        user.uid,
-        user.displayName ?? "",
-        user.email ?? email,
-        new Date(),
-        {
-          emailVerified: user.emailVerified,
-          usesPasswordAuth: usesPasswordAuth(user),
-        },
-      );
+      return this.toUserFromFirebase(user, email);
     } catch (error) {
       throw new Error(toFriendlyMessage(this.extractCode(error)));
     }
@@ -160,32 +211,30 @@ export class FirebaseAuthRepository implements IAuthRepository {
   }
 
   async signInWithGoogle(): Promise<User> {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account" });
+
     try {
-      const provider = new GoogleAuthProvider();
-      const { user } = await signInWithPopup(auth, provider);
-
-      // Verificar se o usuário já existe no Firestore
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-
-      if (!userDoc.exists()) {
-        // Criar novo usuário com dados do Google
-        await setDoc(doc(db, "users", user.uid), {
-          id: user.uid,
-          name: user.displayName ?? "",
-          email: user.email ?? "",
-          createdAt: serverTimestamp(),
-        });
-      }
-
-      return toDomainUser(user.uid, user.displayName ?? "", user.email ?? "", new Date(), {
-        emailVerified: user.emailVerified,
-        usesPasswordAuth: usesPasswordAuth(user),
-      });
+      const credential = await signInWithPopup(auth, provider);
+      return await this.finishGoogleCredential(credential);
     } catch (error) {
-      const errorCode = (error as { code?: string })?.code;
-      if (errorCode === "auth/popup-closed-by-user") {
-        throw new Error("Você cancelou o login com Google.");
+      const code = this.extractCode(error);
+
+      if (POPUP_FALLBACK_CODES.has(code)) {
+        await signInWithRedirect(auth, provider);
+        throw new Error("REDIRECT_IN_PROGRESS");
       }
+
+      throw new Error(toFriendlyMessage(code));
+    }
+  }
+
+  async completeGoogleRedirect(): Promise<User | null> {
+    try {
+      const result = await getRedirectResult(auth);
+      if (!result?.user) return null;
+      return await this.finishGoogleCredential(result);
+    } catch (error) {
       throw new Error(toFriendlyMessage(this.extractCode(error)));
     }
   }

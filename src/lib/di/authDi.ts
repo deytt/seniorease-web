@@ -10,6 +10,11 @@ import { UpdateUserUseCase } from "@/domain/usecases/auth/UpdateUserUseCase";
 import { ChangePasswordUseCase } from "@/domain/usecases/auth/ChangePasswordUseCase";
 import { SendEmailVerificationUseCase } from "@/domain/usecases/auth/SendEmailVerificationUseCase";
 import { ReloadEmailVerificationUseCase } from "@/domain/usecases/auth/ReloadEmailVerificationUseCase";
+import {
+  GetLoginPreferencesUseCase,
+  SaveLoginPreferencesUseCase,
+} from "@/domain/usecases/auth/LoginPreferencesUseCases";
+import { loginPreferencesRepository } from "@/infrastructure/auth/LocalLoginPreferencesRepository";
 import { getHistoryDi } from "@/lib/di/historyDi";
 
 const isDummyFirebaseKey =
@@ -32,6 +37,12 @@ export const updateUserUseCase = new UpdateUserUseCase(authRepository);
 export const changePasswordUseCase = new ChangePasswordUseCase(authRepository);
 export const sendEmailVerificationUseCase = new SendEmailVerificationUseCase(
   authRepository,
+);
+export const getLoginPreferencesUseCase = new GetLoginPreferencesUseCase(
+  loginPreferencesRepository,
+);
+export const saveLoginPreferencesUseCase = new SaveLoginPreferencesUseCase(
+  loginPreferencesRepository,
 );
 
 let reloadEmailVerificationUseCaseInstance: ReloadEmailVerificationUseCase | null =

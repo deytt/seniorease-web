@@ -7,4 +7,9 @@ export class SignInWithGoogleUseCase {
   async execute(): Promise<User> {
     return this.authRepository.signInWithGoogle();
   }
+
+  /** Completa login iniciado com redirect (popup bloqueado). */
+  async completeRedirect(): Promise<User | null> {
+    return this.authRepository.completeGoogleRedirect();
+  }
 }
