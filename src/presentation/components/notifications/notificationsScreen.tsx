@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Bell, CheckSquare2 } from "lucide-react";
+import { Bell, CheckSquare2 } from "lucide-react";
 
 import type { NotificationItem } from "@/domain/entities/NotificationItem";
 import { cn } from "@/lib/utils";
-import { backNavButtonClassName } from "@/presentation/lib/backNavButtonClassName";
-import { Button } from "@/presentation/components/ui/button";
+import { BackNavigationButton } from "@/presentation/components/ui/backNavigationButton";
 import {
   formatNotificationTime,
   getNotificationEntityHref,
@@ -52,12 +51,12 @@ function NotificationCard({ notification }: { notification: NotificationItem }) 
           <p className="text-sm font-semibold text-foreground">
             {notification.title}
           </p>
-          <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-semibold text-primary">
+          <span className="rounded-full bg-primary/15 px-2 py-0.5 text-sm font-semibold text-primary">
             {getNotificationEntityLabel(notification.entityType)}
           </span>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">{notification.body}</p>
-        <p className="mt-2 text-xs font-medium text-muted-foreground">
+        <p className="mt-2 text-sm font-medium text-muted-foreground">
           {formatNotificationTime(notification.sentAt)}
         </p>
       </div>
@@ -85,20 +84,12 @@ export function NotificationsScreen({
         className="mb-6 flex items-center gap-4"
         data-tour="notifications-header"
       >
-        <Button
-          asChild
-          variant="ghost"
-          className={cn(
-            "min-w-11 rounded-[14px] px-0",
-            backNavButtonClassName,
-          )}
-        >
-          <Link href="/dashboard" aria-label="Voltar ao Dashboard">
-            <ArrowLeft className="size-5" />
-          </Link>
-        </Button>
+        <BackNavigationButton
+          href="/dashboard"
+          label="Voltar ao Dashboard"
+        />
         <div className="flex-1">
-          <h1 className="text-[30px] font-bold leading-9 text-foreground">
+          <h1 className="page-title">
             Notificações
           </h1>
           <p className="mt-1 text-base text-muted-foreground">
@@ -118,7 +109,7 @@ export function NotificationsScreen({
           </p>
         ) : notifications.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center">
-            <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-[#eff6ff] text-[#2563eb]">
+            <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-primary-light text-primary">
               <Bell className="size-6" aria-hidden />
             </div>
             <p className="mt-4 text-base font-semibold text-foreground">

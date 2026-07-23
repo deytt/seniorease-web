@@ -154,7 +154,7 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
           />
           <div className="flex justify-end">
             <span
-              className={`text-xs ${titleValue.length >= 30 ? "text-destructive" : "text-muted-foreground"}`}
+              className={`text-sm ${titleValue.length >= 30 ? "text-destructive" : "text-muted-foreground"}`}
             >
               {titleValue.length}/30
             </span>
@@ -180,7 +180,7 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
           />
           <div className="flex justify-end">
             <span
-              className={`text-xs ${descriptionValue.length >= 100 ? "text-destructive" : "text-muted-foreground"}`}
+              className={`text-sm ${descriptionValue.length >= 100 ? "text-destructive" : "text-muted-foreground"}`}
             >
               {descriptionValue.length}/100
             </span>
@@ -273,10 +273,10 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
         data-tour="create-task-steps"
       >
         <div>
-          <h3 className="font-semibold">
+          <h3 className="card-title">
             Passos da Tarefa <span className="text-destructive">*</span>
           </h3>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="mt-1 text-sm text-muted-foreground">
             Divida a tarefa em passos simples para o modo guiado.
           </p>
         </div>
@@ -334,7 +334,7 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
                   <p className="font-medium text-sm">
                     {idx + 1}. {step.title}
                   </p>
-                  <p className="text-xs text-muted-foreground line-clamp-1">
+                  <p className="line-clamp-1 text-sm text-muted-foreground">
                     {step.instruction}
                   </p>
                 </div>

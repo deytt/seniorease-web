@@ -30,24 +30,24 @@ const badgeVariants = cva(
     variants: {
       variant: {
         // Status badges — pill com fundo colorido claro (Figma node 2:7869-2:7883)
-        default: "rounded-full bg-[#eff6ff] text-[#2563eb] px-3 py-1 text-sm",
-        success: "rounded-full bg-[#f0fdf4] text-[#22c55e] px-3 py-1 text-sm",
-        warning: "rounded-full bg-[#fffbeb] text-[#f59e0b] px-3 py-1 text-sm",
+        default: "rounded-full bg-primary-light text-primary px-3 py-1 text-sm",
+        success: "rounded-full bg-success-light text-success px-3 py-1 text-sm",
+        warning: "rounded-full bg-warning-light text-warning px-3 py-1 text-sm",
         destructive:
-          "rounded-full bg-[#fef2f2] text-[#ef4444] px-3 py-1 text-sm",
-        secondary: "rounded-full bg-[#f0fdfa] text-[#14b8a6] px-3 py-1 text-sm",
-        purple: "rounded-full bg-[#f5f3ff] text-[#7c3aed] px-3 py-1 text-sm",
+          "rounded-full bg-destructive-light text-destructive px-3 py-1 text-sm",
+        secondary: "rounded-full bg-secondary-light text-secondary px-3 py-1 text-sm",
+        purple: "rounded-full bg-primary-light text-primary px-3 py-1 text-sm",
         outline:
           "rounded-full border border-border bg-transparent text-foreground px-3 py-1 text-sm",
         // Counter badges — círculo sólido (Figma node 2:7894-2:7909)
         counter:
-          "rounded-full size-6 bg-[#2563eb] text-white text-xs font-black",
+          "rounded-full size-6 bg-primary text-primary-foreground text-sm font-black",
         "counter-danger":
-          "rounded-full size-6 bg-[#ef4444] text-white text-xs font-black",
+          "rounded-full size-6 bg-destructive text-destructive-foreground text-sm font-black",
         "counter-success":
-          "rounded-full size-6 bg-[#22c55e] text-white text-xs font-black",
+          "rounded-full size-6 bg-success text-success-foreground text-sm font-black",
         "counter-secondary":
-          "rounded-full size-6 bg-[#14b8a6] text-white text-xs font-black",
+          "rounded-full size-6 bg-secondary text-secondary-foreground text-sm font-black",
       },
     },
     defaultVariants: {

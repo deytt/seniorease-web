@@ -87,10 +87,10 @@ export function EmailVerificationForm({ onSuccess }: EmailVerificationFormProps)
               aria-hidden
             />
             <div>
-              <p className="text-base font-semibold text-[#0f172a]">
+              <p className="text-base font-semibold text-foreground">
                 E-mail verificado
               </p>
-              <p className="mt-2 text-sm leading-relaxed text-[#64748b]">
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 Sua conta está confirmada. Você pode usar todos os recursos com
                 tranquilidade.
               </p>
@@ -112,16 +112,16 @@ export function EmailVerificationForm({ onSuccess }: EmailVerificationFormProps)
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[14px] border border-[#e2e8f0] bg-[#f8fafc] p-4">
+      <div className="rounded-[14px] border border-border bg-muted p-4">
         <div className="flex items-start gap-3">
           <Mail className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
           <div>
-            <p className="text-base font-semibold text-[#0f172a]">
+            <p className="text-base font-semibold text-foreground">
               Confirme seu e-mail
             </p>
-            <p className="mt-2 text-sm leading-relaxed text-[#64748b]">
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               Enviaremos um link para{" "}
-              <strong className="font-medium text-[#0f172a]">
+              <strong className="font-medium text-foreground">
                 {user?.email ?? "seu e-mail"}
               </strong>
               . Abra o link no e-mail e depois volte aqui para confirmar.
@@ -158,7 +158,7 @@ export function EmailVerificationForm({ onSuccess }: EmailVerificationFormProps)
       <Button
         type="button"
         variant="ghost"
-        className="w-full cursor-pointer rounded-[14px] text-[#64748b]"
+        className="w-full cursor-pointer rounded-[14px] text-muted-foreground"
         onClick={() => router.push("/profile")}
         disabled={isSending || isChecking}
       >

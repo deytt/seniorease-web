@@ -70,7 +70,7 @@ export function ProfileAvatar({ name, photoUrl, className }: ProfileAvatarProps)
       ) : null}
       <AvatarFallback
         delayMs={photoUrl && !isPhotoReady ? Number.POSITIVE_INFINITY : 0}
-        className="bg-primary text-[30px] font-bold leading-9 text-white"
+        className="bg-primary text-[30px] font-bold leading-9 text-primary-foreground"
       >
         {initials}
       </AvatarFallback>

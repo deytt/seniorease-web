@@ -14,6 +14,7 @@ import {
 } from "@/presentation/tour/TourChrome";
 import { getRemindersDi } from "@/lib/di/remindersDi";
 import { Button } from "@/presentation/components/ui/button";
+import { PageHeader } from "@/presentation/components/ui/pageHeader";
 import {
   Dialog,
   DialogClose,
@@ -232,7 +233,7 @@ function RemindersPageContent() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="min-h-11 cursor-pointer rounded-[14px] border-[#e2e8f0]"
+                  className="min-h-11 cursor-pointer rounded-[14px] border-border"
                   disabled={isDeleting}
                 >
                   Cancelar
@@ -241,7 +242,7 @@ function RemindersPageContent() {
               <Button
                 type="button"
                 variant="destructive"
-                className="min-h-11 cursor-pointer rounded-[14px] bg-destructive text-white hover:bg-destructive/90 hover:text-white"
+                className="min-h-11 cursor-pointer rounded-[14px] bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground"
                 loading={isDeleting}
                 loadingText="Excluindo..."
                 onClick={handleConfirmDelete}
@@ -252,23 +253,21 @@ function RemindersPageContent() {
           </DialogContent>
         </Dialog>
 
-        <div
-          className="mb-2 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
-          data-tour="reminders-header"
-        >
-          <div className="min-w-0">
-            <h1 className="text-2xl font-bold text-[#0f172a] sm:text-3xl">
-              Central de Lembretes
-            </h1>
-            <p className="mt-1 text-base text-[#64748b]">
-              {pendingTodayCount === 0
-                ? "Nenhum lembrete pendente para hoje"
-                : pendingTodayCount === 1
-                  ? "1 lembrete restante hoje"
-                  : `${pendingTodayCount} lembretes restantes hoje`}
-            </p>
-          </div>
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+        <PageHeader
+          title="Central de Lembretes"
+          description={
+            pendingTodayCount === 0
+              ? "Nenhum lembrete pendente para hoje"
+              : pendingTodayCount === 1
+                ? "1 lembrete restante hoje"
+                : `${pendingTodayCount} lembretes restantes hoje`
+          }
+          backHref="/dashboard"
+          backLabel="Voltar ao Dashboard"
+          className="mb-2"
+          dataTour="reminders-header"
+          actions={
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
             <Button
               asChild
               size="sm"
@@ -284,8 +283,9 @@ function RemindersPageContent() {
               onClick={beginTour}
               label="Abrir tour guiado dos lembretes"
             />
-          </div>
-        </div>
+            </div>
+          }
+        />
 
         <div className="mb-6 mt-4">
           <ReminderFilterChips value={listFilter} onChange={setFilter} />
@@ -298,12 +298,12 @@ function RemindersPageContent() {
                 className="mx-auto mb-3 size-10 text-muted-foreground"
                 aria-hidden
               />
-              <p className="mb-1 font-semibold text-[#0f172a]">
+              <p className="mb-1 font-semibold text-foreground">
                 {reminders.length === 0
                   ? "Nenhum lembrete ainda"
                   : "Nenhum lembrete neste filtro"}
               </p>
-              <p className="mb-4 text-sm text-[#64748b]">
+              <p className="mb-4 text-sm text-muted-foreground">
                 {reminders.length === 0
                   ? "Crie seu primeiro lembrete para receber avisos no horário certo."
                   : "Toque em outro filtro para ver mais lembretes."}

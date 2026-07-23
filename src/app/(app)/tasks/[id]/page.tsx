@@ -21,14 +21,13 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/presentation/components/ui/dialog";
-import { ChevronLeft, CheckCircle2, Play, Trash2, Clock } from "lucide-react";
+import { CheckCircle2, Play, Trash2, Clock } from "lucide-react";
 import { getTasksDi } from "@/lib/di/tasksDi";
 import { useTasks } from "@/presentation/hooks/useTasks";
 import type { Task } from "@/domain/entities/Task";
 import type { TaskStep } from "@/domain/entities/TaskStep";
 import { useSeniorFeedback } from "@/lib/feedback/useSeniorFeedback";
-import { backNavButtonClassName } from "@/presentation/lib/backNavButtonClassName";
-import { cn } from "@/lib/utils";
+import { BackNavigationButton } from "@/presentation/components/ui/backNavigationButton";
 import { toast } from "@/presentation/lib/feedbackToast";
 import { setTaskNavigationFeedback } from "@/presentation/components/tasks/taskNavigationFeedback";
 
@@ -276,16 +275,11 @@ export default function TaskDetailsPage({
       </Dialog>
 
       {/* Header - Back Button */}
-      <Link href="/tasks">
-        <Button
-          variant="ghost"
-          size="sm"
-          className={cn("mb-6", backNavButtonClassName)}
-        >
-          <ChevronLeft className="size-4 mr-2" />
-          Voltar para Tarefas
-        </Button>
-      </Link>
+      <BackNavigationButton
+        href="/tasks"
+        label="Voltar para Tarefas"
+        className="mb-6"
+      />
 
       {/* Main Content - Two Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -319,7 +313,7 @@ export default function TaskDetailsPage({
                 data-tour="task-details-header"
               >
                 <div className="flex-1">
-                  <h1 className="text-2xl font-bold">{task.title}</h1>
+                  <h1 className="page-title">{task.title}</h1>
                 </div>
                 <div className="flex gap-2">
                   <TourHelpButton
@@ -351,7 +345,7 @@ export default function TaskDetailsPage({
                   {/* Due Time */}
                   {task.dueDate && (
                     <div>
-                      <p className="text-xs uppercase text-muted-foreground font-semibold mb-2 tracking-wide">
+                      <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                         Horário de Entrega
                       </p>
                       <p className="text-lg font-semibold text-foreground">
@@ -366,7 +360,7 @@ export default function TaskDetailsPage({
                   {/* Category */}
                   {task.category && (
                     <div>
-                      <p className="text-xs uppercase text-muted-foreground font-semibold mb-2 tracking-wide">
+                      <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                         Categoria
                       </p>
                       <p className="text-lg font-semibold text-foreground">
@@ -383,7 +377,7 @@ export default function TaskDetailsPage({
           {task.steps && task.steps.length > 0 && (
             <Card data-tour="task-details-steps">
               <CardContent className="pt-6 space-y-4">
-                <h2 className="text-xl font-semibold">
+                <h2 className="section-title">
                   Checklist Passo a Passo
                 </h2>
                 <div className="space-y-3">
@@ -395,8 +389,10 @@ export default function TaskDetailsPage({
                       {/* Step Number Circle */}
                       <div className="flex-shrink-0">
                         <div
-                          className={`h-8 w-8 rounded-full flex items-center justify-center font-semibold text-sm text-white ${
-                            step.isCompleted ? "bg-green-500" : "bg-blue-500"
+                          className={`h-8 w-8 rounded-full flex items-center justify-center font-semibold text-sm ${
+                            step.isCompleted
+                              ? "bg-success text-success-foreground"
+                              : "bg-primary text-primary-foreground"
                           }`}
                         >
                           {step.isCompleted ? (
@@ -440,7 +436,7 @@ export default function TaskDetailsPage({
               {task.steps.length > 0 && (
                 <Button
                   asChild
-                  className="min-h-11 bg-teal-500 text-white hover:bg-teal-600"
+                  className="min-h-11 bg-secondary text-secondary-foreground hover:bg-secondary/80"
                 >
                   <Link href={`/tasks/${taskId}/guided`}>
                     <Play className="size-4 mr-2" />
@@ -452,7 +448,7 @@ export default function TaskDetailsPage({
                 onClick={handleMarkAsComplete}
                 loading={isCompleting}
                 loadingText="Concluindo..."
-                className="min-h-11 bg-green-600 text-white hover:bg-green-700"
+                className="min-h-11 bg-success text-success-foreground hover:bg-success-dark"
               >
                 <CheckCircle2 className="size-4 mr-2" />
                 Concluir Tarefa
@@ -467,7 +463,7 @@ export default function TaskDetailsPage({
           {task.dueDate && (
             <Card className="border-warning/40 bg-warning-light">
               <CardContent className="pt-6 space-y-3">
-                <h3 className="font-semibold text-base flex items-center gap-2 text-foreground">
+                <h3 className="card-title flex items-center gap-2">
                   <Clock className="size-4 text-warning" aria-hidden />
                   Notificação
                 </h3>

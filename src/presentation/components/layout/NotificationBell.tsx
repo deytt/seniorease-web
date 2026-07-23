@@ -65,8 +65,8 @@ export function NotificationBell({ unreadCount, className }: NotificationBellPro
             aria-hidden="true"
             className={cn(
               "absolute -right-1.5 -top-1.5 flex items-center justify-center rounded-full",
-              "min-h-[1.125rem] min-w-[1.125rem] px-1",
-              "bg-destructive text-[10px] font-bold leading-none text-white",
+              "min-h-6 min-w-6 px-1",
+              "bg-destructive text-sm font-bold leading-none text-destructive-foreground",
               "ring-2 ring-background",
             )}
           >

@@ -18,6 +18,7 @@ import {
   type HistoryStatsView,
 } from "@/presentation/components/history/historyUtils";
 import { Button } from "@/presentation/components/ui/button";
+import { PageHeader } from "@/presentation/components/ui/pageHeader";
 import {
   Dialog,
   DialogContent,
@@ -126,21 +127,20 @@ export function HistoryScreen({
   });
 
   return (
-    <div className="pb-20">
-      <header className="mb-8 flex items-start justify-between gap-4" data-tour="history-header">
-        <div>
-          <h1 className="text-[30px] font-bold leading-9 text-foreground">
-            Histórico de Atividades
-          </h1>
-          <p className="mt-2 text-base leading-6 text-muted-foreground">
-            Parabéns! Você tem sido muito consistente.
-          </p>
-        </div>
-        <TourHelpButton
+    <div className="mx-auto w-full max-w-6xl pb-20">
+      <PageHeader
+        title="Histórico de Atividades"
+        description="Parabéns! Você tem sido muito consistente."
+        backHref="/dashboard"
+        backLabel="Voltar ao Dashboard"
+        className="mb-8"
+        descriptionClassName="mt-2"
+        dataTour="history-header"
+        actions={<TourHelpButton
           onClick={beginTour}
           label="Abrir tour guiado do histórico"
-        />
-      </header>
+        />}
+      />
 
       <div
         className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
@@ -179,7 +179,7 @@ export function HistoryScreen({
       ) : null}
 
       <section className="mt-8" data-tour="history-activity">
-        <h2 className="text-xl font-bold leading-[30px] text-foreground">
+        <h2 className="section-title">
           Atividade Recente
         </h2>
 

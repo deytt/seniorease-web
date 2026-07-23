@@ -20,7 +20,7 @@ describe("tourCatalog", () => {
     );
     expect(getTourCatalogItem("guidedTask")?.route).toBe("/tasks/guided");
     expect(getTourCatalogItem("notifications")?.route).toBe("/notifications");
-    expect(getTourCatalogItem("accessibility")?.route).toBe("/acessibility");
+    expect(getTourCatalogItem("accessibility")?.route).toBe("/accessibility");
     expect(getTourCatalogItem("inexistente")).toBeUndefined();
   });
 

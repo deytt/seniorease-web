@@ -72,7 +72,7 @@ export function EditNotificationPreferencesForm() {
 
   if (!isLoaded || !values) {
     return (
-      <p className="text-base text-[#64748b]" role="status">
+      <p className="text-base text-muted-foreground" role="status">
         Carregando preferências...
       </p>
     );
@@ -168,13 +168,13 @@ function PreferenceToggle({
   disabled?: boolean;
 }) {
   return (
-    <div className="rounded-[14px] border border-[#e2e8f0] p-4">
+    <div className="rounded-[14px] border border-border p-4">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <Label htmlFor={id} className="text-base font-semibold text-[#0f172a]">
+          <Label htmlFor={id} className="text-base font-semibold text-foreground">
             {label}
           </Label>
-          <p className="mt-1 text-sm text-[#64748b]">{description}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
         </div>
         <button
           id={id}
@@ -187,14 +187,18 @@ function PreferenceToggle({
             "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full transition-colors",
             checked
               ? "bg-primary"
-              : "border-2 border-[#e2e8f0] bg-white hover:border-primary/40",
+              : "border-2 border-border bg-background hover:border-primary/40",
             disabled
               ? "cursor-not-allowed opacity-60"
               : "cursor-pointer",
           )}
         >
           {checked ? (
-            <Check className="size-4 text-white" strokeWidth={3} aria-hidden />
+            <Check
+              className="size-4 text-primary-foreground"
+              strokeWidth={3}
+              aria-hidden
+            />
           ) : null}
         </button>
       </div>
@@ -261,7 +265,7 @@ function PreferenceChoice({
         "min-h-11 rounded-full border px-4 py-2 text-sm font-semibold transition-colors",
         selected
           ? "border-primary bg-primary text-primary-foreground"
-          : "border-[#e2e8f0] bg-white text-[#0f172a] hover:bg-[#f8fafc]",
+          : "border-border bg-background text-foreground hover:bg-muted",
         disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
       )}
     >

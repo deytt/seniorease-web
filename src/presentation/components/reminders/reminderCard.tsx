@@ -59,7 +59,7 @@ function ReminderActions({
             type="button"
             size="sm"
             className={cn(
-              "min-h-11 cursor-pointer rounded-[14px] bg-success font-bold text-white hover:bg-success/90",
+              "min-h-11 cursor-pointer rounded-[14px] bg-success font-bold text-success-foreground hover:bg-success/90",
               stacked && "min-h-11 min-w-0 flex-1 sm:flex-none",
             )}
             onClick={() => onMarkDone?.(reminder.id)}
@@ -75,7 +75,7 @@ function ReminderActions({
               type="button"
               variant="outline"
               size="icon-sm"
-              className="size-11 shrink-0 cursor-pointer rounded-[10px] border-border"
+              className="size-11 shrink-0 border-border"
               onClick={() => onEdit(reminder)}
               aria-label={`Editar lembrete ${reminder.title}`}
             >
@@ -89,7 +89,7 @@ function ReminderActions({
           type="button"
           variant="outline"
           size="icon-sm"
-          className="size-11 shrink-0 cursor-pointer rounded-[10px] border-destructive/40 text-destructive hover:bg-destructive-light hover:text-destructive"
+          className="size-11 shrink-0 border-destructive/40 text-destructive hover:bg-destructive-light hover:text-destructive"
           onClick={() => onDelete(reminder)}
           aria-label={`Excluir lembrete ${reminder.title}`}
         >
@@ -170,7 +170,7 @@ export function ReminderCard({
               {formatReminderPeriod(reminder.scheduledAt)}
             </p>
             {showDate && (
-              <p className="mt-1 text-xs font-medium text-muted-foreground">
+              <p className="mt-1 text-sm font-medium text-muted-foreground">
                 {formatReminderDateLabel(reminder.scheduledAt)}
               </p>
             )}
@@ -218,7 +218,7 @@ export function ReminderCard({
           </div>
         </div>
 
-        <div className="border-t border-[#f1f5f9] pt-3 xl:hidden">
+        <div className="border-t border-border pt-3 xl:hidden">
           <ReminderActions
             reminder={reminder}
             isCompleted={isCompleted}
