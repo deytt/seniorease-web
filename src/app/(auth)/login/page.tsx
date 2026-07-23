@@ -4,8 +4,8 @@ import { LoginForm } from "@/presentation/components/auth/loginForm";
 export default function LoginPage() {
   return (
     <AuthLayout
-      title="Bem-vindo ao SeniorEase"
-      subtitle="Acesse sua conta para continuar."
+      title="Bem-vindo de volta"
+      subtitle="Entre na sua conta SeniorEase"
       footer={
         <>
           Precisa de ajuda? Ligue para{" "}

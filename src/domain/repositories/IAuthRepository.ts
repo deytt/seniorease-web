@@ -3,19 +3,12 @@ import type { User } from "@/domain/entities/User";
 export interface SignInCredentials {
   email: string;
   password: string;
-  /** Se true, mantém a sessão após fechar o navegador. */
-  rememberMe?: boolean;
 }
 
 export interface SignUpInput {
   name: string;
   email: string;
   password: string;
-}
-
-export interface GoogleSignInOptions {
-  /** Se true, mantém a sessão após fechar o navegador. */
-  rememberMe?: boolean;
 }
 
 export interface UpdateUserInput {
@@ -27,11 +20,14 @@ export interface UpdateUserInput {
 /**
  * Contrato implementado pela camada de Infrastructure (ex: FirebaseAuthRepository).
  * O Domain nunca importa a implementação — apenas esta interface.
+ *
+ * Nota: "Lembrar de mim" NÃO altera a persistência da sessão Firebase —
+ * guarda só identidade local (e-mail + método), como no mobile.
  */
 export interface IAuthRepository {
   signIn(credentials: SignInCredentials): Promise<User>;
   signUp(input: SignUpInput): Promise<User>;
-  signInWithGoogle(options?: GoogleSignInOptions): Promise<User>;
+  signInWithGoogle(): Promise<User>;
   /**
    * Completa o login Google iniciado via redirect (quando o popup é bloqueado).
    * Retorna null se não houver resultado pendente.

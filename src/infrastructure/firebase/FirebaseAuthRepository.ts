@@ -12,9 +12,6 @@ import {
   signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
-  setPersistence,
-  browserLocalPersistence,
-  browserSessionPersistence,
   EmailAuthProvider,
   reauthenticateWithCredential,
   type User as FirebaseUser,
@@ -30,7 +27,6 @@ import {
 
 import { auth, db } from "@/infrastructure/firebase/config";
 import type {
-  GoogleSignInOptions,
   IAuthRepository,
   SignInCredentials,
   SignUpInput,
@@ -134,13 +130,6 @@ const POPUP_FALLBACK_CODES = new Set([
 ]);
 
 export class FirebaseAuthRepository implements IAuthRepository {
-  private async applySessionPersistence(rememberMe: boolean): Promise<void> {
-    await setPersistence(
-      auth,
-      rememberMe ? browserLocalPersistence : browserSessionPersistence,
-    );
-  }
-
   private async ensureFirestoreUser(firebaseUser: FirebaseUser): Promise<void> {
     const userRef = doc(db, "users", firebaseUser.uid);
     const userDoc = await getDoc(userRef);
@@ -184,13 +173,8 @@ export class FirebaseAuthRepository implements IAuthRepository {
     return this.toUserFromFirebase(credential.user);
   }
 
-  async signIn({
-    email,
-    password,
-    rememberMe = false,
-  }: SignInCredentials): Promise<User> {
+  async signIn({ email, password }: SignInCredentials): Promise<User> {
     try {
-      await this.applySessionPersistence(rememberMe);
       const { user } = await signInWithEmailAndPassword(auth, email, password);
       return this.toUserFromFirebase(user, email);
     } catch (error) {
@@ -226,22 +210,17 @@ export class FirebaseAuthRepository implements IAuthRepository {
     await firebaseSignOut(auth);
   }
 
-  async signInWithGoogle({
-    rememberMe = false,
-  }: GoogleSignInOptions = {}): Promise<User> {
+  async signInWithGoogle(): Promise<User> {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: "select_account" });
 
     try {
-      await this.applySessionPersistence(rememberMe);
       const credential = await signInWithPopup(auth, provider);
       return await this.finishGoogleCredential(credential);
     } catch (error) {
       const code = this.extractCode(error);
 
       if (POPUP_FALLBACK_CODES.has(code)) {
-        // Popup bloqueado: redireciona e a página /auth/callback (ou login) completa o fluxo
-        await this.applySessionPersistence(rememberMe);
         await signInWithRedirect(auth, provider);
         throw new Error("REDIRECT_IN_PROGRESS");
       }

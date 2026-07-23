@@ -1,14 +1,11 @@
-import type {
-  GoogleSignInOptions,
-  IAuthRepository,
-} from "@/domain/repositories/IAuthRepository";
+import type { IAuthRepository } from "@/domain/repositories/IAuthRepository";
 import type { User } from "@/domain/entities/User";
 
 export class SignInWithGoogleUseCase {
   constructor(private readonly authRepository: IAuthRepository) {}
 
-  async execute(options: GoogleSignInOptions = {}): Promise<User> {
-    return this.authRepository.signInWithGoogle(options);
+  async execute(): Promise<User> {
+    return this.authRepository.signInWithGoogle();
   }
 
   /** Completa login iniciado com redirect (popup bloqueado). */

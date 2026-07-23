@@ -3,7 +3,11 @@
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
-import { signInWithGoogleUseCase } from "@/lib/di/authDi";
+import {
+  saveLoginPreferencesUseCase,
+  signInWithGoogleUseCase,
+} from "@/lib/di/authDi";
+import { consumePendingRememberMe } from "@/infrastructure/auth/LocalLoginPreferencesRepository";
 
 /**
  * Completa o login Google iniciado via redirect (fallback quando o popup
@@ -20,7 +24,18 @@ export default function AuthCallbackPage() {
     const processRedirect = async () => {
       try {
         const user = await signInWithGoogleUseCase.completeRedirect();
-        router.replace(user ? "/dashboard" : "/login");
+        if (user) {
+          const pendingRemember = consumePendingRememberMe();
+          const rememberMe = pendingRemember ?? true;
+          saveLoginPreferencesUseCase.execute({
+            rememberMe,
+            lastEmail: rememberMe ? user.email : null,
+            lastMethod: rememberMe ? "google" : null,
+          });
+          router.replace("/dashboard");
+          return;
+        }
+        router.replace("/login");
       } catch {
         router.replace("/login");
       }
