@@ -1,10 +1,6 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
-import { Button } from "@/presentation/components/ui/button";
+import { BackNavigationButton } from "@/presentation/components/ui/backNavigationButton";
 import { Card, CardContent } from "@/presentation/components/ui/card";
-import { backNavButtonClassName } from "@/presentation/lib/backNavButtonClassName";
-import { cn } from "@/lib/utils";
 
 interface ProfileFormPageShellProps {
   backHref: string;
@@ -25,20 +21,15 @@ export function ProfileFormPageShell({
 }: ProfileFormPageShellProps) {
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 pb-20">
-      <Link href={backHref}>
-        <Button
-          variant="ghost"
-          size="sm"
-          className={cn("mb-6", backNavButtonClassName)}
-        >
-          <ChevronLeft className="mr-2 size-4" aria-hidden />
-          {backLabel}
-        </Button>
-      </Link>
+      <BackNavigationButton
+        href={backHref}
+        label={backLabel}
+        className="mb-6"
+      />
 
       <div className="mb-8 flex items-start justify-between gap-3">
         <div className="min-w-0" data-tour="profile-form-header">
-          <h1 className="mb-2 text-3xl font-bold text-foreground">{title}</h1>
+          <h1 className="page-title mb-2">{title}</h1>
           {description ? (
             <p className="text-base text-muted-foreground">{description}</p>
           ) : null}

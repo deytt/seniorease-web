@@ -18,6 +18,7 @@ import { ProfileHelpCard } from "@/presentation/components/profile/profileHelpCa
 import { useProfileTour } from "@/presentation/hooks/useProfileTour";
 import { TourHelpButton } from "@/presentation/tour/TourChrome";
 import { Button } from "@/presentation/components/ui/button";
+import { PageHeader } from "@/presentation/components/ui/pageHeader";
 import {
   Dialog,
   DialogContent,
@@ -82,14 +83,11 @@ function ProfileSectionHeader({
 }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <h2 className="text-lg font-bold leading-7 text-foreground">{title}</h2>
+      <h2 className="card-title">{title}</h2>
       {editHref ? (
-        <Link
-          href={editHref}
-          className="inline-flex min-h-8 shrink-0 items-center justify-center rounded-[10px] bg-primary-light px-3 py-1.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
-        >
-          {editLabel}
-        </Link>
+        <Button asChild variant="ghost" size="sm" className="shrink-0">
+          <Link href={editHref}>{editLabel}</Link>
+        </Button>
       ) : null}
     </div>
   );
@@ -104,7 +102,7 @@ function ProfileInfoField({
 }) {
   return (
     <div className="rounded-[14px] bg-muted p-3">
-      <p className="text-xs font-semibold uppercase tracking-[0.3px] text-muted-foreground">
+      <p className="text-sm font-semibold uppercase tracking-[0.3px] text-muted-foreground">
         {label}
       </p>
       <p className="mt-1 text-[15px] font-medium leading-[1.5] text-foreground">
@@ -192,18 +190,16 @@ export function ProfileScreen({
 
   return (
     <div className="mx-auto w-full max-w-6xl pb-16">
-      <div
-        className="flex items-start justify-between gap-4"
-        data-tour="profile-header"
-      >
-        <h1 className="text-[30px] font-bold leading-9 text-foreground">
-          Meu Perfil
-        </h1>
-        <TourHelpButton
+      <PageHeader
+        title="Meu Perfil"
+        backHref="/dashboard"
+        backLabel="Voltar ao Dashboard"
+        dataTour="profile-header"
+        actions={<TourHelpButton
           onClick={beginTour}
           label="Abrir tour guiado do perfil"
-        />
-      </div>
+        />}
+      />
 
       <div className="mt-8 grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,328px)_minmax(0,1fr)] xl:gap-6">
         <div className="space-y-4">
@@ -211,7 +207,7 @@ export function ProfileScreen({
             <div className="flex flex-col items-center text-center">
               <ProfileAvatar name={user.name} photoUrl={user.photoUrl} />
 
-              <h2 className="mt-4 text-xl font-bold leading-7 text-foreground">
+              <h2 className="section-title mt-4">
                 {formatProfileValue(user.name)}
               </h2>
               <p className="mt-1 text-base leading-6 text-muted-foreground">
@@ -236,7 +232,7 @@ export function ProfileScreen({
           </ProfileCard>
 
           <ProfileCard className="p-[21px]" data-tour="profile-account-status">
-            <h2 className="text-lg font-bold leading-[27px] text-foreground">
+            <h2 className="card-title">
               Status da Conta
             </h2>
             <div className="mt-3 space-y-0">
@@ -326,7 +322,7 @@ export function ProfileScreen({
           </ProfileCard>
 
           <ProfileCard className="p-[25px]" data-tour="profile-account-support">
-            <h2 className="text-lg font-bold leading-7 text-foreground">
+            <h2 className="card-title">
               Conta e suporte
             </h2>
             <div className="mt-4 flex flex-col gap-3">

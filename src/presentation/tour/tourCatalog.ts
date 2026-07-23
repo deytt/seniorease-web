@@ -76,7 +76,7 @@ export const TOUR_CATALOG: TourCatalogItem[] = [
     id: "accessibility",
     title: "Acessibilidade",
     description: "Ajuste o tamanho da letra, o modo de uso, o espaçamento e outros atalhos.",
-    route: "/acessibility",
+    route: "/accessibility",
   },
   {
     id: "security",

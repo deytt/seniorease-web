@@ -101,7 +101,7 @@ function DashboardTaskRow({ task }: { task: Task }) {
         className={cn(
           "flex size-6 shrink-0 items-center justify-center rounded-full border-2",
           isCompleted
-            ? "border-success bg-success text-white"
+            ? "border-success bg-success text-success-foreground"
             : "border-border bg-card",
         )}
         aria-hidden
@@ -120,7 +120,7 @@ function DashboardTaskRow({ task }: { task: Task }) {
         </p>
         <div className="mt-1 flex flex-wrap items-center gap-3">
           {timeLabel ? (
-            <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground">
+            <span className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground">
               <Clock className="size-3" aria-hidden />
               {timeLabel}
             </span>
@@ -128,7 +128,7 @@ function DashboardTaskRow({ task }: { task: Task }) {
           {categoryBadge ? (
             <span
               className={cn(
-                "rounded-full px-2.5 py-0.5 text-xs font-semibold",
+                "rounded-full px-2.5 py-0.5 text-sm font-semibold",
                 categoryBadge.className,
               )}
             >
@@ -138,7 +138,7 @@ function DashboardTaskRow({ task }: { task: Task }) {
           {priorityBadge ? (
             <span
               className={cn(
-                "advanced-only rounded-full px-2.5 py-0.5 text-xs font-semibold",
+                "advanced-only rounded-full px-2.5 py-0.5 text-sm font-semibold",
                 priorityBadge.className,
               )}
             >
@@ -148,12 +148,16 @@ function DashboardTaskRow({ task }: { task: Task }) {
         </div>
       </div>
 
-      <Link
-        href={getTaskActionHref(task)}
-        className="a11y-touch-target inline-flex min-h-11 shrink-0 items-center justify-center rounded-[10px] bg-primary-light px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/20"
+      <Button
+        asChild
+        variant="ghost"
+        size="sm"
+        className="shrink-0"
       >
-        {getTaskActionLabel(task)}
-      </Link>
+        <Link href={getTaskActionHref(task)}>
+          {getTaskActionLabel(task)}
+        </Link>
+      </Button>
     </div>
   );
 }
@@ -189,7 +193,7 @@ function QuickActionTile({
           className="size-5"
         />
       </div>
-      <span className="text-xs font-semibold text-foreground">{label}</span>
+      <span className="text-sm font-semibold text-foreground">{label}</span>
     </Link>
   );
 }
@@ -223,7 +227,7 @@ export function DashboardScreen({
         data-tour="dashboard-header"
       >
         <div>
-          <h1 className="text-[30px] font-bold leading-9 text-foreground">
+          <h1 className="page-title">
             {getDashboardGreeting()}, {firstName}! {getDashboardGreetingEmoji()}
           </h1>
           <p className="mt-1 text-base leading-6 text-muted-foreground">
@@ -258,19 +262,19 @@ export function DashboardScreen({
               <p className="text-[30px] font-bold leading-9 text-primary-foreground">
                 {stats.completedYesterday}
               </p>
-              <p className="text-xs text-primary-foreground/70">Ontem</p>
+              <p className="text-sm text-primary-foreground/70">Ontem</p>
             </div>
             <div className="text-center">
               <p className="text-[30px] font-bold leading-9 text-primary-foreground">
                 {stats.completedToday}
               </p>
-              <p className="text-xs text-primary-foreground/70">Concluídas hoje</p>
+              <p className="text-sm text-primary-foreground/70">Concluídas hoje</p>
             </div>
             <div className="text-center">
               <p className="text-[30px] font-bold leading-9 text-primary-foreground">
                 {stats.remainingToday}
               </p>
-              <p className="text-xs text-primary-foreground/70">Restantes</p>
+              <p className="text-sm text-primary-foreground/70">Restantes</p>
             </div>
           </div>
         </div>
@@ -279,13 +283,13 @@ export function DashboardScreen({
       <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
         <DashboardCard className="p-[25px]" data-tour="dashboard-today-tasks">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="text-xl font-bold leading-7 text-foreground">
+            <h2 className="card-title">
               Próxima atividade
             </h2>
             <Button
               asChild
+              size="sm"
               data-tour="dashboard-add-task"
-              className="min-h-11 cursor-pointer rounded-[10px] bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
               <Link href="/tasks/create">
                 <Plus className="size-4" aria-hidden />
@@ -311,29 +315,29 @@ export function DashboardScreen({
             </div>
           )}
 
-          <Link
-            href="/tasks"
-            className="a11y-touch-target mt-4 flex min-h-11 items-center justify-center gap-1 rounded-[14px] border border-border text-sm font-medium text-muted-foreground transition-colors hover:bg-muted"
-          >
-            Ver todas as tarefas
-            <ChevronRight className="size-4" aria-hidden />
-          </Link>
+          <Button asChild variant="outline" size="sm" className="mt-4 w-full">
+            <Link href="/tasks">
+              Ver todas as tarefas
+              <ChevronRight className="size-4" aria-hidden />
+            </Link>
+          </Button>
         </DashboardCard>
 
         <div className="flex flex-col gap-6">
           <DashboardCard className="p-[21px]" data-tour="dashboard-quick-actions">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <h2 className="text-[17px] font-bold leading-[25.5px] text-foreground">
+              <h2 className="card-title">
                 Ações rápidas
               </h2>
               {showSeedAction && onSeedDemoData ? (
                 <Button
                   type="button"
                   variant="outline"
+                  size="sm"
                   loading={seeding}
                   loadingText="Carregando exemplos..."
                   onClick={onSeedDemoData}
-                  className="advanced-only min-h-11 rounded-[10px] border-border text-xs font-medium text-muted-foreground"
+                  className="advanced-only border-border text-muted-foreground"
                 >
                   Carregar exemplos
                 </Button>
@@ -347,7 +351,7 @@ export function DashboardScreen({
                 iconWrapClassName="bg-[rgba(37,99,235,0.13)]"
               />
               <QuickActionTile
-                href="/acessibility"
+                href="/accessibility"
                 label="Acessibilidade"
                 iconSrc={QUICK_ACTION_ICONS.accessibility}
                 iconWrapClassName="bg-[rgba(20,184,166,0.13)]"
@@ -368,7 +372,7 @@ export function DashboardScreen({
           </DashboardCard>
 
           <DashboardCard className="p-[21px]" data-tour="dashboard-reminders">
-            <h2 className="text-[17px] font-bold leading-[25.5px] text-foreground">
+            <h2 className="card-title">
               Lembretes de hoje
             </h2>
             {loading ? (
@@ -411,7 +415,7 @@ export function DashboardScreen({
                         </p>
                         <p
                           className={cn(
-                            "truncate text-xs text-muted-foreground",
+                            "truncate text-sm text-muted-foreground",
                             isDone && "line-through",
                           )}
                         >
@@ -423,20 +427,19 @@ export function DashboardScreen({
                 })}
               </div>
             )}
-            <Link
-              href="/reminders"
-              className="a11y-touch-target mt-4 flex min-h-11 items-center justify-center gap-1 rounded-[14px] border border-border text-sm font-medium text-muted-foreground transition-colors hover:bg-muted"
-            >
-              Gerenciar lembretes
-              <ChevronRight className="size-4" aria-hidden />
-            </Link>
+            <Button asChild variant="outline" size="sm" className="mt-4 w-full">
+              <Link href="/reminders">
+                Gerenciar lembretes
+                <ChevronRight className="size-4" aria-hidden />
+              </Link>
+            </Button>
           </DashboardCard>
 
           <section
             className="advanced-only rounded-2xl border border-border bg-card p-[21px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)]"
             data-tour="dashboard-accessibility"
           >
-            <h2 className="flex items-center gap-2 text-[15px] font-bold leading-[22.5px] text-foreground">
+            <h2 className="card-title flex items-center gap-2">
               <Accessibility className="size-[18px] text-primary" aria-hidden />
               Status de acessibilidade
             </h2>
@@ -486,9 +489,10 @@ export function DashboardScreen({
             </dl>
             <Button
               asChild
-              className="mt-4 min-h-11 w-full cursor-pointer rounded-[10px] bg-primary text-primary-foreground hover:bg-primary/90"
+              size="sm"
+              className="mt-4 w-full"
             >
-              <Link href="/acessibility">Ajustar configurações</Link>
+              <Link href="/accessibility">Ajustar configurações</Link>
             </Button>
           </section>
         </div>

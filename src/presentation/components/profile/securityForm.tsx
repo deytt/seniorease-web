@@ -95,11 +95,11 @@ export function SecurityForm({ onSuccess }: SecurityFormProps) {
     return (
       <div className="space-y-6">
         <div className="rounded-[14px] border border-primary/20 bg-primary-light p-4">
-          <p className="text-sm leading-relaxed text-[#0f172a]">
+          <p className="text-sm leading-relaxed text-foreground">
             Você criou sua conta com o <strong>login do Google</strong>. Por
             isso, não há senha cadastrada na SeniorEase para alterar.
           </p>
-          <p className="mt-3 text-sm leading-relaxed text-[#64748b]">
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             Para entrar, continue usando o botão <strong>Entrar com Google</strong>{" "}
             na tela de login.
           </p>
@@ -183,7 +183,7 @@ export function SecurityForm({ onSuccess }: SecurityFormProps) {
       </div>
 
       <div className="rounded-[14px] border border-primary/20 bg-primary-light p-4">
-        <p className="text-sm leading-relaxed text-[#0f172a]">
+        <p className="text-sm leading-relaxed text-foreground">
           <strong>Dica:</strong> Use uma senha com pelo menos 8 caracteres,
           incluindo letras, números e símbolos para maior segurança.
         </p>

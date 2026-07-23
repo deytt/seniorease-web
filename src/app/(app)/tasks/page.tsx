@@ -10,6 +10,7 @@ import {
   TourOfferDialog,
 } from "@/presentation/tour/TourChrome";
 import { Button } from "@/presentation/components/ui/button";
+import { PageHeader } from "@/presentation/components/ui/pageHeader";
 import {
   Dialog,
   DialogContent,
@@ -245,14 +246,14 @@ export default function TaskListPage() {
             </span>
             {priorityBadge && (
               <span
-                className={`advanced-only text-xs font-medium px-2 py-0.5 rounded-full border ${priorityBadge.className}`}
+                className={`advanced-only rounded-full border px-2 py-0.5 text-sm font-medium ${priorityBadge.className}`}
               >
                 {priorityBadge.label}
               </span>
             )}
             {categoryBadge && (
               <span
-                className={`text-xs font-medium px-2 py-0.5 rounded-full border ${categoryBadge.className}`}
+                className={`rounded-full border px-2 py-0.5 text-sm font-medium ${categoryBadge.className}`}
               >
                 {categoryBadge.label}
               </span>
@@ -265,7 +266,7 @@ export default function TaskListPage() {
             </p>
           )}
           {/* Meta */}
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
             {task.dueDate && (
               <span className="flex items-center gap-1">
                 <Clock className="size-3" />
@@ -320,7 +321,7 @@ export default function TaskListPage() {
           <div className="space-y-6">
             {/* Data Section */}
             <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-foreground">Data</h3>
+              <h3 className="card-title">Data</h3>
               <label className="flex items-center gap-3 p-3 rounded-lg border border-input hover:border-primary/50 cursor-pointer transition-colors">
                 <input
                   type="checkbox"
@@ -330,7 +331,7 @@ export default function TaskListPage() {
                 />
                 <div className="flex-1">
                   <div className="text-sm font-medium">Tarefas de Hoje</div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-sm text-muted-foreground">
                     Mostrar apenas tarefas agendadas para hoje
                   </div>
                 </div>
@@ -339,7 +340,7 @@ export default function TaskListPage() {
 
             {/* Category Section */}
             <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-foreground">
+              <h3 className="card-title">
                 Categoria
               </h3>
               <div className="flex flex-wrap gap-2">
@@ -373,7 +374,7 @@ export default function TaskListPage() {
 
             {/* Priority Section — oculto no Modo Básico */}
             <div className="advanced-only space-y-3">
-              <h3 className="text-sm font-semibold text-foreground">
+              <h3 className="card-title">
                 Prioridade
               </h3>
               <div className="flex gap-2">
@@ -442,20 +443,19 @@ export default function TaskListPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Header - Responsive Layout */}
-      <div
-        className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6"
-        data-tour="tasks-header"
-      >
-        <div>
-          <h1 className="text-3xl font-bold">Minhas Tarefas</h1>
-          {stats.scheduledToday > 0 && (
-            <p className="text-sm text-muted-foreground mt-1">
-              {stats.completedToday} de {stats.scheduledToday} concluídas hoje
-            </p>
-          )}
-        </div>
-        <div className="flex flex-col md:flex-row gap-2 md:items-center">
+      <PageHeader
+        title="Minhas Tarefas"
+        description={
+          stats.scheduledToday > 0
+            ? `${stats.completedToday} de ${stats.scheduledToday} concluídas hoje`
+            : undefined
+        }
+        backHref="/dashboard"
+        backLabel="Voltar ao Dashboard"
+        className="mb-6 md:items-center"
+        dataTour="tasks-header"
+        actions={
+          <div className="flex flex-col gap-2 md:flex-row md:items-center">
           <Button
             variant="outline"
             size="sm"
@@ -481,8 +481,9 @@ export default function TaskListPage() {
             onClick={beginTour}
             label="Abrir tour guiado das tarefas"
           />
-        </div>
-      </div>
+          </div>
+        }
+      />
 
       {/* Search */}
       <div className="relative mb-5" data-tour="tasks-search">
@@ -535,7 +536,7 @@ export default function TaskListPage() {
               setFilterCategory(null);
               setFilterPriority(null);
             }}
-            className="ml-auto text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="ml-auto text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             Remover filtro
           </button>
