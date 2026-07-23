@@ -1,49 +1,40 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { getRedirectResult } from "firebase/auth";
-import { auth } from "@/infrastructure/firebase/config";
 
+import { signInWithGoogleUseCase } from "@/lib/di/authDi";
+
+/**
+ * Completa o login Google iniciado via redirect (fallback quando o popup
+ * é bloqueado). O Firebase devolve o resultado na mesma origem.
+ */
 export default function AuthCallbackPage() {
   const router = useRouter();
+  const handled = useRef(false);
 
   useEffect(() => {
+    if (handled.current) return;
+    handled.current = true;
+
     const processRedirect = async () => {
       try {
-        console.log("[AuthCallback] Processing redirect result...");
-        const result = await getRedirectResult(auth);
-        console.log(
-          "[AuthCallback] Redirect result:",
-          result?.user?.email ?? "null",
-        );
-
-        if (result?.user) {
-          console.log(
-            "[AuthCallback] User authenticated, redirecting to dashboard",
-          );
-          // Add a small delay to ensure auth state is updated
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          router.push("/dashboard");
-        } else {
-          console.log(
-            "[AuthCallback] No user in redirect result, going back to login",
-          );
-          router.push("/login");
-        }
-      } catch (error) {
-        console.error("[AuthCallback] Error processing redirect:", error);
-        router.push("/login");
+        const user = await signInWithGoogleUseCase.completeRedirect();
+        router.replace(user ? "/dashboard" : "/login");
+      } catch {
+        router.replace("/login");
       }
     };
 
-    processRedirect();
+    void processRedirect();
   }, [router]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
-        <h1 className="text-2xl font-bold">Processando login...</h1>
+        <h1 className="text-2xl font-bold text-foreground">
+          Processando login...
+        </h1>
         <p className="text-muted-foreground">Por favor, aguarde.</p>
       </div>
     </div>

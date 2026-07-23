@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -15,6 +15,7 @@ import { Checkbox } from "@/presentation/components/ui/checkbox";
 import { useAuth } from "@/presentation/hooks/useAuth";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
 import { toast } from "@/presentation/lib/feedbackToast";
+import { getRememberedEmail } from "@/infrastructure/auth/rememberEmail";
 
 const loginSchema = z.object({
   email: z
@@ -30,11 +31,13 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export function LoginForm() {
   const router = useRouter();
   const { user, loading } = useAuthContext();
+  const redirectHandled = useRef(false);
   const {
     signIn,
     isSigningIn,
     signInError,
     signInWithGoogle,
+    completeGoogleRedirect,
     isSigningInWithGoogle,
     signInWithGoogleError,
   } = useAuth();
@@ -43,11 +46,24 @@ export function LoginForm() {
     register,
     control,
     handleSubmit,
+    getValues,
+    reset,
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "", rememberMe: false },
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
   });
+
+  useEffect(() => {
+    const email = getRememberedEmail();
+    if (email) {
+      reset({ email, password: "", rememberMe: true });
+    }
+  }, [reset]);
 
   useEffect(() => {
     if (user?.id && !loading) {
@@ -56,11 +72,21 @@ export function LoginForm() {
   }, [user?.id, loading, router]);
 
   useEffect(() => {
+    if (redirectHandled.current) return;
+    redirectHandled.current = true;
+    void completeGoogleRedirect();
+  }, [completeGoogleRedirect]);
+
+  useEffect(() => {
     if (signInError) toast.error(signInError);
   }, [signInError]);
 
+  useEffect(() => {
+    if (signInWithGoogleError) toast.error(signInWithGoogleError);
+  }, [signInWithGoogleError]);
+
   async function onSubmit(values: LoginFormValues) {
-    await signIn(values.email, values.password);
+    await signIn(values.email, values.password, values.rememberMe);
   }
 
   return (
@@ -193,7 +219,7 @@ export function LoginForm() {
         variant="outline"
         size="lg"
         className="w-full"
-        onClick={() => signInWithGoogle()}
+        onClick={() => signInWithGoogle(getValues("rememberMe"))}
         disabled={isSigningIn || isSigningInWithGoogle}
         loading={isSigningInWithGoogle}
         loadingText="Conectando..."

@@ -10,6 +10,10 @@ import {
   sendPasswordResetUseCase,
   signInWithGoogleUseCase,
 } from "@/lib/di/authDi";
+import {
+  clearRememberedEmail,
+  setRememberedEmail,
+} from "@/infrastructure/auth/rememberEmail";
 
 interface ActionState {
   isLoading: boolean;
@@ -45,11 +49,15 @@ export function useAuth() {
   });
 
   const signIn = useCallback(
-    async (email: string, password: string) => {
+    async (email: string, password: string, rememberMe = false) => {
       setSignInState({ isLoading: true, error: null });
       try {
-        await signInUseCase.execute({ email, password });
-        // Reset loading state before redirect to avoid button being stuck
+        await signInUseCase.execute({ email, password, rememberMe });
+        if (rememberMe) {
+          setRememberedEmail(email);
+        } else {
+          clearRememberedEmail();
+        }
         setSignInState({ isLoading: false, error: null });
         router.push("/dashboard");
       } catch (err) {
@@ -59,21 +67,43 @@ export function useAuth() {
     [router],
   );
 
-  const signInWithGoogle = useCallback(async () => {
-    setGoogleSignInState({ isLoading: true, error: null });
-    try {
-      await signInWithGoogleUseCase.execute();
-      // Reset loading state before redirect to avoid button being stuck
-      setGoogleSignInState({ isLoading: false, error: null });
-      router.push("/dashboard");
-    } catch (err) {
-      const message = toMessage(err);
-      // Ignore the canceled popup message
-      if (message.includes("cancelou")) {
+  const signInWithGoogle = useCallback(
+    async (rememberMe = false) => {
+      setGoogleSignInState({ isLoading: true, error: null });
+      try {
+        await signInWithGoogleUseCase.execute({ rememberMe });
         setGoogleSignInState({ isLoading: false, error: null });
-      } else {
+        router.push("/dashboard");
+      } catch (err) {
+        const message = toMessage(err);
+
+        if (message === "REDIRECT_IN_PROGRESS") {
+          // Navegação para o Google em andamento — mantém loading
+          return;
+        }
+
+        if (message.includes("cancelou")) {
+          setGoogleSignInState({ isLoading: false, error: null });
+          return;
+        }
+
         setGoogleSignInState({ isLoading: false, error: message });
       }
+    },
+    [router],
+  );
+
+  const completeGoogleRedirect = useCallback(async () => {
+    try {
+      const user = await signInWithGoogleUseCase.completeRedirect();
+      if (!user) return false;
+
+      setGoogleSignInState({ isLoading: true, error: null });
+      router.push("/dashboard");
+      return true;
+    } catch (err) {
+      setGoogleSignInState({ isLoading: false, error: toMessage(err) });
+      return false;
     }
   }, [router]);
 
@@ -122,6 +152,7 @@ export function useAuth() {
     signInError: signInState.error,
 
     signInWithGoogle,
+    completeGoogleRedirect,
     isSigningInWithGoogle: googleSignInState.isLoading,
     signInWithGoogleError: googleSignInState.error,
 
