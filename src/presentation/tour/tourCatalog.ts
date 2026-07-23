@@ -45,6 +45,7 @@ export const TOUR_CATALOG: TourCatalogItem[] = [
     id: "taskDetails",
     title: "Detalhes da Tarefa",
     description: "Veja o checklist de passos e as ações disponíveis em uma tarefa.",
+    // Rota base; o Guia resolve dinamicamente para `/tasks/{id}` (issue #55).
     route: "/tasks",
   },
   {

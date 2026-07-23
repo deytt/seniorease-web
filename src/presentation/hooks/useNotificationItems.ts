@@ -8,7 +8,7 @@ import type { INotificationRepository } from "@/domain/repositories/INotificatio
  * Lê a coleção `notifications/{id}` — somente-leitura, escrita é da Cloud Function.
  * Espelha o comportamento de `notificationHistoryProvider` do mobile.
  *
- * Não confundir com `useNotifications` (configura FCM foreground listener).
+ * Não confundir com o registro FCM em `AuthProvider` (token + listener).
  */
 export function useNotificationItems(repository: INotificationRepository) {
   const [items, setItems] = useState<NotificationItem[]>([]);

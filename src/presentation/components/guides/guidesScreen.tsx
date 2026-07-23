@@ -1,18 +1,42 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BookOpen, ChevronRight } from "lucide-react";
+import { toast } from "@/presentation/lib/feedbackToast";
 import { TOUR_CATALOG } from "@/presentation/tour/tourCatalog";
 import { setPendingTour } from "@/presentation/tour/pendingTour";
+import { resolveTourRoute } from "@/presentation/tour/resolveTourRoute";
 import { Button } from "@/presentation/components/ui/button";
+import { useAuthContext } from "@/presentation/providers/AuthProvider";
 
 export function GuidesScreen() {
   const router = useRouter();
+  const { user } = useAuthContext();
+  const [startingId, setStartingId] = useState<string | null>(null);
 
-  const startGuide = (tourId: string, route: string) => {
-    setPendingTour(tourId);
-    router.push(route);
+  const startGuide = async (tourId: string, route: string) => {
+    if (startingId) return;
+
+    setStartingId(tourId);
+    try {
+      const resolved = await resolveTourRoute(tourId, route, user?.id);
+
+      if (resolved.errorMessage) {
+        toast.info(resolved.errorMessage);
+        if (resolved.route === "/tasks" && tourId === "taskDetails") {
+          // Sem tarefa alvo: não dispara o tour na lista.
+          router.push(resolved.route);
+          return;
+        }
+      }
+
+      setPendingTour(tourId);
+      router.push(resolved.route);
+    } finally {
+      setStartingId(null);
+    }
   };
 
   return (
@@ -46,8 +70,9 @@ export function GuidesScreen() {
           <li key={item.id}>
             <button
               type="button"
-              onClick={() => startGuide(item.id, item.route)}
-              className="flex min-h-[72px] w-full cursor-pointer items-center gap-3 rounded-2xl border border-border bg-card p-4 text-left shadow-card transition-colors hover:bg-muted"
+              disabled={startingId !== null}
+              onClick={() => void startGuide(item.id, item.route)}
+              className="flex min-h-[72px] w-full cursor-pointer items-center gap-3 rounded-2xl border border-border bg-card p-4 text-left shadow-card transition-colors hover:bg-muted disabled:cursor-wait disabled:opacity-70"
             >
               <div className="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-secondary/15">
                 <BookOpen className="size-5 text-secondary" aria-hidden />
