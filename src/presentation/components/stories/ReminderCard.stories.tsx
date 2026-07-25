@@ -24,7 +24,7 @@ import type { Reminder } from "@/domain/entities/Reminder";
  * - `onDelete`: abre confirmação de exclusão
  *
  * ## Acessibilidade
- * - aria-label descritivo incluindo hora e período
+ * - aria-label descritivo incluindo data e horário (24h)
  * - Ícones com aria-hidden (redundante com texto)
  * - Labels em botões de ação para leitores de tela
  *
@@ -104,21 +104,6 @@ export const Default: Story = {
 export const Completed: Story = {
   args: {
     reminder: mockReminderCompleted,
-    onMarkDone: (id) => console.log(`✅ Marcar como concluído: ${id}`),
-    onEdit: (reminder) => console.log(`✏️ Editar: ${reminder.title}`),
-    onDelete: (reminder) => console.log(`🗑️ Deletar: ${reminder.title}`),
-  },
-  render: (args) => <ReminderCard {...args} />,
-};
-
-/**
- * Com opção de mostrar data: útil em listagens que abrangem múltiplos dias
- * ou quando o contexto de data não é óbvio.
- */
-export const WithDate: Story = {
-  args: {
-    reminder: mockReminderPending,
-    showDate: true,
     onMarkDone: (id) => console.log(`✅ Marcar como concluído: ${id}`),
     onEdit: (reminder) => console.log(`✏️ Editar: ${reminder.title}`),
     onDelete: (reminder) => console.log(`🗑️ Deletar: ${reminder.title}`),

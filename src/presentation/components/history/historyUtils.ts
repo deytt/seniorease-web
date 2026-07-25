@@ -1,11 +1,23 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  Accessibility,
   Award,
-  Calendar,
-  Check,
+  BadgeCheck,
+  BellPlus,
+  CheckCheck,
+  CheckCircle,
   ClipboardList,
+  Droplets,
+  Footprints,
+  Heart,
+  ListPlus,
+  Pencil,
   Pill,
-  Settings,
+  Receipt,
+  Trash2,
+  User,
+  Users,
+  UtensilsCrossed,
   Zap,
 } from "lucide-react";
 import type { HistoryEvent } from "@/domain/entities/HistoryEvent";
@@ -22,6 +34,70 @@ export interface HistoryEventVisual {
   icon: LucideIcon;
   iconClassName: string;
   ringClassName: string;
+}
+
+/** Cores de marca — espelha AppColors do mobile (fixas, inclusive dark/maximum).
+ * Classes estáticas para o Tailwind as gerar no CSS (não usar template strings).
+ * Usa `[color:#…]` em vez de `text-[#…]` para não ser remapeado no dark/maximum.
+ */
+const HISTORY_BRAND = {
+  primary: {
+    iconClassName: "[color:#2563eb]",
+    ringClassName: "bg-[rgba(37,99,235,0.13)] [color:#2563eb]",
+  },
+  secondary: {
+    iconClassName: "[color:#14b8a6]",
+    ringClassName: "bg-[rgba(20,184,166,0.13)] [color:#14b8a6]",
+  },
+  success: {
+    iconClassName: "[color:#22c55e]",
+    ringClassName: "bg-[rgba(34,197,94,0.13)] [color:#22c55e]",
+  },
+  warning: {
+    iconClassName: "[color:#f59e0b]",
+    ringClassName: "bg-[rgba(245,158,11,0.13)] [color:#f59e0b]",
+  },
+  danger: {
+    iconClassName: "[color:#ef4444]",
+    ringClassName: "bg-[rgba(239,68,68,0.13)] [color:#ef4444]",
+  },
+} as const;
+
+type HistoryBrandKey = keyof typeof HISTORY_BRAND;
+
+function brandVisual(
+  icon: LucideIcon,
+  brand: HistoryBrandKey,
+): HistoryEventVisual {
+  const classes = HISTORY_BRAND[brand];
+  return {
+    icon,
+    iconClassName: classes.iconClassName,
+    ringClassName: classes.ringClassName,
+  };
+}
+
+/** Ícone de conclusão por categoria — espelha `_completionIcon` do mobile. */
+function completionIcon(category?: string | null): LucideIcon {
+  switch (category) {
+    case "medication":
+      return Pill;
+    case "health":
+    case "appointment":
+      return Heart;
+    case "exercise":
+      return Footprints;
+    case "social":
+      return Users;
+    case "hydration":
+      return Droplets;
+    case "meal":
+      return UtensilsCrossed;
+    case "bills":
+      return Receipt;
+    default:
+      return CheckCircle;
+  }
 }
 
 const MONTHS_SHORT_PT = [
@@ -89,62 +165,41 @@ export function filterHistoryEventsForMode(
   return events.filter((event) => !isLowRelevanceHistoryType(event.type));
 }
 
+/**
+ * Aparência do evento — paridade com
+ * `history_visuals.dart` / `historyVisual` do mobile (issue #81 item 9).
+ */
 export function getHistoryEventVisual(event: HistoryEvent): HistoryEventVisual {
   if (
     event.type === HistoryActionType.streakAchievement ||
     event.title.toLowerCase().includes("conquista")
   ) {
-    return {
-      icon: Award,
-      iconClassName: "text-[#f59e0b]",
-      ringClassName:
-        "border-2 border-[#f59e0b] bg-[rgba(245,158,11,0.13)] text-[#f59e0b]",
-    };
+    return brandVisual(Award, "warning");
   }
 
   switch (event.type) {
     case HistoryActionType.taskCompleted:
     case HistoryActionType.reminderCompleted:
+      return brandVisual(completionIcon(event.category), "success");
     case HistoryActionType.taskStepCompleted:
-      return {
-        icon: Check,
-        iconClassName: "text-[#22c55e]",
-        ringClassName:
-          "border-2 border-[#22c55e] bg-[rgba(34,197,94,0.13)] text-[#22c55e]",
-      };
+      return brandVisual(CheckCheck, "secondary");
     case HistoryActionType.taskCreated:
+      return brandVisual(ListPlus, "primary");
     case HistoryActionType.reminderCreated:
-      return {
-        icon: Calendar,
-        iconClassName: "text-[#2563eb]",
-        ringClassName:
-          "border-2 border-[#2563eb] bg-[rgba(37,99,235,0.13)] text-[#2563eb]",
-      };
-    case HistoryActionType.accessibilityChanged:
-    case HistoryActionType.profileUpdated:
-    case HistoryActionType.accountVerified:
-      return {
-        icon: Settings,
-        iconClassName: "text-[#64748b]",
-        ringClassName:
-          "border-2 border-[#cbd5e1] bg-[#f8fafc] text-[#64748b]",
-      };
+      return brandVisual(BellPlus, "primary");
+    case HistoryActionType.reminderEdited:
+      return brandVisual(Pencil, "warning");
     case HistoryActionType.taskDeleted:
     case HistoryActionType.reminderDeleted:
-    case HistoryActionType.reminderEdited:
-      return {
-        icon: ClipboardList,
-        iconClassName: "text-[#64748b]",
-        ringClassName:
-          "border-2 border-[#cbd5e1] bg-[#f8fafc] text-[#64748b]",
-      };
+      return brandVisual(Trash2, "danger");
+    case HistoryActionType.accessibilityChanged:
+      return brandVisual(Accessibility, "secondary");
+    case HistoryActionType.profileUpdated:
+      return brandVisual(User, "primary");
+    case HistoryActionType.accountVerified:
+      return brandVisual(BadgeCheck, "success");
     default:
-      return {
-        icon: ClipboardList,
-        iconClassName: "text-[#64748b]",
-        ringClassName:
-          "border-2 border-[#cbd5e1] bg-[#f8fafc] text-[#64748b]",
-      };
+      return brandVisual(ClipboardList, "primary");
   }
 }
 
@@ -173,28 +228,28 @@ export const HISTORY_STAT_CARDS = [
     key: "thisWeek",
     label: "Tarefas esta semana",
     icon: ClipboardList,
-    iconWrapClassName: "bg-[rgba(37,99,235,0.13)] text-[#2563eb]",
+    iconWrapClassName: "bg-[rgba(37,99,235,0.13)] [color:#2563eb]",
     getValue: (stats: HistoryStatsView) => formatStatValue(stats.thisWeek),
   },
   {
     key: "streak",
     label: "Sequência atual",
     icon: Zap,
-    iconWrapClassName: "bg-[rgba(245,158,11,0.13)] text-[#f59e0b]",
+    iconWrapClassName: "bg-[rgba(245,158,11,0.13)] [color:#f59e0b]",
     getValue: (stats: HistoryStatsView) => formatStreakLabel(stats.streak),
   },
   {
     key: "totalCompleted",
     label: "Conquistas",
     icon: Award,
-    iconWrapClassName: "bg-[rgba(34,197,94,0.13)] text-[#22c55e]",
+    iconWrapClassName: "bg-[rgba(34,197,94,0.13)] [color:#22c55e]",
     getValue: (stats: HistoryStatsView) => formatStatValue(stats.totalCompleted),
   },
   {
     key: "reminders",
     label: "Lembretes concluídos",
     icon: Pill,
-    iconWrapClassName: "bg-[rgba(20,184,166,0.13)] text-[#14b8a6]",
+    iconWrapClassName: "bg-[rgba(20,184,166,0.13)] [color:#14b8a6]",
     getValue: (stats: HistoryStatsView) => formatStatValue(stats.thisMonth),
   },
 ] as const;

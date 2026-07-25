@@ -1,65 +1,103 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import React, { useState } from "react";
-import { ReminderFilterChips } from "@/presentation/components/reminders/reminderFilterChips";
+import { Filter } from "lucide-react";
+import { ReminderActiveFilterBar } from "@/presentation/components/reminders/reminderActiveFilterBar";
+import { ReminderFilterSheet } from "@/presentation/components/reminders/reminderFilterSheet";
 import {
   DEFAULT_REMINDER_LIST_FILTER,
-  REMINDER_LIST_FILTER_OPTIONS,
+  isReminderListFilterEmpty,
+  reminderListFilterActiveCount,
   type ReminderListFilter,
 } from "@/presentation/components/reminders/reminderFilter";
+import { Button } from "@/presentation/components/ui/button";
 
 /**
- * Chips exclusivos de filtro da lista de lembretes (paridade mobile).
+ * Filtros da lista de lembretes — modal + chips ativos (paridade mobile).
  */
 const meta = {
-  title: "Features/ReminderFilterChips",
-  component: ReminderFilterChips,
+  title: "Features/ReminderFilters",
+  component: ReminderActiveFilterBar,
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
     docs: {
       description: {
         component:
-          "Filtro exclusivo: Hoje, Medicação ou Consultas. Um chip ativo por vez; padrão Hoje.",
+          "Botão Filtrar abre o modal (Hoje + categorias). Chips ativos removem filtros individualmente.",
       },
     },
   },
-} satisfies Meta<typeof ReminderFilterChips>;
+} satisfies Meta<typeof ReminderActiveFilterBar>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function ChipsDemo({
+function FiltersDemo({
   initial = DEFAULT_REMINDER_LIST_FILTER,
 }: {
   initial?: ReminderListFilter;
 }) {
   const [filter, setFilter] = useState<ReminderListFilter>(initial);
-  const label =
-    REMINDER_LIST_FILTER_OPTIONS.find((option) => option.id === filter)
-      ?.label ?? filter;
+  const [open, setOpen] = useState(false);
+  const count = reminderListFilterActiveCount(filter);
 
   return (
     <div className="w-full max-w-md space-y-4">
-      <ReminderFilterChips value={filter} onChange={setFilter} />
-      <p className="text-sm text-muted-foreground">
-        Ativo: <span className="font-bold">{label}</span>
-      </p>
+      <Button
+        type="button"
+        variant="outline"
+        className="relative min-h-11 cursor-pointer rounded-[14px]"
+        onClick={() => setOpen(true)}
+      >
+        <Filter className="size-4" aria-hidden />
+        Filtrar
+        {count > 0 ? (
+          <span className="absolute -right-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+            {count}
+          </span>
+        ) : null}
+      </Button>
+
+      {!isReminderListFilterEmpty(filter) ? (
+        <ReminderActiveFilterBar
+          filter={filter}
+          onRemoveToday={() =>
+            setFilter((prev) => ({ ...prev, isToday: false }))
+          }
+          onRemoveCategory={() =>
+            setFilter((prev) => ({ ...prev, category: null }))
+          }
+        />
+      ) : (
+        <p className="text-sm text-muted-foreground">Nenhum filtro ativo</p>
+      )}
+
+      <ReminderFilterSheet
+        open={open}
+        onOpenChange={setOpen}
+        initialFilter={filter}
+        onApply={setFilter}
+      />
     </div>
   );
 }
 
 export const Default: Story = {
   args: {
-    value: DEFAULT_REMINDER_LIST_FILTER,
-    onChange: () => {},
+    filter: DEFAULT_REMINDER_LIST_FILTER,
+    onRemoveToday: () => {},
+    onRemoveCategory: () => {},
   },
-  render: () => <ChipsDemo />,
+  render: () => <FiltersDemo />,
 };
 
-export const MedicationSelected: Story = {
+export const TodayAndMedication: Story = {
   args: {
-    value: "medication",
-    onChange: () => {},
+    filter: { isToday: true, category: "medication" },
+    onRemoveToday: () => {},
+    onRemoveCategory: () => {},
   },
-  render: () => <ChipsDemo initial="medication" />,
+  render: () => (
+    <FiltersDemo initial={{ isToday: true, category: "medication" }} />
+  ),
 };

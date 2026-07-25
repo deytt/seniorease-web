@@ -1,20 +1,23 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import React, { useState } from "react";
-import { Plus } from "lucide-react";
-import { ReminderFilterChips } from "@/presentation/components/reminders/reminderFilterChips";
+import { Filter, Plus } from "lucide-react";
+import { ReminderActiveFilterBar } from "@/presentation/components/reminders/reminderActiveFilterBar";
+import { ReminderFilterSheet } from "@/presentation/components/reminders/reminderFilterSheet";
 import { ReminderCard } from "@/presentation/components/reminders/reminderCard";
 import { Button } from "@/presentation/components/ui/button";
 import {
   DEFAULT_REMINDER_LIST_FILTER,
-  REMINDER_LIST_FILTER_OPTIONS,
+  EMPTY_REMINDER_LIST_FILTER,
+  isReminderListFilterEmpty,
   matchesReminderListFilter,
+  reminderListFilterActiveCount,
   type ReminderListFilter,
 } from "@/presentation/components/reminders/reminderFilter";
 import { isReminderToday } from "@/presentation/components/reminders/reminderVisuals";
 import type { Reminder } from "@/domain/entities/Reminder";
 
 /**
- * Demonstração integrada da página `/reminders` com chips exclusivos.
+ * Demonstração integrada da página `/reminders` com filtros do mobile.
  */
 const meta = {
   title: "Integrations/ReminderListPage",
@@ -25,7 +28,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Demonstração integrada da página de Lembretes com filtros exclusivos (Hoje / Medicação / Consultas).",
+          "Demonstração integrada da página de Lembretes com modal de filtros (Hoje + categoria) e hora 24h.",
       },
     },
   },
@@ -96,15 +99,13 @@ const ReminderListIntegration = () => {
   const [filter, setFilter] = useState<ReminderListFilter>(
     DEFAULT_REMINDER_LIST_FILTER,
   );
+  const [open, setOpen] = useState(false);
   const [reminders, setReminders] = useState(mockReminders);
+  const count = reminderListFilterActiveCount(filter);
 
   const filteredReminders = reminders.filter((reminder) =>
     matchesReminderListFilter(reminder, filter, isReminderToday),
   );
-
-  const activeLabel =
-    REMINDER_LIST_FILTER_OPTIONS.find((option) => option.id === filter)
-      ?.label ?? filter;
 
   const handleMarkDone = (reminderId: string) => {
     setReminders((prev) =>
@@ -122,44 +123,69 @@ const ReminderListIntegration = () => {
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-6 p-6">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold">Lembretes</h1>
           <p className="mt-1 text-muted-foreground">
             Gerencie seus lembretes e compromissos
           </p>
         </div>
-        <Button
-          className="min-h-11 cursor-pointer rounded-[14px]"
-          onClick={() => console.log("Navegar para /reminders/create")}
-        >
-          <Plus className="mr-2 size-4" aria-hidden />
-          Novo Lembrete
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="relative min-h-11 cursor-pointer rounded-[14px]"
+            onClick={() => setOpen(true)}
+          >
+            <Filter className="size-4" aria-hidden />
+            Filtrar
+            {count > 0 ? (
+              <span className="absolute -right-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+                {count}
+              </span>
+            ) : null}
+          </Button>
+          <Button
+            className="min-h-11 cursor-pointer rounded-[14px]"
+            onClick={() => console.log("Navegar para /reminders/create")}
+          >
+            <Plus className="mr-2 size-4" aria-hidden />
+            Novo Lembrete
+          </Button>
+        </div>
       </div>
 
-      <ReminderFilterChips value={filter} onChange={setFilter} />
+      {!isReminderListFilterEmpty(filter) ? (
+        <ReminderActiveFilterBar
+          filter={filter}
+          onRemoveToday={() =>
+            setFilter((prev) => ({ ...prev, isToday: false }))
+          }
+          onRemoveCategory={() =>
+            setFilter((prev) => ({ ...prev, category: null }))
+          }
+        />
+      ) : null}
 
       <p className="text-sm text-muted-foreground">
-        Filtro ativo: <span className="font-bold">{activeLabel}</span> —{" "}
-        {filteredReminders.length} de {reminders.length}
+        {filteredReminders.length} de {reminders.length} lembretes
       </p>
 
       <div className="space-y-3 border-t pt-6">
         {filteredReminders.length === 0 ? (
           <div className="py-12 text-center">
             <p className="text-muted-foreground">
-              Nenhum lembrete encontrado para este filtro
+              Nenhum lembrete com estes filtros
             </p>
-            {filter !== "today" && (
+            {!isReminderListFilterEmpty(filter) ? (
               <Button
                 variant="outline"
                 className="mt-4 cursor-pointer rounded-[14px]"
-                onClick={() => setFilter("today")}
+                onClick={() => setFilter(EMPTY_REMINDER_LIST_FILTER)}
               >
-                Ver lembretes de hoje
+                Mostrar todos os lembretes
               </Button>
-            )}
+            ) : null}
           </div>
         ) : (
           filteredReminders.map((reminder) => (
@@ -169,11 +195,17 @@ const ReminderListIntegration = () => {
               onMarkDone={handleMarkDone}
               onEdit={handleEdit}
               onDelete={handleDelete}
-              showDate={filter !== "today"}
             />
           ))
         )}
       </div>
+
+      <ReminderFilterSheet
+        open={open}
+        onOpenChange={setOpen}
+        initialFilter={filter}
+        onApply={setFilter}
+      />
     </div>
   );
 };

@@ -53,7 +53,7 @@ export function NotificationBell({ unreadCount, className }: NotificationBellPro
         href="/notifications"
         aria-label={ariaLabel}
         className={cn(
-          "relative inline-flex h-11 w-11 flex-shrink-0 items-center justify-center",
+          "a11y-touch-target relative inline-flex h-11 w-11 flex-shrink-0 items-center justify-center",
           "rounded-xl bg-primary/10 text-primary transition-colors hover:bg-primary/20",
           className,
         )}

@@ -59,17 +59,20 @@ export function getReminderCategoryVisual(
   }
 }
 
-/** Hora no formato 12h (ex.: "8:00") — Figma Reminder Center. */
+/** Hora no padrão brasileiro 24h (ex.: "13:45") — issue #81 item 4. */
 export function formatReminderTime(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
-  const hours = d.getHours() % 12 || 12;
+  const hours = String(d.getHours()).padStart(2, "0");
   const minutes = String(d.getMinutes()).padStart(2, "0");
   return `${hours}:${minutes}`;
 }
 
-export function formatReminderPeriod(date: Date | string): string {
+/** Data curta `dd/MM` — alinhado ao mobile `formatReminderDayMonth`. */
+export function formatReminderDayMonth(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
-  return d.getHours() < 12 ? "AM" : "PM";
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  return `${day}/${month}`;
 }
 
 /** Data `dd/MM/yyyy` — alinhado ao mobile. */

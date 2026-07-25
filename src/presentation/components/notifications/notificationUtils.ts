@@ -8,6 +8,10 @@ export function getNotificationEntityHref(
     return `/tasks/${entityId}`;
   }
 
+  if (entityType === "reminder" && entityId) {
+    return `/reminders?highlight=${encodeURIComponent(entityId)}`;
+  }
+
   return "/reminders";
 }
 
