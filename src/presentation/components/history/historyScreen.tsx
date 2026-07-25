@@ -91,12 +91,12 @@ function HistoryTimelineEvent({ event }: { event: HistoryEvent }) {
     <div className="flex w-full items-center gap-4">
       <div
         className={cn(
-          "flex size-8 shrink-0 items-center justify-center rounded-full",
+          "flex size-10 shrink-0 items-center justify-center rounded-[14px]",
           visual.ringClassName,
         )}
         aria-hidden
       >
-        <Icon className="size-3.5" />
+        <Icon className={cn("size-5", visual.iconClassName)} aria-hidden />
       </div>
 
       <HistoryCard className="min-w-0 flex-1 p-[17px]">

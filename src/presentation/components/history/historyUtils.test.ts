@@ -5,9 +5,11 @@ import {
   filterHistoryEventsForMode,
   formatHistoryEventDate,
   formatStreakLabel,
+  getHistoryEventVisual,
   getStreakBannerTitle,
   shouldShowStreakBanner,
 } from "@/presentation/components/history/historyUtils";
+import { Trash2, Accessibility, Pill } from "lucide-react";
 
 function makeEvent(
   overrides: Partial<HistoryEvent> & Pick<HistoryEvent, "type" | "title">,
@@ -81,5 +83,36 @@ describe("historyUtils", () => {
       HistoryActionType.taskCompleted,
       HistoryActionType.taskCreated,
     ]);
+  });
+
+  it("usa ícones e cores alinhados ao mobile (history_visuals.dart)", () => {
+    const deleted = getHistoryEventVisual(
+      makeEvent({
+        type: HistoryActionType.taskDeleted,
+        title: "Excluiu tarefa",
+      }),
+    );
+    expect(deleted.icon).toBe(Trash2);
+    expect(deleted.iconClassName).toContain("#ef4444");
+    expect(deleted.ringClassName).toContain("239,68,68");
+
+    const accessibility = getHistoryEventVisual(
+      makeEvent({
+        type: HistoryActionType.accessibilityChanged,
+        title: "Ajustou acessibilidade",
+      }),
+    );
+    expect(accessibility.icon).toBe(Accessibility);
+    expect(accessibility.iconClassName).toContain("#14b8a6");
+
+    const medCompleted = getHistoryEventVisual(
+      makeEvent({
+        type: HistoryActionType.reminderCompleted,
+        title: "Lembrete",
+        category: "medication",
+      }),
+    );
+    expect(medCompleted.icon).toBe(Pill);
+    expect(medCompleted.iconClassName).toContain("#22c55e");
   });
 });
