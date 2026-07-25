@@ -365,7 +365,7 @@ export default function AccessibilityCenterPage() {
           <Button
             type="button"
             variant="outline"
-            className="w-full"
+            className="a11y-touch-target w-full"
             data-tour="a11y-reset"
             onClick={() => setIsResetDialogOpen(true)}
           >

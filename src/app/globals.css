@@ -325,6 +325,7 @@
 /* ==========================================================================
    Botões Maiores (largeTouchTargets) — Módulo 1
    Alvo mínimo de 64×64px, conforme techContext.md / ADR-009.
+   !important vence utilitários Tailwind (h-11, size-11, h-14).
    ========================================================================== */
 .a11y-large-touch button:not(.dialog-close-btn),
 .a11y-large-touch [role="button"]:not(.dialog-close-btn),
@@ -334,15 +335,24 @@
 .a11y-large-touch input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
 .a11y-large-touch select,
 .a11y-large-touch textarea {
-  min-height: 64px;
+  min-height: 64px !important;
+}
+
+/* Ícones / links de ação (sino, ?) — largura mínima 64px, sem forçar w-full */
+.a11y-large-touch button:not(.dialog-close-btn):not(.w-full),
+.a11y-large-touch [role="button"]:not(.dialog-close-btn):not(.w-full),
+.a11y-large-touch a[role="button"]:not(.w-full),
+.a11y-large-touch a[data-slot="button"]:not(.w-full),
+.a11y-large-touch .a11y-touch-target {
+  min-width: 64px !important;
 }
 
 /* Botão fechar do modal: mantém 44px mesmo com alvos maiores */
 .a11y-large-touch .dialog-close-btn {
-  min-height: 44px;
-  min-width: 44px;
-  height: 44px;
-  width: 44px;
+  min-height: 44px !important;
+  min-width: 44px !important;
+  height: 44px !important;
+  width: 44px !important;
 }
 
 /* Slider de tamanho da fonte — trilho fino + bolinha amarela no contraste máximo */
@@ -539,12 +549,17 @@ html[data-interface-mode="basic"] .advanced-only {
 
 .dark select {
   color-scheme: dark;
-  background-color: var(--card);
+  background-color: var(--background);
   color: var(--foreground);
 }
 
 .dark select option {
-  background-color: var(--card);
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+.dark textarea {
+  background-color: var(--background);
   color: var(--foreground);
 }
 

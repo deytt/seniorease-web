@@ -388,8 +388,6 @@ function RemindersPageContent() {
                   id={`reminder-${reminder.id}`}
                   className={cn(
                     busyId === reminder.id && "pointer-events-none opacity-70",
-                    highlightId === reminder.id &&
-                      "rounded-[16px] ring-2 ring-primary ring-offset-2 ring-offset-background transition-shadow",
                   )}
                 >
                   <ReminderCard
@@ -398,6 +396,11 @@ function RemindersPageContent() {
                     onEdit={handleEdit}
                     onDelete={setReminderToDelete}
                     completing={busyId === reminder.id}
+                    className={
+                      highlightId === reminder.id
+                        ? "ring-2 ring-primary"
+                        : undefined
+                    }
                   />
                 </div>
               ))}
