@@ -431,8 +431,8 @@ html[data-interface-mode="basic"] .advanced-only {
    ========================================================================== */
 
 /* 1. bg-primary sólido → amarelo + texto preto.
-      Filhos diretos também ficam pretos (corrige ícone text-white no
-      CompletedStepCheck e ícones dentro de botões default). */
+      Só filhos diretos — `*` quebrava o ProfileHelpCard (ícone/botão
+      bg-primary-foreground + text-primary ficavam pretos sobre preto). */
 .dark[data-contrast="maximum"] .bg-primary {
   background-color: var(--primary) !important;
   color: var(--primary-foreground) !important;
@@ -464,7 +464,8 @@ html[data-interface-mode="basic"] .advanced-only {
 /* 3. bg-primary-light (#eff6ff ≈ branco) → amarelo sólido no contraste máximo.
       Sem isso, text-primary (amarelo) sobre bg-primary-light (branco) é invisível.
       Afeta: ícone ListOrdered na tela de Modo Guiado, número do passo atual,
-      caixa de dica (Info) dentro do GuidedTaskScreen. */
+      caixa de dica (Info) dentro do GuidedTaskScreen.
+      Só filhos diretos — mesmo motivo do ProfileHelpCard. */
 .dark[data-contrast="maximum"] .bg-primary-light {
   background-color: var(--primary) !important;
   color: var(--primary-foreground) !important;
