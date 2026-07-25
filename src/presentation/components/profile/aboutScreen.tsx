@@ -35,7 +35,7 @@ export function AboutScreen() {
       >
         <div className="space-y-6">
           <div
-            className="rounded-[14px] border border-primary/20 bg-primary-light p-4"
+            className="rounded-[14px] border border-border bg-card p-4"
             data-tour="about-purpose"
           >
             <div className="flex items-start gap-3">

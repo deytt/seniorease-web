@@ -196,14 +196,16 @@ export default function AccessibilityCenterPage() {
                 }}
                 className="font-size-slider w-full h-2 rounded-full appearance-none cursor-pointer bg-input accent-primary"
               />
+              {/*
+                Só extremos — paridade mobile (font_size_slider_card.dart).
+                Quatro labels em justify-between estouram em mobile com fonte 125%.
+              */}
               <div
-                className="flex justify-between text-sm text-muted-foreground"
+                className="flex justify-between gap-2 text-sm leading-tight text-muted-foreground"
                 aria-hidden="true"
               >
-                <span>Pequena</span>
-                <span>Média</span>
-                <span>Grande</span>
-                <span>Extra Grande</span>
+                <span className="shrink-0">Pequena</span>
+                <span className="shrink-0 text-right">Extra Grande</span>
               </div>
             </div>
           </CardContent>
@@ -250,7 +252,10 @@ export default function AccessibilityCenterPage() {
               <p className="mb-3 mt-1 text-sm text-muted-foreground">
                 Controla o espaço entre botões, cards e campos do formulário.
               </p>
-              <div className="grid grid-cols-3 gap-3" role="group">
+              <div
+                className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3"
+                role="group"
+              >
                 {(
                   [
                     {
@@ -279,17 +284,19 @@ export default function AccessibilityCenterPage() {
                     aria-pressed={preferences.spacing === key}
                     onClick={() => setField("spacing", key)}
                     className={cn(
-                      "flex flex-col items-center gap-1 px-3 py-4 rounded-xl border-2 font-medium transition-colors min-h-[80px]",
+                      "flex min-h-11 min-w-0 flex-col items-center justify-center gap-0.5 rounded-xl border-2 px-2 py-3 font-medium transition-colors sm:min-h-[80px] sm:gap-1 sm:px-3 sm:py-4",
                       preferences.spacing === key
                         ? "border-primary bg-primary/5 text-primary"
                         : "border-border bg-muted/30 text-muted-foreground hover:border-primary/40",
                     )}
                   >
-                    <span className="text-xl" aria-hidden="true">
+                    <span className="text-lg sm:text-xl" aria-hidden="true">
                       {emoji}
                     </span>
-                    <span className="text-sm font-semibold">{label}</span>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="max-w-full text-sm font-semibold leading-tight text-balance">
+                      {label}
+                    </span>
+                    <span className="max-w-full text-sm leading-tight text-muted-foreground text-balance">
                       {sublabel}
                     </span>
                   </button>
@@ -358,7 +365,7 @@ export default function AccessibilityCenterPage() {
           <Button
             type="button"
             variant="outline"
-            className="w-full"
+            className="a11y-touch-target w-full"
             data-tour="a11y-reset"
             onClick={() => setIsResetDialogOpen(true)}
           >

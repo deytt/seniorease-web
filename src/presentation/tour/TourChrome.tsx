@@ -24,8 +24,8 @@ export function TourHelpButton({
     <Button
       type="button"
       variant="outline"
-      size="icon"
-      className="size-11 shrink-0 cursor-pointer rounded-[14px]"
+      size="icon-sm"
+      className="a11y-touch-target shrink-0 cursor-pointer rounded-[14px]"
       onClick={onClick}
       aria-label={label}
     >

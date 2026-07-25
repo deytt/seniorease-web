@@ -172,7 +172,7 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
           <textarea
             id="description"
             placeholder="Adicione mais detalhes..."
-            className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-muted disabled:cursor-not-allowed"
+            className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
             rows={3}
             maxLength={100}
             {...register("description")}
@@ -206,7 +206,7 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
           </Label>
           <select
             id="priority"
-            className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-muted disabled:cursor-not-allowed"
+            className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
             {...register("priority")}
             disabled={isSubmitting}
           >
@@ -229,7 +229,7 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
           </Label>
           <select
             id="category"
-            className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-muted disabled:cursor-not-allowed"
+            className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
             {...register("category")}
             disabled={isSubmitting}
           >
@@ -291,7 +291,7 @@ export function CreateTaskForm({ onSuccess, formRef }: CreateTaskFormProps) {
           />
           <textarea
             placeholder="Instrução do passo..."
-            className="w-full px-3 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-muted disabled:cursor-not-allowed"
+            className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
             rows={2}
             value={stepInstruction}
             onChange={(e) => setStepInstruction(e.target.value)}

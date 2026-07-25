@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -18,7 +19,6 @@ import {
   REMINDER_CATEGORY_LABELS,
   type ReminderCategory,
 } from "@/domain/entities/ReminderCategory";
-import { cn } from "@/lib/utils";
 
 const TITLE_MAX = 30;
 const SUBMIT_DELAY_MS = 2000;
@@ -72,7 +72,14 @@ export function CreateReminderForm({
   const { createReminderUseCase, updateReminderUseCase } = getRemindersDi();
   const isEditing = Boolean(initial);
   const isBasicMode = preferences.interfaceMode === "basic";
-  const categories = isBasicMode ? BASIC_MODE_CATEGORIES : REMINDER_CATEGORIES;
+  const categories = useMemo(() => {
+    const base = isBasicMode ? BASIC_MODE_CATEGORIES : REMINDER_CATEGORIES;
+    const current = initial?.category;
+    if (current && !base.includes(current)) {
+      return [...base, current];
+    }
+    return base;
+  }, [isBasicMode, initial?.category]);
 
   const {
     register,
@@ -192,7 +199,7 @@ export function CreateReminderForm({
             placeholder="Ex: Tomar com alimento"
             rows={3}
             maxLength={200}
-            className="w-full rounded-[14px] border border-input px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:bg-muted"
+            className="w-full rounded-[14px] border border-input bg-background px-3 py-2 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
             {...register("message")}
             disabled={isSubmitting}
           />
@@ -206,42 +213,21 @@ export function CreateReminderForm({
       </div>
 
       <div className="space-y-2" data-tour="create-reminder-category">
-        <Label id="category-label">
+        <Label htmlFor="category">
           Categoria <span className="text-destructive">*</span>
         </Label>
-        <Controller
-          name="category"
-          control={control}
-          render={({ field }) => (
-            <div
-              className="flex flex-wrap gap-2"
-              role="radiogroup"
-              aria-labelledby="category-label"
-            >
-              {categories.map((category) => {
-                const selected = field.value === category;
-                return (
-                  <button
-                    key={category}
-                    type="button"
-                    role="radio"
-                    aria-checked={selected}
-                    disabled={isSubmitting}
-                    onClick={() => field.onChange(category)}
-                    className={cn(
-                      "min-h-11 cursor-pointer rounded-[14px] border px-4 py-2 text-sm font-semibold transition-colors",
-                      selected
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground",
-                    )}
-                  >
-                    {REMINDER_CATEGORY_LABELS[category]}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        />
+        <select
+          id="category"
+          className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
+          {...register("category")}
+          disabled={isSubmitting}
+        >
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {REMINDER_CATEGORY_LABELS[category]}
+            </option>
+          ))}
+        </select>
         {errors.category && (
           <p className="flex items-center gap-2 text-sm text-destructive">
             <AlertCircle className="size-4" aria-hidden />
@@ -270,26 +256,28 @@ export function CreateReminderForm({
         )}
       </div>
 
-      <Button
-        type="submit"
-        className="w-full cursor-pointer rounded-[14px]"
-        size="sm"
-        loading={isSubmitting}
-        loadingText={isEditing ? "Salvando..." : "Criando lembrete..."}
-        data-tour="create-reminder-submit"
-      >
-        {isEditing ? "Salvar alterações" : "Criar Lembrete"}
-      </Button>
-
-      <Button
-        type="button"
-        variant="outline"
-        className="w-full cursor-pointer rounded-[14px]"
-        onClick={() => router.back()}
-        disabled={isSubmitting}
-      >
-        Cancelar
-      </Button>
+      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="w-full cursor-pointer rounded-[14px]"
+          onClick={() => router.back()}
+          disabled={isSubmitting}
+        >
+          Cancelar
+        </Button>
+        <Button
+          type="submit"
+          size="sm"
+          className="w-full cursor-pointer rounded-[14px]"
+          loading={isSubmitting}
+          loadingText={isEditing ? "Salvando..." : "Criando lembrete..."}
+          data-tour="create-reminder-submit"
+        >
+          {isEditing ? "Salvar alterações" : "Criar Lembrete"}
+        </Button>
+      </div>
     </form>
   );
 }

@@ -1,28 +1,31 @@
 import type { ReminderCategory } from "@/domain/entities/ReminderCategory";
+import { REMINDER_CATEGORY_LABELS } from "@/domain/entities/ReminderCategory";
 
 /**
- * Filtro exclusivo da lista de lembretes — paridade com o mobile
- * (`ReminderListFilter`: today | medication | appointments).
+ * Filtro combinável da lista de lembretes — paridade com o mobile
+ * (`ReminderFilter`: isToday + category opcional).
  */
-export type ReminderListFilter = "today" | "medication" | "appointments";
+export interface ReminderListFilter {
+  isToday: boolean;
+  category: ReminderCategory | null;
+}
 
-export const DEFAULT_REMINDER_LIST_FILTER: ReminderListFilter = "today";
+/** Sem filtros — mostra todos os lembretes (padrão mobile). */
+export const EMPTY_REMINDER_LIST_FILTER: ReminderListFilter = {
+  isToday: false,
+  category: null,
+};
 
-export const REMINDER_LIST_FILTER_OPTIONS: Array<{
-  id: ReminderListFilter;
-  label: string;
-}> = [
-  { id: "today", label: "Hoje" },
-  { id: "medication", label: "Medicação" },
-  { id: "appointments", label: "Consultas" },
-];
+export const DEFAULT_REMINDER_LIST_FILTER = EMPTY_REMINDER_LIST_FILTER;
 
-export function reminderListFilterCategory(
+export function isReminderListFilterEmpty(filter: ReminderListFilter): boolean {
+  return !filter.isToday && filter.category === null;
+}
+
+export function reminderListFilterActiveCount(
   filter: ReminderListFilter,
-): ReminderCategory | null {
-  if (filter === "medication") return "medication";
-  if (filter === "appointments") return "appointment";
-  return null;
+): number {
+  return (filter.isToday ? 1 : 0) + (filter.category ? 1 : 0);
 }
 
 export function matchesReminderListFilter(
@@ -30,10 +33,22 @@ export function matchesReminderListFilter(
   filter: ReminderListFilter,
   isToday: (scheduledAt: Date | string) => boolean,
 ): boolean {
-  if (filter === "today") {
-    return isToday(reminder.scheduledAt);
+  if (filter.isToday && !isToday(reminder.scheduledAt)) {
+    return false;
   }
+  if (filter.category !== null && reminder.category !== filter.category) {
+    return false;
+  }
+  return true;
+}
 
-  const category = reminderListFilterCategory(filter);
-  return category !== null && reminder.category === category;
+export function reminderFilterChipLabel(
+  filter: ReminderListFilter,
+): { today?: string; category?: string } {
+  return {
+    today: filter.isToday ? "Hoje" : undefined,
+    category: filter.category
+      ? REMINDER_CATEGORY_LABELS[filter.category]
+      : undefined,
+  };
 }

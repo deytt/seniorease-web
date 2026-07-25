@@ -19,6 +19,9 @@ interface SegmentedOptionGroupProps<T extends string> {
  * Seletor em cards (não dropdown) — clareza acima de completude
  * (productContext.md): o usuário vê e toca todas as opções de uma vez,
  * sem precisar abrir um menu.
+ *
+ * Em viewports estreitas (fonte 125% + espaçoso) empilha em 1 coluna
+ * para não estourar o layout (issue #81 item 7).
  */
 export function SegmentedOptionGroup<T extends string>({
   options,
@@ -30,10 +33,12 @@ export function SegmentedOptionGroup<T extends string>({
     <div
       role="radiogroup"
       aria-label={ariaLabel}
-      className="grid gap-3"
-      style={{
-        gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))`,
-      }}
+      className={cn(
+        "grid grid-cols-1 gap-3",
+        options.length === 2 && "sm:grid-cols-2",
+        options.length === 3 && "sm:grid-cols-3",
+        options.length >= 4 && "sm:grid-cols-2 md:grid-cols-4",
+      )}
     >
       {options.map((option) => {
         const isSelected = option.value === value;
@@ -46,16 +51,18 @@ export function SegmentedOptionGroup<T extends string>({
             aria-checked={isSelected}
             onClick={() => onChange(option.value)}
             className={cn(
-              "flex min-h-16 flex-col items-center justify-center gap-0.5 rounded-2xl border-2 px-3 py-3 text-center transition-colors",
+              "flex min-h-11 min-w-0 flex-col items-center justify-center gap-0.5 rounded-2xl border-2 px-2 py-3 text-center transition-colors sm:min-h-16 sm:px-3",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2",
               isSelected
                 ? "border-primary bg-primary-light text-primary"
                 : "border-border bg-card text-foreground hover:border-primary/40",
             )}
           >
-            <span className="text-base font-semibold">{option.label}</span>
+            <span className="max-w-full text-base font-semibold leading-tight text-balance">
+              {option.label}
+            </span>
             {option.description && (
-              <span className="text-sm text-muted-foreground">
+              <span className="max-w-full text-sm leading-tight text-muted-foreground text-balance">
                 {option.description}
               </span>
             )}

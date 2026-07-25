@@ -34,7 +34,7 @@ export const remindersListTourSteps: DriveStep[] = [
     popover: {
       title: "Filtrar lembretes",
       description:
-        "Escolha Hoje, Medicação ou Consultas. Só um filtro fica ativo de cada vez, como no aplicativo do celular.",
+        "Toque em Filtrar para ver lembretes de hoje e por categoria (medicação, consulta e outras). Você pode combinar os dois filtros.",
       side: "bottom",
       align: "start",
     },
@@ -44,7 +44,7 @@ export const remindersListTourSteps: DriveStep[] = [
     popover: {
       title: "Seus lembretes",
       description:
-        "Cada cartão mostra o horário e a categoria. Você pode marcar como concluído, editar ou excluir.",
+        "Cada cartão mostra a data, o horário e a categoria. Você pode marcar como concluído, editar ou excluir.",
       side: "top",
       align: "start",
     },
