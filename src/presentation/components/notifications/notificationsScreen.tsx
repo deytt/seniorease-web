@@ -5,12 +5,12 @@ import { Bell, CheckSquare2 } from "lucide-react";
 
 import type { NotificationItem } from "@/domain/entities/NotificationItem";
 import { cn } from "@/lib/utils";
-import { BackNavigationButton } from "@/presentation/components/ui/backNavigationButton";
 import {
   formatNotificationTime,
   getNotificationEntityHref,
   getNotificationEntityLabel,
 } from "@/presentation/components/notifications/notificationUtils";
+import { PageHeader } from "@/presentation/components/ui/pageHeader";
 import { useNotificationsTour } from "@/presentation/hooks/useNotificationsTour";
 import {
   TourHelpButton,
@@ -80,27 +80,20 @@ export function NotificationsScreen({
 
   return (
     <div className="pb-20">
-      <header
-        className="mb-6 flex items-center gap-4"
-        data-tour="notifications-header"
-      >
-        <BackNavigationButton
-          href="/dashboard"
-          label="Voltar ao Dashboard"
-        />
-        <div className="flex-1">
-          <h1 className="page-title">
-            Notificações
-          </h1>
-          <p className="mt-1 text-base text-muted-foreground">
-            Avisos enviados sobre tarefas e lembretes
-          </p>
-        </div>
-        <TourHelpButton
-          onClick={beginTour}
-          label="Abrir tour guiado das notificações"
-        />
-      </header>
+      <PageHeader
+        title="Notificações"
+        description="Avisos enviados sobre tarefas e lembretes"
+        backHref="/dashboard"
+        backLabel="Voltar ao Dashboard"
+        className="mb-6"
+        dataTour="notifications-header"
+        actions={
+          <TourHelpButton
+            onClick={beginTour}
+            label="Abrir tour guiado das notificações"
+          />
+        }
+      />
 
       <div data-tour="notifications-list">
         {loading ? (
