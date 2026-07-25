@@ -122,6 +122,20 @@
   --info: #2563eb;
   --info-foreground: #ffffff;
 
+  /* Toasts (Sonner) — contraste legível em light/dark (issue #81 item 11) */
+  --toast-success-bg: var(--success-light);
+  --toast-success-border: var(--success);
+  --toast-success-text: var(--success-dark);
+  --toast-error-bg: var(--destructive-light);
+  --toast-error-border: var(--destructive);
+  --toast-error-text: var(--destructive-dark);
+  --toast-warning-bg: var(--warning-light);
+  --toast-warning-border: var(--warning);
+  --toast-warning-text: #92400e;
+  --toast-info-bg: var(--primary-light);
+  --toast-info-border: var(--info);
+  --toast-info-text: #1e40af;
+
   /* Sidebar */
   --sidebar: #ffffff;
   --sidebar-foreground: #374151;
@@ -244,6 +258,20 @@
   --sidebar: #1e293b;          /* darkSurface */
   --sidebar-foreground: #f1f5f9;
   --sidebar-border: #475569;   /* darkBorder */
+
+  /* Toasts: texto claro sobre fundos *-light escuros (issue #81 item 11) */
+  --toast-success-bg: #14532d;
+  --toast-success-border: #22c55e;
+  --toast-success-text: #dcfce7;
+  --toast-error-bg: #450a0a;
+  --toast-error-border: #ef4444;
+  --toast-error-text: #fecaca;
+  --toast-warning-bg: #78350f;
+  --toast-warning-border: #f59e0b;
+  --toast-warning-text: #fef3c7;
+  --toast-info-bg: #1e3a5f;
+  --toast-info-border: #60a5fa;
+  --toast-info-text: #dbeafe;
 }
 
 /* ==========================================================================
@@ -276,8 +304,22 @@
   --secondary-light: #111111;
   --success-light: #111111;
   --warning-light: #111111;
+  --destructive-light: #111111;
   --ring: #ffff00;             /* foco visível em fundo preto */
   --focus: #ffff00;
+
+  --toast-success-bg: #0a2a10;
+  --toast-success-border: #22c55e;
+  --toast-success-text: #ffffff;
+  --toast-error-bg: #2a0a0a;
+  --toast-error-border: #ef4444;
+  --toast-error-text: #ffffff;
+  --toast-warning-bg: #2a1a00;
+  --toast-warning-border: #f59e0b;
+  --toast-warning-text: #ffffff;
+  --toast-info-bg: #0a1a2a;
+  --toast-info-border: #60a5fa;
+  --toast-info-text: #ffffff;
 }
 
 /* ==========================================================================
@@ -630,4 +672,65 @@ html.with-scroll-bars-hidden,
   grid-column: 3;
   grid-row: 1;
   align-self: start;
+}
+
+/*
+ * Tipografia do toast — Sonner fixa 13px; substituímos pela mesma fórmula
+ * do <html> para respeitar o tamanho de fonte da tela de Acessibilidade
+ * (issue #81 item 11).
+ */
+[data-sonner-toaster] [data-sonner-toast][data-styled="true"],
+[data-sonner-toast][data-styled="true"] {
+  font-size: calc(16px * var(--a11y-font-scale)) !important;
+  line-height: 1.45 !important;
+  font-weight: 600 !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-title],
+[data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-description],
+[data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-content],
+[data-sonner-toast][data-styled="true"] [data-title],
+[data-sonner-toast][data-styled="true"] [data-description],
+[data-sonner-toast][data-styled="true"] [data-content] {
+  font-size: inherit !important;
+  line-height: inherit !important;
+  color: inherit;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-icon],
+[data-sonner-toast][data-styled="true"] [data-icon] {
+  width: 1.25em !important;
+  height: 1.25em !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="success"] {
+  color: var(--toast-success-text) !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="success"] [data-icon] {
+  color: var(--toast-success-text) !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="error"] {
+  color: var(--toast-error-text) !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="error"] [data-icon] {
+  color: var(--toast-error-text) !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="warning"] {
+  color: var(--toast-warning-text) !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="warning"] [data-icon] {
+  color: var(--toast-warning-text) !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="info"] {
+  color: var(--toast-info-text) !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="info"] [data-icon] {
+  color: var(--toast-info-text) !important;
 }
