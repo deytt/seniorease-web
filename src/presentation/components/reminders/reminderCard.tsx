@@ -5,8 +5,8 @@ import { Reminder } from "@/domain/entities/Reminder";
 import { Button } from "@/presentation/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
-  formatReminderDateLabel,
-  formatReminderPeriod,
+  formatReminderDate,
+  formatReminderDayMonth,
   formatReminderTime,
   getReminderCategoryVisual,
   REMINDER_MESSAGE_PREVIEW_LIMITS,
@@ -19,7 +19,6 @@ interface ReminderCardProps {
   onMarkDone?: (reminderId: string) => void;
   onEdit?: (reminder: Reminder) => void;
   onDelete?: (reminder: Reminder) => void;
-  showDate?: boolean;
   className?: string;
   completing?: boolean;
 }
@@ -137,7 +136,6 @@ export function ReminderCard({
   onMarkDone,
   onEdit,
   onDelete,
-  showDate = false,
   className,
   completing = false,
 }: ReminderCardProps) {
@@ -145,6 +143,9 @@ export function ReminderCard({
     reminder.category,
   );
   const isCompleted = reminder.isRead;
+  const timeLabel = formatReminderTime(reminder.scheduledAt);
+  const dateLabel = formatReminderDayMonth(reminder.scheduledAt);
+  const fullDateLabel = formatReminderDate(reminder.scheduledAt);
 
   return (
     <article
@@ -153,27 +154,22 @@ export function ReminderCard({
         isCompleted && "opacity-65",
         className,
       )}
-      aria-label={`${reminder.title}, ${formatReminderTime(reminder.scheduledAt)} ${formatReminderPeriod(reminder.scheduledAt)}`}
+      aria-label={`${reminder.title}, ${fullDateLabel} às ${timeLabel}`}
     >
       <div className="flex min-w-0 flex-col gap-4">
         <div className="flex min-w-0 items-start gap-3 sm:items-center sm:gap-4">
           <div className="w-16 shrink-0 text-center sm:w-20">
+            <p className="text-sm font-semibold leading-5 text-muted-foreground">
+              {dateLabel}
+            </p>
             <p
               className={cn(
-                "text-xl font-black leading-7 sm:text-2xl sm:leading-8",
+                "mt-0.5 text-xl font-black leading-7 sm:text-2xl sm:leading-8",
                 isCompleted ? "text-muted-foreground" : "text-foreground",
               )}
             >
-              {formatReminderTime(reminder.scheduledAt)}
+              {timeLabel}
             </p>
-            <p className="mt-0.5 text-sm font-semibold leading-5 text-muted-foreground">
-              {formatReminderPeriod(reminder.scheduledAt)}
-            </p>
-            {showDate && (
-              <p className="mt-1 text-sm font-medium text-muted-foreground">
-                {formatReminderDateLabel(reminder.scheduledAt)}
-              </p>
-            )}
           </div>
 
           <div
