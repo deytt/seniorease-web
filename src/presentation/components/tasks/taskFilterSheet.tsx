@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CalendarDays, Check } from "lucide-react";
 import type { TaskCategory, TaskPriority } from "@/domain/entities/Task";
 import {
@@ -40,10 +40,13 @@ export function TaskFilterSheet({
   onApply,
 }: TaskFilterSheetProps) {
   const [draft, setDraft] = useState<TaskListFilter>(initialFilter);
+  const [wasOpen, setWasOpen] = useState(open);
 
-  useEffect(() => {
+  // Ao abrir, sincroniza o rascunho com o filtro aplicado (sem useEffect).
+  if (open !== wasOpen) {
+    setWasOpen(open);
     if (open) setDraft(initialFilter);
-  }, [open, initialFilter]);
+  }
 
   const toggleToday = () => {
     setDraft((prev) => ({ ...prev, isToday: !prev.isToday }));
