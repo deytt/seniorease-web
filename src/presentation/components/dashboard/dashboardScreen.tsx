@@ -9,7 +9,6 @@ import {
   Clock,
   Plus,
   Sparkles,
-  Check,
 } from "lucide-react";
 import type { Task } from "@/domain/entities/Task";
 import type { Reminder } from "@/domain/entities/Reminder";
@@ -86,28 +85,20 @@ function DashboardTaskRow({ task }: { task: Task }) {
   const categoryBadge = getTaskCategoryBadge(task.category);
   const priorityBadge = getTaskPriorityBadge(task.priority);
   const timeLabel = formatTaskTime(task.dueDate);
+  const href = getTaskActionHref(task);
+  const actionLabel = getTaskActionLabel(task);
 
   return (
-    <div
+    <Link
+      href={href}
+      aria-label={`${actionLabel} tarefa ${task.title}`}
       className={cn(
-        "flex items-center gap-4 rounded-[14px] border p-[17px]",
+        "a11y-touch-target flex min-h-11 items-center gap-4 rounded-[14px] border p-[17px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         isCompleted
-          ? "border-success/40 bg-success-light"
-          : "border-border bg-card",
+          ? "border-success/40 bg-success-light hover:bg-success-light/80"
+          : "border-border bg-card hover:bg-muted",
       )}
     >
-      <div
-        className={cn(
-          "flex size-6 shrink-0 items-center justify-center rounded-full border-2",
-          isCompleted
-            ? "border-success bg-success text-success-foreground"
-            : "border-border bg-card",
-        )}
-        aria-hidden
-      >
-        {isCompleted ? <Check className="size-3.5" strokeWidth={3} /> : null}
-      </div>
-
       <div className="min-w-0 flex-1">
         <p
           className={cn(
@@ -147,17 +138,10 @@ function DashboardTaskRow({ task }: { task: Task }) {
         </div>
       </div>
 
-      <Button
-        asChild
-        variant="ghost"
-        size="sm"
-        className="shrink-0"
-      >
-        <Link href={getTaskActionHref(task)}>
-          {getTaskActionLabel(task)}
-        </Link>
-      </Button>
-    </div>
+      <span className="shrink-0 text-sm font-semibold text-primary">
+        {actionLabel}
+      </span>
+    </Link>
   );
 }
 
@@ -222,10 +206,10 @@ export function DashboardScreen({
   return (
     <div className="pb-20">
       <header
-        className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
+        className="flex items-start justify-between gap-3"
         data-tour="dashboard-header"
       >
-        <div>
+        <div className="min-w-0 flex-1">
           <h1 className="page-title">
             {getDashboardGreeting()}, {firstName}! {getDashboardGreetingEmoji()}
           </h1>
@@ -234,7 +218,7 @@ export function DashboardScreen({
             {stats.pending === 1 ? "tarefa pendente" : "tarefas pendentes"}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <TourHelpButton
             onClick={beginTour}
             label="Abrir tour guiado do painel"

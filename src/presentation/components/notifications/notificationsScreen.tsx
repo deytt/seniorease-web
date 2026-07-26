@@ -114,7 +114,7 @@ export function NotificationsScreen({
         backLabel="Voltar ao Dashboard"
         className="mb-6"
         dataTour="notifications-header"
-        actions={
+        tourAction={
           <TourHelpButton
             onClick={beginTour}
             label="Abrir tour guiado das notificações"

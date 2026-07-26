@@ -147,10 +147,12 @@ export default function AccessibilityCenterPage() {
         backHref="/dashboard"
         backLabel="Voltar ao Dashboard"
         dataTour="a11y-header"
-        actions={<TourHelpButton
-          onClick={beginTour}
-          label="Abrir tour guiado de acessibilidade"
-        />}
+        tourAction={
+          <TourHelpButton
+            onClick={beginTour}
+            label="Abrir tour guiado de acessibilidade"
+          />
+        }
       />
 
       <div
@@ -229,7 +231,7 @@ export default function AccessibilityCenterPage() {
                     aria-pressed={preferences.interfaceMode === mode}
                     onClick={() => setField("interfaceMode", mode)}
                     className={cn(
-                      "flex-1 px-4 py-2 rounded-lg border font-medium transition-colors min-h-[44px]",
+                      "flex-1 cursor-pointer px-4 py-2 rounded-lg border font-medium transition-colors min-h-[44px]",
                       preferences.interfaceMode === mode
                         ? "border-primary bg-primary text-primary-foreground"
                         : "border-border bg-muted text-muted-foreground hover:bg-muted/80",
