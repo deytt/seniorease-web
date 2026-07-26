@@ -2,8 +2,8 @@
 
 **Prioridade:** 🟡 Médio  
 **Estimativa:** 2–3 horas  
-**Status:** Pendente  
-**Responsável:** _a definir_
+**Status:** Concluído (2026-07-26)  
+**Responsável:** David
 
 ---
 
@@ -142,11 +142,11 @@ npm test -- --coverage
 
 ## Critérios de Aceitação
 
-- [ ] Pelo menos 4 novos arquivos de teste criados (mínimo: `CreateTaskUseCase`, `CompleteTaskUseCase`, `SavePreferencesUseCase`, `CreateReminderUseCase`)
-- [ ] Total de testes Vitest ≥ 100 após as adições
-- [ ] `npm test` — 0 falhas
-- [ ] ESLint e TypeScript sem erros nos novos arquivos
-- [ ] Atualizar `memory-bank/progress.md`: marcar `[ ] Testes unitários — Domain, Data, Presentation` como `[x]` (ou atualizar o percentual)
+- [x] Pelo menos 4 novos arquivos de teste criados (mínimo: `CreateTaskUseCase`, `CompleteTaskUseCase`, `SavePreferencesUseCase`, `CreateReminderUseCase`) + `FirebaseTaskRepository`
+- [x] Total de testes Vitest ≥ 100 após as adições (**120**)
+- [x] `npm test` — 0 falhas
+- [x] ESLint e TypeScript sem erros nos novos arquivos
+- [x] Atualizar `memory-bank/progress.md`: marcar testes unitários Domain/Data ampliado
 
 ---
 
