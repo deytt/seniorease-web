@@ -6,7 +6,8 @@ import { sortTasksByDueDateDescending } from "@/presentation/components/tasks/ta
 export interface DashboardTaskStats {
   completedYesterday: number;
   completedToday: number;
-  remainingToday: number;
+  /** Todas as tarefas não concluídas (pending + in_progress). */
+  pending: number;
 }
 
 export function getDashboardGreeting(now: Date = new Date()): string {
@@ -45,14 +46,6 @@ function startOfDay(date: Date): Date {
   const copy = new Date(date);
   copy.setHours(0, 0, 0, 0);
   return copy;
-}
-
-function isTaskForToday(task: Task, today: Date): boolean {
-  if (task.dueDate) {
-    return isSameCalendarDay(task.dueDate, today);
-  }
-
-  return task.status === "pending" || task.status === "in_progress";
 }
 
 /**
@@ -116,13 +109,9 @@ export function computeDashboardTaskStats(
       isSameCalendarDay(task.completedAt, today),
   ).length;
 
-  const remainingToday = tasks.filter(
-    (task) =>
-      isTaskForToday(task, today) &&
-      task.status !== "completed",
-  ).length;
+  const pending = tasks.filter((task) => task.status !== "completed").length;
 
-  return { completedYesterday, completedToday, remainingToday };
+  return { completedYesterday, completedToday, pending };
 }
 
 export function buildEncouragementMessage(stats: DashboardTaskStats): string {

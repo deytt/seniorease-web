@@ -24,7 +24,7 @@ function buildTask(overrides: Partial<Task> & Pick<Task, "id">): Task {
 }
 
 describe("dashboardUtils", () => {
-  it("calcula estatísticas de ontem, hoje e restantes", () => {
+  it("calcula estatísticas de ontem, hoje e pendentes (todas não concluídas)", () => {
     const now = new Date("2026-07-16T12:00:00");
     const tasks = [
       buildTask({
@@ -49,12 +49,17 @@ describe("dashboardUtils", () => {
         status: "pending",
         dueDate: new Date("2026-07-17T10:00:00"),
       }),
+      buildTask({
+        id: "5",
+        status: "in_progress",
+        dueDate: new Date("2026-07-14T10:00:00"),
+      }),
     ];
 
     expect(computeDashboardTaskStats(tasks, now)).toEqual({
       completedYesterday: 1,
       completedToday: 1,
-      remainingToday: 1,
+      pending: 3,
     });
   });
 

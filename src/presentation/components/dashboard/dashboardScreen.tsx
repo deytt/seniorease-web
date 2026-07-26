@@ -230,9 +230,8 @@ export function DashboardScreen({
             {getDashboardGreeting()}, {firstName}! {getDashboardGreetingEmoji()}
           </h1>
           <p className="mt-1 text-base leading-6 text-muted-foreground">
-            {formatDashboardDate()} · Você tem {stats.remainingToday}{" "}
-            {stats.remainingToday === 1 ? "tarefa restante" : "tarefas restantes"}{" "}
-            hoje
+            {formatDashboardDate()} · Você tem {stats.pending}{" "}
+            {stats.pending === 1 ? "tarefa pendente" : "tarefas pendentes"}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -271,9 +270,9 @@ export function DashboardScreen({
             </div>
             <div className="text-center">
               <p className="text-[30px] font-bold leading-9 text-primary-foreground">
-                {stats.remainingToday}
+                {stats.pending}
               </p>
-              <p className="text-sm text-primary-foreground/70">Restantes</p>
+              <p className="text-sm text-primary-foreground/70">Pendentes</p>
             </div>
           </div>
         </div>
