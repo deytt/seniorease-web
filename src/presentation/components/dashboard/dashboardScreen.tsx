@@ -20,14 +20,13 @@ import {
   buildEncouragementMessage,
   computeDashboardTaskStats,
   formatDashboardDate,
-  formatReminderListTime,
   formatTaskTime,
   getDashboardGreeting,
   getDashboardGreetingEmoji,
   getTaskActionHref,
   getTaskActionLabel,
+  getNextActiveReminders,
   getNextPendingTasks,
-  getTodayReminders,
 } from "@/presentation/components/dashboard/dashboardUtils";
 import { NotificationBell } from "@/presentation/components/notifications/notificationBell";
 import { getReminderCategoryVisual } from "@/presentation/components/reminders/reminderVisuals";
@@ -212,7 +211,7 @@ export function DashboardScreen({
   const firstName = userName.split(" ")[0] || "Usuário";
   const stats = computeDashboardTaskStats(tasks);
   const nextTasks = getNextPendingTasks(tasks);
-  const todayReminders = getTodayReminders(reminders);
+  const nextReminders = getNextActiveReminders(reminders);
   const accessibility = getAccessibilityPreviewSummary(preferences);
   const { showOfferDialog, beginTour, dismissOffer, offerTitle, offerDescription } =
     useDashboardTour({
@@ -375,21 +374,21 @@ export function DashboardScreen({
 
           <DashboardCard className="p-[21px]" data-tour="dashboard-reminders">
             <h2 className="card-title">
-              Lembretes de hoje
+              Próximos lembretes
             </h2>
             {loading ? (
               <p className="mt-4 text-sm text-muted-foreground">Carregando lembretes...</p>
-            ) : todayReminders.length === 0 ? (
+            ) : nextReminders.length === 0 ? (
               <p className="mt-4 py-4 text-center text-sm text-muted-foreground">
-                Nenhum lembrete para hoje
+                Nenhum lembrete ativo
               </p>
             ) : (
               <div className="mt-4 flex flex-col gap-3">
-                {todayReminders.map((reminder) => {
+                {nextReminders.map((reminder) => {
                   const visual = getReminderCategoryVisual(reminder.category);
                   const Icon = visual.Icon;
                   const scheduledAt = new Date(reminder.scheduledAt);
-                  const isDone = reminder.isRead;
+                  const timeLabel = formatTaskTime(scheduledAt);
 
                   return (
                     <Link
@@ -407,20 +406,10 @@ export function DashboardScreen({
                         <Icon className={cn("size-[18px]", visual.iconClassName)} />
                       </div>
                       <div className="min-w-0">
-                        <p
-                          className={cn(
-                            "text-sm font-semibold text-foreground",
-                            isDone && "text-muted-foreground line-through",
-                          )}
-                        >
-                          {formatReminderListTime(scheduledAt)}
+                        <p className="text-sm font-semibold text-foreground">
+                          {timeLabel}
                         </p>
-                        <p
-                          className={cn(
-                            "truncate text-sm text-muted-foreground",
-                            isDone && "line-through",
-                          )}
-                        >
+                        <p className="truncate text-sm text-muted-foreground">
                           {reminder.title}
                         </p>
                       </div>

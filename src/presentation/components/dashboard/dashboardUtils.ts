@@ -179,34 +179,18 @@ export function getTaskActionLabel(task: Task): string {
 }
 
 /**
- * Lembretes de hoje — paridade com o mobile (`todayRemindersProvider`):
- * dia civil atual (inclui concluídos), ordenação ASC, limite 3.
+ * Próximos lembretes ativos para o preview do Dashboard:
+ * exclui concluídos (`isRead`), ordena por `scheduledAt` DESC e limita a `limit`.
  */
-export function getTodayReminders(
+export function getNextActiveReminders(
   reminders: Reminder[],
   limit = 3,
-  now: Date = new Date(),
 ): Reminder[] {
-  const dayStart = startOfDay(now);
-  const dayEnd = new Date(dayStart);
-  dayEnd.setDate(dayEnd.getDate() + 1);
-
   return reminders
-    .filter((reminder) => {
-      const scheduled = new Date(reminder.scheduledAt).getTime();
-      return scheduled >= dayStart.getTime() && scheduled < dayEnd.getTime();
-    })
+    .filter((reminder) => !reminder.isRead)
     .sort(
       (a, b) =>
-        new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime(),
+        new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime(),
     )
     .slice(0, limit);
-}
-
-export function formatReminderListTime(date: Date): string {
-  return date.toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
 }

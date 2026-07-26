@@ -6,8 +6,8 @@ import { getAccessibilityPreviewSummary } from "@/presentation/components/access
 import {
   computeDashboardTaskStats,
   formatTaskTime,
+  getNextActiveReminders,
   getNextPendingTask,
-  getTodayReminders,
 } from "@/presentation/components/dashboard/dashboardUtils";
 
 function buildTask(overrides: Partial<Task> & Pick<Task, "id">): Task {
@@ -113,10 +113,10 @@ describe("dashboardUtils", () => {
     );
   });
 
-  it("retorna lembretes do dia civil em ordem ascendente (inclui concluídos)", () => {
+  it("retorna os próximos 3 lembretes ativos em ordem descendente (exclui concluídos)", () => {
     const now = new Date("2026-07-16T12:00:00");
 
-    const reminders = getTodayReminders(
+    const reminders = getNextActiveReminders(
       [
         {
           id: "1",
@@ -157,17 +157,27 @@ describe("dashboardUtils", () => {
           title: "Já lido",
           message: "",
           category: "hydration",
-          scheduledAt: new Date("2026-07-16T20:00:00"),
+          scheduledAt: new Date("2026-07-16T11:00:00"),
           isRead: true,
+          notified: false,
+          createdAt: now,
+        },
+        {
+          id: "5",
+          userId: "user-1",
+          title: "Depois",
+          message: "",
+          category: "bills",
+          scheduledAt: new Date("2026-07-18T09:00:00"),
+          isRead: false,
           notified: false,
           createdAt: now,
         },
       ],
       3,
-      now,
     );
 
-    expect(reminders.map((reminder) => reminder.id)).toEqual(["2", "1", "4"]);
+    expect(reminders.map((reminder) => reminder.id)).toEqual(["5", "3", "1"]);
   });
 
   it("resume preferências de acessibilidade em português", () => {
