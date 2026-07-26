@@ -2,8 +2,8 @@
 
 **Prioridade:** 🔴 Crítico  
 **Estimativa:** 10 minutos  
-**Status:** Pendente  
-**Responsável:** _a definir_
+**Status:** Concluído (2026-07-26)  
+**Responsável:** David
 
 ---
 
@@ -60,11 +60,11 @@ O CSS em `globals.css` já trata esta classe: `html[data-interface-mode="basic"]
 
 ## Critérios de Aceitação
 
-- [ ] Em Modo Básico (`data-interface-mode="basic"` no `<html>`), o card "Precisa de Ajuda?" **não aparece** na tela `/profile`
-- [ ] Em Modo Avançado (padrão), o card continua visível normalmente
-- [ ] A mudança de modo em `/accessibility` aplica-se em tempo real ao perfil (sem recarregar a página) — porque o `PreferencesProvider` aplica o atributo no `<html>` globalmente
-- [ ] ESLint e TypeScript sem erros
-- [ ] Atualizar coluna "Status paridade" em `memory-bank/systemPatterns.md`: linha do "Card Precisa de Ajuda?" de ❌ para ✅
+- [x] Em Modo Básico (`data-interface-mode="basic"` no `<html>`), o card "Precisa de Ajuda?" **não aparece** na tela `/profile`
+- [x] Em Modo Avançado (padrão), o card continua visível normalmente
+- [x] A mudança de modo em `/accessibility` aplica-se em tempo real ao perfil (sem recarregar a página) — porque o `PreferencesProvider` aplica o atributo no `<html>` globalmente
+- [x] ESLint e TypeScript sem erros
+- [x] Atualizar coluna "Status paridade" em `memory-bank/systemPatterns.md`: linha do "Card Precisa de Ajuda?" de ❌ para ✅
 
 ---
 

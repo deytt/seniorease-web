@@ -258,7 +258,7 @@ export function ProfileScreen({
             </div>
           </ProfileCard>
 
-          <div data-tour="profile-help">
+          <div data-tour="profile-help" className="advanced-only">
             <ProfileHelpCard />
           </div>
         </div>
