@@ -2,8 +2,8 @@
 
 **Prioridade:** 🟢 Baixo (verificação / documentação)  
 **Estimativa:** 15 minutos  
-**Status:** Pendente — confirmação e documentação  
-**Responsável:** _a definir_
+**Status:** Concluído (2026-07-26)  
+**Responsável:** David
 
 ---
 
@@ -49,8 +49,8 @@ O `systemPatterns.md` documenta a estrutura de pastas. Se necessário, adicionar
 
 Nenhuma alteração de código necessária. Apenas:
 
-- [ ] Executar `rg "/tasks/guided" src/` e confirmar que todos os links usam a rota correta
-- [ ] Adicionar um comentário JSDoc no topo de `src/app/(app)/tasks/guided/page.tsx` explicando o propósito do hub:
+- [x] Executar `rg "/tasks/guided" src/` e confirmar que todos os links usam a rota correta
+- [x] Adicionar um comentário JSDoc no topo de `src/app/(app)/tasks/guided/page.tsx` explicando o propósito do hub:
 
 ```tsx
 /**
@@ -62,7 +62,7 @@ Nenhuma alteração de código necessária. Apenas:
 export default function GuidedTaskHubPage() { ... }
 ```
 
-- [ ] (Opcional) Adicionar nota no `memory-bank/systemPatterns.md` — seção de estrutura web — explicando o padrão hub + tela
+- [x] (Opcional) Adicionar nota no `memory-bank/systemPatterns.md` — seção de estrutura web — explicando o padrão hub + tela
 
 ---
 
