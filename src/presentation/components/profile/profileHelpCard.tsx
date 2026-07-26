@@ -16,11 +16,11 @@ export function ProfileHelpCard() {
             SeniorEase com tranquilidade.
           </p>
           <a
-            href="tel:18007366467"
+            href="tel:08006000300"
             className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-[14px] bg-primary-foreground px-4 py-2 text-base font-semibold text-primary transition-colors hover:bg-primary-foreground/90"
           >
             <Phone className="size-4" aria-hidden />
-            1-800-SENIOR
+            0800 600 0300
           </a>
         </div>
       </div>
