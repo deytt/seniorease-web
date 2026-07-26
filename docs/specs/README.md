@@ -12,7 +12,7 @@
 | [SPEC-WEB-01](./SPEC-WEB-01-numero-suporte.md) | Número de suporte `1-800-SENIOR` → `0800 600 0300` | 🔴 Crítico | 15 min | Concluído (2026-07-26) |
 | [SPEC-WEB-02](./SPEC-WEB-02-advanced-only-help-card.md) | Card "Precisa de Ajuda?" oculto em Modo Básico | 🔴 Crítico | 10 min | Concluído (2026-07-26) |
 | [SPEC-WEB-03](./SPEC-WEB-03-readme-completo.md) | README Web completo para entrega | 🟡 Médio | 30 min | Pendente |
-| [SPEC-WEB-04](./SPEC-WEB-04-testes-unitarios.md) | Ampliar cobertura de testes unitários | 🟡 Médio | 2–3 h | Pendente |
+| [SPEC-WEB-04](./SPEC-WEB-04-testes-unitarios.md) | Ampliar cobertura de testes unitários | 🟡 Médio | 2–3 h | ✅ Concluído (2026-07-26) |
 | [SPEC-WEB-05](./SPEC-WEB-05-rotas-modo-guiado.md) | Documentar e validar rotas do Modo Guiado | 🟢 Baixo | 15 min | Pendente |
 | [SPEC-WEB-06](./SPEC-WEB-06-video-script-adicoes.md) | Adições ao `video-script.md` | 🟡 Médio | 20 min | Pendente |
 
