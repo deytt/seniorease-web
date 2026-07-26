@@ -305,6 +305,9 @@ export default function TaskListPage() {
           onRemovePriority={() =>
             setFilter((prev) => ({ ...prev, priority: null }))
           }
+          onRemoveStatus={() =>
+            setFilter((prev) => ({ ...prev, status: null }))
+          }
         />
       ) : null}
 

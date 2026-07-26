@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarDays, Check } from "lucide-react";
+import { CalendarDays, Check, CheckCircle2, Circle } from "lucide-react";
 import type { TaskCategory, TaskPriority } from "@/domain/entities/Task";
 import {
   EMPTY_TASK_LIST_FILTER,
@@ -9,8 +9,10 @@ import {
   TASK_FILTER_CATEGORIES,
   TASK_FILTER_PRIORITIES,
   TASK_PRIORITY_LABELS,
+  TASK_STATUS_LABELS,
   taskCategoryLabel,
   type TaskListFilter,
+  type TaskStatusFilter,
 } from "@/presentation/components/tasks/taskFilter";
 import { Button } from "@/presentation/components/ui/button";
 import {
@@ -63,6 +65,13 @@ export function TaskFilterSheet({
     setDraft((prev) => ({
       ...prev,
       priority: prev.priority === priority ? null : priority,
+    }));
+  };
+
+  const toggleStatus = (status: NonNullable<TaskStatusFilter>) => {
+    setDraft((prev) => ({
+      ...prev,
+      status: prev.status === status ? null : status,
     }));
   };
 
@@ -171,6 +180,40 @@ export function TaskFilterSheet({
                     )}
                   >
                     {taskCategoryLabel(category)}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          <section>
+            <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              Status
+            </p>
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Status">
+              {(
+                Object.entries(TASK_STATUS_LABELS) as [
+                  NonNullable<TaskStatusFilter>,
+                  string,
+                ][]
+              ).map(([value, label]) => {
+                const selected = draft.status === value;
+                const Icon = value === "completed" ? CheckCircle2 : Circle;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => toggleStatus(value)}
+                    className={cn(
+                      "inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border-2 px-4 py-2 text-sm font-semibold transition-colors",
+                      selected
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-transparent text-muted-foreground hover:border-primary/40",
+                    )}
+                  >
+                    <Icon className="size-4 shrink-0" aria-hidden />
+                    {label}
                   </button>
                 );
               })}

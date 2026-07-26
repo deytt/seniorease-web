@@ -14,7 +14,11 @@ describe("matchesReminderListFilter", () => {
   it("sem filtros aceita qualquer lembrete", () => {
     expect(
       matchesReminderListFilter(
-        { category: "meal", scheduledAt: new Date("2026-07-22T10:00:00") },
+        {
+          category: "meal",
+          scheduledAt: new Date("2026-07-22T10:00:00"),
+          isRead: false,
+        },
         EMPTY_REMINDER_LIST_FILTER,
         isToday,
       ),
@@ -24,15 +28,23 @@ describe("matchesReminderListFilter", () => {
   it("filtro hoje só aceita lembretes do dia", () => {
     expect(
       matchesReminderListFilter(
-        { category: "meal", scheduledAt: new Date("2026-07-21T10:00:00") },
-        { isToday: true, category: null },
+        {
+          category: "meal",
+          scheduledAt: new Date("2026-07-21T10:00:00"),
+          isRead: false,
+        },
+        { isToday: true, category: null, status: null },
         isToday,
       ),
     ).toBe(true);
     expect(
       matchesReminderListFilter(
-        { category: "meal", scheduledAt: new Date("2026-07-22T10:00:00") },
-        { isToday: true, category: null },
+        {
+          category: "meal",
+          scheduledAt: new Date("2026-07-22T10:00:00"),
+          isRead: false,
+        },
+        { isToday: true, category: null, status: null },
         isToday,
       ),
     ).toBe(false);
@@ -44,15 +56,20 @@ describe("matchesReminderListFilter", () => {
         {
           category: "medication",
           scheduledAt: new Date("2026-07-21T10:00:00"),
+          isRead: false,
         },
-        { isToday: true, category: "medication" },
+        { isToday: true, category: "medication", status: null },
         isToday,
       ),
     ).toBe(true);
     expect(
       matchesReminderListFilter(
-        { category: "meal", scheduledAt: new Date("2026-07-21T10:00:00") },
-        { isToday: true, category: "medication" },
+        {
+          category: "meal",
+          scheduledAt: new Date("2026-07-21T10:00:00"),
+          isRead: false,
+        },
+        { isToday: true, category: "medication", status: null },
         isToday,
       ),
     ).toBe(false);
@@ -61,8 +78,59 @@ describe("matchesReminderListFilter", () => {
         {
           category: "medication",
           scheduledAt: new Date("2026-07-22T10:00:00"),
+          isRead: false,
         },
-        { isToday: true, category: "medication" },
+        { isToday: true, category: "medication", status: null },
+        isToday,
+      ),
+    ).toBe(false);
+  });
+
+  it("filtro 'completed' só aceita lembretes lidos", () => {
+    expect(
+      matchesReminderListFilter(
+        {
+          category: "meal",
+          scheduledAt: new Date("2026-07-21T10:00:00"),
+          isRead: true,
+        },
+        { isToday: false, category: null, status: "completed" },
+        isToday,
+      ),
+    ).toBe(true);
+    expect(
+      matchesReminderListFilter(
+        {
+          category: "meal",
+          scheduledAt: new Date("2026-07-21T10:00:00"),
+          isRead: false,
+        },
+        { isToday: false, category: null, status: "completed" },
+        isToday,
+      ),
+    ).toBe(false);
+  });
+
+  it("filtro 'pending' exclui lembretes lidos", () => {
+    expect(
+      matchesReminderListFilter(
+        {
+          category: "meal",
+          scheduledAt: new Date("2026-07-21T10:00:00"),
+          isRead: false,
+        },
+        { isToday: false, category: null, status: "pending" },
+        isToday,
+      ),
+    ).toBe(true);
+    expect(
+      matchesReminderListFilter(
+        {
+          category: "meal",
+          scheduledAt: new Date("2026-07-21T10:00:00"),
+          isRead: true,
+        },
+        { isToday: false, category: null, status: "pending" },
         isToday,
       ),
     ).toBe(false);
@@ -73,8 +141,22 @@ describe("reminderListFilter helpers", () => {
   it("padrão vazio como no mobile", () => {
     expect(DEFAULT_REMINDER_LIST_FILTER).toEqual(EMPTY_REMINDER_LIST_FILTER);
     expect(isReminderListFilterEmpty(DEFAULT_REMINDER_LIST_FILTER)).toBe(true);
-    expect(reminderListFilterActiveCount({ isToday: true, category: "meal" })).toBe(
-      2,
-    );
+    expect(
+      reminderListFilterActiveCount({
+        isToday: true,
+        category: "meal",
+        status: "pending",
+      }),
+    ).toBe(3);
+  });
+
+  it("detecta filtro não-vazio com status", () => {
+    expect(
+      isReminderListFilterEmpty({
+        isToday: false,
+        category: null,
+        status: "completed",
+      }),
+    ).toBe(false);
   });
 });
