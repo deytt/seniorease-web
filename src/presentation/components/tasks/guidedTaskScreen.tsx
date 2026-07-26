@@ -160,37 +160,40 @@ export function GuidedTaskScreen({
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col justify-center rounded-2xl bg-background px-3 py-4 sm:px-1 sm:py-6 lg:min-h-[calc(100vh-12rem)] lg:py-8">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          className={cn(
-            "h-11 w-fit shrink-0 px-1 text-sm sm:text-base",
-            backNavButtonClassName,
-          )}
-          asChild
-        >
-          <Link href="/tasks" aria-label="Sair do Modo Guiado">
-            <X className="size-5" aria-hidden="true" />
-            <span className="sm:hidden">Sair</span>
-            <span className="hidden sm:inline">Sair do Modo Guiado</span>
-          </Link>
-        </Button>
-
-        <div
-          className="flex w-full min-w-0 items-center justify-center gap-2 sm:w-auto sm:justify-end"
-          data-tour="guided-header"
-        >
-          <span
-            className="inline-flex w-full min-w-0 items-center justify-center rounded-full bg-secondary px-4 py-2 text-base font-semibold leading-snug text-secondary-foreground sm:w-auto sm:max-w-sm sm:justify-start sm:text-lg"
-            title={task.title}
+      <div className="flex flex-col gap-3">
+        <div className="flex items-start justify-between gap-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn(
+              "h-11 w-fit shrink-0 px-1 text-sm sm:text-base",
+              backNavButtonClassName,
+            )}
+            asChild
           >
-            <span className="truncate">{task.title}</span>
-          </span>
+            <Link href="/tasks" aria-label="Sair do Modo Guiado">
+              <X className="size-5" aria-hidden="true" />
+              <span className="sm:hidden">Sair</span>
+              <span className="hidden sm:inline">Sair do Modo Guiado</span>
+            </Link>
+          </Button>
+
           <TourHelpButton
             onClick={beginTour}
             label="Abrir tour guiado do Modo Guiado"
           />
+        </div>
+
+        <div
+          className="flex w-full min-w-0 items-center justify-end"
+          data-tour="guided-header"
+        >
+          <span
+            className="inline-flex min-w-0 max-w-full items-center justify-start rounded-full bg-secondary px-4 py-2 text-left text-base font-semibold leading-snug text-secondary-foreground sm:max-w-sm sm:text-lg"
+            title={task.title}
+          >
+            <span className="truncate">{task.title}</span>
+          </span>
         </div>
       </div>
 

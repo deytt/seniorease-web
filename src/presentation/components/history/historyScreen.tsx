@@ -6,7 +6,7 @@ import type { HistoryEvent } from "@/domain/entities/HistoryEvent";
 import type { InterfaceMode } from "@/domain/entities/UserPreferences";
 import { cn } from "@/lib/utils";
 import { useHistoryTour } from "@/presentation/hooks/useHistoryTour";
-import { TourHelpButton } from "@/presentation/tour/TourChrome";
+import { TourHelpButton, TourOfferDialog } from "@/presentation/tour/TourChrome";
 import {
   HISTORY_STAT_CARDS,
   filterHistoryEventsForMode,
@@ -17,16 +17,7 @@ import {
   shouldShowStreakBanner,
   type HistoryStatsView,
 } from "@/presentation/components/history/historyUtils";
-import { Button } from "@/presentation/components/ui/button";
 import { PageHeader } from "@/presentation/components/ui/pageHeader";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/presentation/components/ui/dialog";
 
 interface HistoryScreenProps {
   userId: string;
@@ -121,10 +112,11 @@ export function HistoryScreen({
 }: HistoryScreenProps) {
   const visibleEvents = filterHistoryEventsForMode(events, interfaceMode);
   const showStreakBanner = shouldShowStreakBanner(stats.streak);
-  const { showOfferDialog, beginTour, dismissOffer } = useHistoryTour({
-    userId,
-    interfaceMode,
-  });
+  const { showOfferDialog, beginTour, dismissOffer, offerTitle, offerDescription } =
+    useHistoryTour({
+      userId,
+      interfaceMode,
+    });
 
   return (
     <div className="mx-auto w-full max-w-6xl pb-20">
@@ -136,10 +128,12 @@ export function HistoryScreen({
         className="mb-8"
         descriptionClassName="mt-2"
         dataTour="history-header"
-        actions={<TourHelpButton
-          onClick={beginTour}
-          label="Abrir tour guiado do histórico"
-        />}
+        tourAction={
+          <TourHelpButton
+            onClick={beginTour}
+            label="Abrir tour guiado do histórico"
+          />
+        }
       />
 
       <div
@@ -211,34 +205,13 @@ export function HistoryScreen({
         )}
       </section>
 
-      <Dialog open={showOfferDialog} onOpenChange={(open) => !open && dismissOffer()}>
-        <DialogContent className="rounded-2xl">
-          <DialogHeader>
-            <DialogTitle>Quer um tour guiado do histórico?</DialogTitle>
-            <DialogDescription>
-              Em poucos passos, mostramos como acompanhar suas estatísticas,
-              sequência de dias e atividades recentes.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button
-              type="button"
-              variant="outline"
-              className="cursor-pointer rounded-[14px]"
-              onClick={dismissOffer}
-            >
-              Agora não
-            </Button>
-            <Button
-              type="button"
-              className="cursor-pointer rounded-[14px]"
-              onClick={beginTour}
-            >
-              Começar tour
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <TourOfferDialog
+        open={showOfferDialog}
+        title={offerTitle}
+        description={offerDescription}
+        onDismiss={dismissOffer}
+        onStart={beginTour}
+      />
     </div>
   );
 }

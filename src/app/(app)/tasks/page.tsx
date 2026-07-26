@@ -12,7 +12,6 @@ import {
 import { Button } from "@/presentation/components/ui/button";
 import { PageHeader } from "@/presentation/components/ui/pageHeader";
 import {
-  CheckCircle2,
   Clock,
   AlertCircle,
   Plus,
@@ -131,24 +130,25 @@ export default function TaskListPage() {
     const priorityBadge = getTaskPriorityBadge(task.priority);
     const categoryBadge = getTaskCategoryBadge(task.category);
     const isCompleted = task.status === "completed";
+    const detailsHref = `/tasks/${task.id}`;
+    const showGuided =
+      !isCompleted && Boolean(task.steps && task.steps.length > 0);
 
     return (
       <article
         aria-label={`Tarefa: ${task.title}${isCompleted ? " — concluída" : ""}`}
-        className={`flex flex-col md:flex-row md:items-center gap-4 bg-card border rounded-xl px-5 py-4 hover:shadow-sm transition-shadow ${isCompleted ? "opacity-70" : ""}`}
+        className={`relative flex flex-col gap-4 rounded-xl border bg-card px-5 py-4 transition-shadow hover:shadow-sm md:flex-row md:items-center ${isCompleted ? "opacity-70" : ""}`}
       >
-        <div className="flex-shrink-0 flex md:block" aria-hidden="true">
-          {isCompleted ? (
-            <CheckCircle2 className="size-6 text-primary" />
-          ) : (
-            <div className="size-6 rounded-full border-2 border-muted-foreground/40" />
-          )}
-        </div>
+        <Link
+          href={detailsHref}
+          className="absolute inset-0 z-0 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label={`Abrir detalhes da tarefa ${task.title}`}
+        />
 
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-wrap items-center gap-2 mb-1">
+        <div className="relative z-10 min-w-0 flex-1 pointer-events-none">
+          <div className="mb-1 flex flex-wrap items-center gap-2">
             <span
-              className={`font-semibold text-base ${isCompleted ? "text-primary line-through" : ""}`}
+              className={`text-base font-semibold ${isCompleted ? "text-primary line-through" : ""}`}
             >
               {task.title}
             </span>
@@ -168,7 +168,7 @@ export default function TaskListPage() {
             )}
           </div>
           {task.description && (
-            <p className="text-sm text-muted-foreground mb-2 line-clamp-1">
+            <p className="mb-2 line-clamp-1 text-sm text-muted-foreground">
               {task.description}
             </p>
           )}
@@ -188,25 +188,17 @@ export default function TaskListPage() {
           </div>
         </div>
 
-        <div className="w-full md:w-auto md:flex-shrink-0 flex flex-col md:flex-row md:items-center gap-2">
-          {!isCompleted && task.steps && task.steps.length > 0 && (
+        {showGuided ? (
+          <div className="relative z-10 w-full md:w-auto md:flex-shrink-0">
             <Button
               asChild
               size="sm"
-              className="border-0 bg-secondary text-secondary-foreground hover:bg-secondary/90"
+              className="w-full border-0 bg-secondary text-secondary-foreground hover:bg-secondary/90 md:w-auto"
             >
               <Link href={`/tasks/${task.id}/guided`}>Modo Guiado</Link>
             </Button>
-          )}
-          <Button
-            asChild
-            size="sm"
-            variant="outline"
-            className="md:w-auto w-full"
-          >
-            <Link href={`/tasks/${task.id}`}>Detalhes</Link>
-          </Button>
-        </div>
+          </div>
+        ) : null}
       </article>
     );
   };
@@ -229,15 +221,21 @@ export default function TaskListPage() {
         }
         backHref="/dashboard"
         backLabel="Voltar ao Dashboard"
-        className="mb-6 md:items-center"
+        className="mb-6"
         dataTour="tasks-header"
+        tourAction={
+          <TourHelpButton
+            onClick={beginTour}
+            label="Abrir tour guiado das tarefas"
+          />
+        }
         actions={
-          <div className="flex flex-col gap-2 md:flex-row md:items-center">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
             <Button
               type="button"
               variant="outline"
               size="sm"
-              className="relative flex items-center justify-center gap-2"
+              className="relative flex w-full items-center justify-center gap-2 sm:w-auto"
               onClick={() => setIsFilterOpen(true)}
               data-tour="tasks-filter"
               aria-label={
@@ -257,7 +255,7 @@ export default function TaskListPage() {
             <Button
               asChild
               size="sm"
-              className="flex items-center justify-center"
+              className="flex w-full items-center justify-center sm:w-auto"
               data-tour="tasks-create"
             >
               <Link href="/tasks/create">
@@ -265,10 +263,6 @@ export default function TaskListPage() {
                 Nova Tarefa
               </Link>
             </Button>
-            <TourHelpButton
-              onClick={beginTour}
-              label="Abrir tour guiado das tarefas"
-            />
           </div>
         }
       />
