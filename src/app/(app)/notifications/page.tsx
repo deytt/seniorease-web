@@ -8,7 +8,8 @@ import { useNotificationHistory } from "@/presentation/hooks/useNotificationHist
 export default function NotificationsPage() {
   const { user, loading: authLoading } = useAuthContext();
   const { preferences } = usePreferences();
-  const { notifications, loading } = useNotificationHistory(user?.id ?? null);
+  const { notifications, loading, lastSeenAt, markAllAsRead } =
+    useNotificationHistory(user?.id ?? null);
 
   if (authLoading || !user) {
     return (
@@ -28,6 +29,8 @@ export default function NotificationsPage() {
       loading={loading}
       userId={user.id}
       interfaceMode={preferences.interfaceMode}
+      lastSeenAt={lastSeenAt}
+      onMarkAllAsRead={markAllAsRead}
     />
   );
 }
