@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BookOpen, ChevronRight } from "lucide-react";
 import { toast } from "@/presentation/lib/feedbackToast";
 import { TOUR_CATALOG } from "@/presentation/tour/tourCatalog";
 import { setPendingTour } from "@/presentation/tour/pendingTour";
 import { resolveTourRoute } from "@/presentation/tour/resolveTourRoute";
-import { Button } from "@/presentation/components/ui/button";
+import { PageHeader } from "@/presentation/components/ui/pageHeader";
 import { useAuthContext } from "@/presentation/providers/AuthProvider";
 
 export function GuidesScreen() {
@@ -41,14 +40,13 @@ export function GuidesScreen() {
 
   return (
     <div className="mx-auto w-full max-w-6xl pb-16">
-      <header className="mb-6">
-        <h1 className="page-title">
-          Guia do aplicativo
-        </h1>
-        <p className="mt-1 text-base text-muted-foreground">
-          Escolha um tour guiado para conhecer as telas com calma, passo a passo.
-        </p>
-      </header>
+      <PageHeader
+        title="Guia do aplicativo"
+        description="Escolha um tour guiado para conhecer as telas com calma, passo a passo."
+        backHref="/dashboard"
+        backLabel="Voltar ao Dashboard"
+        className="mb-6"
+      />
 
       <div className="mb-6 rounded-2xl border border-border bg-card p-5 shadow-card">
         <div className="flex items-start gap-3">
@@ -92,11 +90,6 @@ export function GuidesScreen() {
         ))}
       </ul>
 
-      <div className="mt-8">
-        <Button asChild variant="outline" className="min-h-11 cursor-pointer rounded-[14px]">
-          <Link href="/dashboard">Voltar ao Dashboard</Link>
-        </Button>
-      </div>
     </div>
   );
 }
