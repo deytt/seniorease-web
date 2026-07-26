@@ -55,9 +55,9 @@ export const dashboardTourSteps: DriveStep[] = [
   {
     element: "[data-tour='dashboard-reminders']",
     popover: {
-      title: "Lembretes de hoje",
+      title: "Próximos lembretes",
       description:
-        "Os lembretes do dia aparecem aqui. Toque em Gerenciar lembretes para ver ou criar novos.",
+        "Os próximos lembretes ativos aparecem aqui. Toque em Gerenciar lembretes para ver ou criar novos.",
       side: "top",
       align: "start",
     },

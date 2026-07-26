@@ -1,11 +1,13 @@
 import type { Task } from "@/domain/entities/Task";
 import type { Reminder } from "@/domain/entities/Reminder";
 import { isGuidedTaskCandidate } from "@/presentation/components/tasks/guidedTaskUtils";
+import { sortTasksByDueDateDescending } from "@/presentation/components/tasks/taskListUtils";
 
 export interface DashboardTaskStats {
   completedYesterday: number;
   completedToday: number;
-  remainingToday: number;
+  /** Todas as tarefas não concluídas (pending + in_progress). */
+  pending: number;
 }
 
 export function getDashboardGreeting(now: Date = new Date()): string {
@@ -46,14 +48,6 @@ function startOfDay(date: Date): Date {
   return copy;
 }
 
-function isTaskForToday(task: Task, today: Date): boolean {
-  if (task.dueDate) {
-    return isSameCalendarDay(task.dueDate, today);
-  }
-
-  return task.status === "pending" || task.status === "in_progress";
-}
-
 /**
  * Próxima tarefa pendente — paridade com o mobile (`nextPendingTaskProvider`):
  * 1) incompleta com dueDate >= agora, a mais próxima (ASC);
@@ -80,6 +74,19 @@ export function getNextPendingTask(
   return pending[0] ?? null;
 }
 
+/**
+ * Próximas tarefas pendentes para o preview do Dashboard:
+ * filtra concluídas e aplica a mesma ordenação da lista de tarefas
+ * (dueDate DESC, sem data no fim). Limitado a `limit` itens.
+ */
+export function getNextPendingTasks(
+  tasks: Task[],
+  limit = 8,
+): Task[] {
+  const pending = tasks.filter((task) => task.status !== "completed");
+  return sortTasksByDueDateDescending(pending).slice(0, limit);
+}
+
 export function computeDashboardTaskStats(
   tasks: Task[],
   now: Date = new Date(),
@@ -102,13 +109,9 @@ export function computeDashboardTaskStats(
       isSameCalendarDay(task.completedAt, today),
   ).length;
 
-  const remainingToday = tasks.filter(
-    (task) =>
-      isTaskForToday(task, today) &&
-      task.status !== "completed",
-  ).length;
+  const pending = tasks.filter((task) => task.status !== "completed").length;
 
-  return { completedYesterday, completedToday, remainingToday };
+  return { completedYesterday, completedToday, pending };
 }
 
 export function buildEncouragementMessage(stats: DashboardTaskStats): string {
@@ -142,7 +145,8 @@ export function formatTaskTime(
 
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
-  return `${time} · ${day}/${month}`;
+  const year = date.getFullYear();
+  return `${time} · ${day}/${month}/${year}`;
 }
 
 export function getTaskActionHref(task: Task): string {
@@ -164,34 +168,18 @@ export function getTaskActionLabel(task: Task): string {
 }
 
 /**
- * Lembretes de hoje — paridade com o mobile (`todayRemindersProvider`):
- * dia civil atual (inclui concluídos), ordenação ASC, limite 3.
+ * Próximos lembretes ativos para o preview do Dashboard:
+ * exclui concluídos (`isRead`), ordena por `scheduledAt` DESC e limita a `limit`.
  */
-export function getTodayReminders(
+export function getNextActiveReminders(
   reminders: Reminder[],
   limit = 3,
-  now: Date = new Date(),
 ): Reminder[] {
-  const dayStart = startOfDay(now);
-  const dayEnd = new Date(dayStart);
-  dayEnd.setDate(dayEnd.getDate() + 1);
-
   return reminders
-    .filter((reminder) => {
-      const scheduled = new Date(reminder.scheduledAt).getTime();
-      return scheduled >= dayStart.getTime() && scheduled < dayEnd.getTime();
-    })
+    .filter((reminder) => !reminder.isRead)
     .sort(
       (a, b) =>
-        new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime(),
+        new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime(),
     )
     .slice(0, limit);
-}
-
-export function formatReminderListTime(date: Date): string {
-  return date.toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
 }

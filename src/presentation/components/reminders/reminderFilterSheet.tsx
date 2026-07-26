@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarDays, Check } from "lucide-react";
+import { CalendarDays, Check, CheckCircle2, Circle } from "lucide-react";
 import {
   REMINDER_CATEGORIES,
   REMINDER_CATEGORY_LABELS,
@@ -10,7 +10,9 @@ import {
 import {
   EMPTY_REMINDER_LIST_FILTER,
   isReminderListFilterEmpty,
+  REMINDER_STATUS_LABELS,
   type ReminderListFilter,
+  type ReminderStatusFilter,
 } from "@/presentation/components/reminders/reminderFilter";
 import { Button } from "@/presentation/components/ui/button";
 import {
@@ -59,6 +61,13 @@ export function ReminderFilterSheet({
     }));
   };
 
+  const toggleStatus = (status: NonNullable<ReminderStatusFilter>) => {
+    setDraft((prev) => ({
+      ...prev,
+      status: prev.status === status ? null : status,
+    }));
+  };
+
   const clearDraft = () => setDraft(EMPTY_REMINDER_LIST_FILTER);
 
   const apply = () => {
@@ -87,7 +96,7 @@ export function ReminderFilterSheet({
           ) : null}
         </DialogHeader>
 
-        <div className="space-y-6 px-5 py-5">
+        <div className="max-h-[min(70vh,32rem)] space-y-6 overflow-y-auto px-5 py-5">
           <section>
             <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Data
@@ -141,6 +150,40 @@ export function ReminderFilterSheet({
                 />
               ) : null}
             </button>
+          </section>
+
+          <section>
+            <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              Status
+            </p>
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Status">
+              {(
+                Object.entries(REMINDER_STATUS_LABELS) as [
+                  NonNullable<ReminderStatusFilter>,
+                  string,
+                ][]
+              ).map(([value, label]) => {
+                const selected = draft.status === value;
+                const Icon = value === "completed" ? CheckCircle2 : Circle;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => toggleStatus(value)}
+                    className={cn(
+                      "inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border-2 px-4 py-2 text-sm font-semibold transition-colors",
+                      selected
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-transparent text-muted-foreground hover:border-primary/40",
+                    )}
+                  >
+                    <Icon className="size-4 shrink-0" aria-hidden />
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
           </section>
 
           <section className="advanced-only">

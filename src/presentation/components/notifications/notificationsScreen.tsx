@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { Bell, CheckSquare2 } from "lucide-react";
 
@@ -22,9 +23,19 @@ interface NotificationsScreenProps {
   loading?: boolean;
   userId?: string;
   interfaceMode?: "basic" | "advanced";
+  /** Timestamp da última vez que o utilizador abriu esta tela (do localStorage). */
+  lastSeenAt?: Date;
+  /** Persiste o timestamp de leitura no localStorage e zera o badge. */
+  onMarkAllAsRead?: () => void;
 }
 
-function NotificationCard({ notification }: { notification: NotificationItem }) {
+function NotificationCard({
+  notification,
+  isUnread,
+}: {
+  notification: NotificationItem;
+  isUnread: boolean;
+}) {
   const href = getNotificationEntityHref(
     notification.entityType,
     notification.entityId,
@@ -34,7 +45,12 @@ function NotificationCard({ notification }: { notification: NotificationItem }) 
   return (
     <Link
       href={href}
-      className="flex items-start gap-4 rounded-[14px] border border-border bg-card p-4 transition-colors hover:bg-muted"
+      className={cn(
+        "flex items-start gap-4 rounded-[14px] border p-4 transition-colors hover:bg-muted",
+        isUnread
+          ? "border-primary/40 bg-primary/5"
+          : "border-border bg-card",
+      )}
     >
       <div
         className={cn(
@@ -48,12 +64,15 @@ function NotificationCard({ notification }: { notification: NotificationItem }) 
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <p className="text-sm font-semibold text-foreground">
+          <p className={cn("text-sm font-semibold", isUnread ? "text-foreground" : "text-foreground/80")}>
             {notification.title}
           </p>
           <span className="rounded-full bg-primary/15 px-2 py-0.5 text-sm font-semibold text-primary">
             {getNotificationEntityLabel(notification.entityType)}
           </span>
+          {isUnread && (
+            <span className="ml-auto flex size-2 shrink-0 rounded-full bg-primary" aria-label="Não lida" />
+          )}
         </div>
         <p className="mt-1 text-sm text-muted-foreground">{notification.body}</p>
         <p className="mt-2 text-sm font-medium text-muted-foreground">
@@ -69,6 +88,8 @@ export function NotificationsScreen({
   loading = false,
   userId,
   interfaceMode = "advanced",
+  lastSeenAt = new Date(0),
+  onMarkAllAsRead,
 }: NotificationsScreenProps) {
   const {
     showOfferDialog,
@@ -77,6 +98,12 @@ export function NotificationsScreen({
     offerTitle,
     offerDescription,
   } = useNotificationsTour({ userId, interfaceMode });
+
+  // Marca todas as notificações como lidas ao abrir a tela
+  useEffect(() => {
+    onMarkAllAsRead?.();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="pb-20">
@@ -116,7 +143,11 @@ export function NotificationsScreen({
         ) : (
           <div className="flex flex-col gap-3">
             {notifications.map((notification) => (
-              <NotificationCard key={notification.id} notification={notification} />
+              <NotificationCard
+                key={notification.id}
+                notification={notification}
+                isUnread={notification.sentAt.getTime() > lastSeenAt.getTime()}
+              />
             ))}
           </div>
         )}

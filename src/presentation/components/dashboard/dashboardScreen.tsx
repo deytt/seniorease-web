@@ -20,14 +20,13 @@ import {
   buildEncouragementMessage,
   computeDashboardTaskStats,
   formatDashboardDate,
-  formatReminderListTime,
   formatTaskTime,
   getDashboardGreeting,
   getDashboardGreetingEmoji,
   getTaskActionHref,
   getTaskActionLabel,
-  getNextPendingTask,
-  getTodayReminders,
+  getNextActiveReminders,
+  getNextPendingTasks,
 } from "@/presentation/components/dashboard/dashboardUtils";
 import { NotificationBell } from "@/presentation/components/notifications/notificationBell";
 import { getReminderCategoryVisual } from "@/presentation/components/reminders/reminderVisuals";
@@ -211,8 +210,8 @@ export function DashboardScreen({
 }: DashboardScreenProps) {
   const firstName = userName.split(" ")[0] || "Usuário";
   const stats = computeDashboardTaskStats(tasks);
-  const nextTask = getNextPendingTask(tasks);
-  const todayReminders = getTodayReminders(reminders);
+  const nextTasks = getNextPendingTasks(tasks);
+  const nextReminders = getNextActiveReminders(reminders);
   const accessibility = getAccessibilityPreviewSummary(preferences);
   const { showOfferDialog, beginTour, dismissOffer, offerTitle, offerDescription } =
     useDashboardTour({
@@ -231,9 +230,8 @@ export function DashboardScreen({
             {getDashboardGreeting()}, {firstName}! {getDashboardGreetingEmoji()}
           </h1>
           <p className="mt-1 text-base leading-6 text-muted-foreground">
-            {formatDashboardDate()} · Você tem {stats.remainingToday}{" "}
-            {stats.remainingToday === 1 ? "tarefa restante" : "tarefas restantes"}{" "}
-            hoje
+            {formatDashboardDate()} · Você tem {stats.pending}{" "}
+            {stats.pending === 1 ? "tarefa pendente" : "tarefas pendentes"}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -272,9 +270,9 @@ export function DashboardScreen({
             </div>
             <div className="text-center">
               <p className="text-[30px] font-bold leading-9 text-primary-foreground">
-                {stats.remainingToday}
+                {stats.pending}
               </p>
-              <p className="text-sm text-primary-foreground/70">Restantes</p>
+              <p className="text-sm text-primary-foreground/70">Pendentes</p>
             </div>
           </div>
         </div>
@@ -284,7 +282,7 @@ export function DashboardScreen({
         <DashboardCard className="p-[25px]" data-tour="dashboard-today-tasks">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="card-title">
-              Próxima atividade
+              Próximas atividades
             </h2>
             <Button
               asChild
@@ -300,7 +298,7 @@ export function DashboardScreen({
 
           {loading ? (
             <p className="mt-5 text-base text-muted-foreground">Carregando tarefas...</p>
-          ) : !nextTask ? (
+          ) : nextTasks.length === 0 ? (
             <div className="mt-5 rounded-[14px] border border-dashed border-border p-8 text-center">
               <p className="text-base font-medium text-foreground">
                 Nenhuma atividade agendada
@@ -311,7 +309,9 @@ export function DashboardScreen({
             </div>
           ) : (
             <div className="mt-5 flex flex-col gap-3">
-              <DashboardTaskRow task={nextTask} />
+              {nextTasks.map((task) => (
+                <DashboardTaskRow key={task.id} task={task} />
+              ))}
             </div>
           )}
 
@@ -373,21 +373,21 @@ export function DashboardScreen({
 
           <DashboardCard className="p-[21px]" data-tour="dashboard-reminders">
             <h2 className="card-title">
-              Lembretes de hoje
+              Próximos lembretes
             </h2>
             {loading ? (
               <p className="mt-4 text-sm text-muted-foreground">Carregando lembretes...</p>
-            ) : todayReminders.length === 0 ? (
+            ) : nextReminders.length === 0 ? (
               <p className="mt-4 py-4 text-center text-sm text-muted-foreground">
-                Nenhum lembrete para hoje
+                Nenhum lembrete ativo
               </p>
             ) : (
               <div className="mt-4 flex flex-col gap-3">
-                {todayReminders.map((reminder) => {
+                {nextReminders.map((reminder) => {
                   const visual = getReminderCategoryVisual(reminder.category);
                   const Icon = visual.Icon;
                   const scheduledAt = new Date(reminder.scheduledAt);
-                  const isDone = reminder.isRead;
+                  const timeLabel = formatTaskTime(scheduledAt);
 
                   return (
                     <Link
@@ -405,20 +405,10 @@ export function DashboardScreen({
                         <Icon className={cn("size-[18px]", visual.iconClassName)} />
                       </div>
                       <div className="min-w-0">
-                        <p
-                          className={cn(
-                            "text-sm font-semibold text-foreground",
-                            isDone && "text-muted-foreground line-through",
-                          )}
-                        >
-                          {formatReminderListTime(scheduledAt)}
+                        <p className="text-sm font-semibold text-foreground">
+                          {timeLabel}
                         </p>
-                        <p
-                          className={cn(
-                            "truncate text-sm text-muted-foreground",
-                            isDone && "line-through",
-                          )}
-                        >
+                        <p className="truncate text-sm text-muted-foreground">
                           {reminder.title}
                         </p>
                       </div>

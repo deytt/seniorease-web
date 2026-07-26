@@ -29,7 +29,7 @@ export function LivePreviewCard({
           Bom dia! ☀️
         </p>
         <p className="mt-1 text-foreground">
-          Você tem 3 tarefas restantes hoje.
+          Você tem 3 tarefas pendentes.
         </p>
         <button
           type="button"

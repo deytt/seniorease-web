@@ -16,6 +16,7 @@ describe("matchesTaskListFilter", () => {
           dueDate: new Date("2026-07-26T10:00:00"),
           category: "health",
           priority: "low",
+          status: "pending",
         },
         EMPTY_TASK_LIST_FILTER,
         now,
@@ -30,8 +31,9 @@ describe("matchesTaskListFilter", () => {
           dueDate: new Date("2026-07-25T08:00:00"),
           category: "health",
           priority: "high",
+          status: "pending",
         },
-        { isToday: true, category: null, priority: null },
+        { isToday: true, category: null, priority: null, status: null },
         now,
       ),
     ).toBe(true);
@@ -41,8 +43,9 @@ describe("matchesTaskListFilter", () => {
           dueDate: new Date("2026-07-26T08:00:00"),
           category: "health",
           priority: "high",
+          status: "pending",
         },
-        { isToday: true, category: null, priority: null },
+        { isToday: true, category: null, priority: null, status: null },
         now,
       ),
     ).toBe(false);
@@ -55,8 +58,9 @@ describe("matchesTaskListFilter", () => {
           dueDate: new Date("2026-07-25T08:00:00"),
           category: "medication",
           priority: "high",
+          status: "pending",
         },
-        { isToday: false, category: "medication", priority: "high" },
+        { isToday: false, category: "medication", priority: "high", status: null },
         now,
       ),
     ).toBe(true);
@@ -66,8 +70,43 @@ describe("matchesTaskListFilter", () => {
           dueDate: new Date("2026-07-25T08:00:00"),
           category: "medication",
           priority: "low",
+          status: "pending",
         },
-        { isToday: false, category: "medication", priority: "high" },
+        { isToday: false, category: "medication", priority: "high", status: null },
+        now,
+      ),
+    ).toBe(false);
+  });
+
+  it("filtro 'completed' só aceita tarefas concluídas", () => {
+    expect(
+      matchesTaskListFilter(
+        { dueDate: undefined, category: "health", priority: "low", status: "completed" },
+        { isToday: false, category: null, priority: null, status: "completed" },
+        now,
+      ),
+    ).toBe(true);
+    expect(
+      matchesTaskListFilter(
+        { dueDate: undefined, category: "health", priority: "low", status: "pending" },
+        { isToday: false, category: null, priority: null, status: "completed" },
+        now,
+      ),
+    ).toBe(false);
+  });
+
+  it("filtro 'pending' exclui tarefas concluídas", () => {
+    expect(
+      matchesTaskListFilter(
+        { dueDate: undefined, category: "health", priority: "low", status: "in_progress" },
+        { isToday: false, category: null, priority: null, status: "pending" },
+        now,
+      ),
+    ).toBe(true);
+    expect(
+      matchesTaskListFilter(
+        { dueDate: undefined, category: "health", priority: "low", status: "completed" },
+        { isToday: false, category: null, priority: null, status: "pending" },
         now,
       ),
     ).toBe(false);
@@ -82,8 +121,9 @@ describe("taskListFilter helpers", () => {
         isToday: true,
         category: "social",
         priority: "medium",
+        status: "pending",
       }),
-    ).toBe(3);
+    ).toBe(4);
   });
 
   it("detecta filtro vazio", () => {
@@ -93,6 +133,15 @@ describe("taskListFilter helpers", () => {
         isToday: true,
         category: null,
         priority: null,
+        status: null,
+      }),
+    ).toBe(false);
+    expect(
+      isTaskListFilterEmpty({
+        isToday: false,
+        category: null,
+        priority: null,
+        status: "completed",
       }),
     ).toBe(false);
   });

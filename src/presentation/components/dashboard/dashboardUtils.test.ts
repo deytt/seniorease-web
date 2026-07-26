@@ -6,8 +6,8 @@ import { getAccessibilityPreviewSummary } from "@/presentation/components/access
 import {
   computeDashboardTaskStats,
   formatTaskTime,
+  getNextActiveReminders,
   getNextPendingTask,
-  getTodayReminders,
 } from "@/presentation/components/dashboard/dashboardUtils";
 
 function buildTask(overrides: Partial<Task> & Pick<Task, "id">): Task {
@@ -24,7 +24,7 @@ function buildTask(overrides: Partial<Task> & Pick<Task, "id">): Task {
 }
 
 describe("dashboardUtils", () => {
-  it("calcula estatísticas de ontem, hoje e restantes", () => {
+  it("calcula estatísticas de ontem, hoje e pendentes (todas não concluídas)", () => {
     const now = new Date("2026-07-16T12:00:00");
     const tasks = [
       buildTask({
@@ -49,12 +49,17 @@ describe("dashboardUtils", () => {
         status: "pending",
         dueDate: new Date("2026-07-17T10:00:00"),
       }),
+      buildTask({
+        id: "5",
+        status: "in_progress",
+        dueDate: new Date("2026-07-14T10:00:00"),
+      }),
     ];
 
     expect(computeDashboardTaskStats(tasks, now)).toEqual({
       completedYesterday: 1,
       completedToday: 1,
-      remainingToday: 1,
+      pending: 3,
     });
   });
 
@@ -113,10 +118,10 @@ describe("dashboardUtils", () => {
     );
   });
 
-  it("retorna lembretes do dia civil em ordem ascendente (inclui concluídos)", () => {
+  it("retorna os próximos 3 lembretes ativos em ordem descendente (exclui concluídos)", () => {
     const now = new Date("2026-07-16T12:00:00");
 
-    const reminders = getTodayReminders(
+    const reminders = getNextActiveReminders(
       [
         {
           id: "1",
@@ -157,17 +162,27 @@ describe("dashboardUtils", () => {
           title: "Já lido",
           message: "",
           category: "hydration",
-          scheduledAt: new Date("2026-07-16T20:00:00"),
+          scheduledAt: new Date("2026-07-16T11:00:00"),
           isRead: true,
+          notified: false,
+          createdAt: now,
+        },
+        {
+          id: "5",
+          userId: "user-1",
+          title: "Depois",
+          message: "",
+          category: "bills",
+          scheduledAt: new Date("2026-07-18T09:00:00"),
+          isRead: false,
           notified: false,
           createdAt: now,
         },
       ],
       3,
-      now,
     );
 
-    expect(reminders.map((reminder) => reminder.id)).toEqual(["2", "1", "4"]);
+    expect(reminders.map((reminder) => reminder.id)).toEqual(["5", "3", "1"]);
   });
 
   it("resume preferências de acessibilidade em português", () => {

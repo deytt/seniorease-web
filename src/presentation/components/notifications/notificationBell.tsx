@@ -12,16 +12,16 @@ interface NotificationBellProps {
 }
 
 export function NotificationBell({ userId, className }: NotificationBellProps) {
-  const { todayCount } = useNotificationHistory(userId);
+  const { unreadCount } = useNotificationHistory(userId);
   const badgeLabel =
-    todayCount > 99 ? "99+" : todayCount > 0 ? String(todayCount) : null;
+    unreadCount > 99 ? "99+" : unreadCount > 0 ? String(unreadCount) : null;
 
   return (
     <Link
       href="/notifications"
       aria-label={
-        todayCount > 0
-          ? `Notificações: ${todayCount} recebidas hoje`
+        unreadCount > 0
+          ? `Notificações: ${unreadCount} não lida${unreadCount > 1 ? "s" : ""}`
           : "Notificações"
       }
       className={cn(

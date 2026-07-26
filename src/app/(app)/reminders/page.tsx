@@ -336,6 +336,9 @@ function RemindersPageContent() {
             onRemoveCategory={() =>
               setFilter((prev) => ({ ...prev, category: null }))
             }
+            onRemoveStatus={() =>
+              setFilter((prev) => ({ ...prev, status: null }))
+            }
           />
         ) : null}
 
