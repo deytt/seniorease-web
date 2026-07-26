@@ -49,7 +49,7 @@ export const profileTourSteps: DriveStep[] = [
     popover: {
       title: "Precisa de ajuda?",
       description:
-        "Se tiver dúvidas, ligue para 1-800-SENIOR. Nossa equipe está pronta para ajudar com calma e clareza.",
+        "Se tiver dúvidas, ligue para 0800 600 0300. Nossa equipe está pronta para ajudar com calma e clareza.",
       side: "bottom",
       align: "start",
     },

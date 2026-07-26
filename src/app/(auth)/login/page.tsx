@@ -10,10 +10,10 @@ export default function LoginPage() {
         <>
           Precisa de ajuda? Ligue para{" "}
           <a
-            href="tel:1-800-736467"
+            href="tel:08006000300"
             className="font-medium text-primary underline-offset-4 hover:underline"
           >
-            1-800-SENIOR
+            0800 600 0300
           </a>
         </>
       }
