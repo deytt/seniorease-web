@@ -1,28 +1,73 @@
 # SeniorEase Web
 
-Aplicação web do **SeniorEase** — plataforma de acessibilidade e organização de tarefas/lembretes para pessoas idosas (Hackathon FIAP Inclusive).
+Plataforma web de acessibilidade e organização de atividades para pessoas idosas —
+Hackathon FIAP Inclusive (Pós-Graduação POSTECH FIAP).
 
-Stack: **Next.js 16** (App Router) · TypeScript · Tailwind · Firebase · Zustand · Storybook · Vitest.
+Stack: **Next.js 16** (App Router) · TypeScript · Tailwind CSS · Firebase · Zustand · Storybook 10 · Vitest 3.
 
-Arquitetura: Clean Architecture em `src/domain`, `src/infrastructure` e `src/presentation`.
+Arquitetura: **Clean Architecture** em `src/domain`, `src/infrastructure` e `src/presentation`.
 
-Documentação compartilhada com o mobile: submódulo [`memory-bank/`](./memory-bank).
+---
+
+## Sobre o Projeto
+
+O **SeniorEase** foi desenvolvido para facilitar a vida digital de pessoas idosas,
+promovendo autonomia, confiança e inclusão. A plataforma web oferece:
+
+- **Painel de Acessibilidade** — fonte ajustável (4 níveis), Dark Mode, 3 modos de contraste,
+  espaçamento configurável e Modo Básico / Avançado
+- **Organizador de Tarefas** — criação, detalhes, modo guiado passo a passo com celebração Lottie
+- **Central de Lembretes** — criação, edição, filtros e notificações push via FCM
+- **Histórico** — estatísticas de sequência (streak) e atividade recente
+- **Perfil** — foto, dados pessoais, endereço, preferências de notificação, segurança
+- **Notificações** — sininho com badge, histórico completo, push via Cloud Functions
+
+---
+
+## Telas implementadas (13/13)
+
+| # | Tela | Rota |
+|---|------|------|
+| 1 | Login | `/login` |
+| 2 | Registro | `/register` |
+| 3 | Esqueci a senha | `/forgot-password` |
+| 4 | Tela de sucesso | `/success` |
+| 5 | Dashboard | `/dashboard` |
+| 6 | Central de Acessibilidade | `/accessibility` |
+| 7 | Lista de Tarefas | `/tasks` |
+| 8 | Detalhes da Tarefa | `/tasks/[id]` |
+| 9 | Criar Tarefa | `/tasks/create` |
+| 10 | Modo Guiado | `/tasks/[id]/guided` |
+| 11 | Central de Lembretes | `/reminders` |
+| 12 | Histórico | `/history` |
+| 13 | Perfil | `/profile` |
+
+---
+
+## Links do Projeto
+
+| Recurso | Link |
+|---------|------|
+| Deploy (Vercel) | https://seniorease-web.vercel.app/ |
+| Repositório Mobile (Flutter) | https://github.com/deytt/seniorease-mobile |
+| Figma Design | https://www.figma.com/design/3avWJD9n4gI9mZHw9dksIy/SeniorEase |
+| Protótipo publicado | https://senior-ease.figma.site |
+| Kanban do projeto | https://github.com/users/deytt/projects/3 |
 
 ---
 
 ## Pré-requisitos
 
-- Node.js 20+ (recomendado)
+- Node.js 20+
 - Conta no projeto Firebase `seniorease-backend`
-- Acesso ao repositório do memory-bank (submódulo)
 
 ---
 
-## Setup
+## Instalação
 
 ```bash
 # Clonar com submódulo
-git clone --recurse-submodules <url-do-repositorio>
+git clone --recurse-submodules https://github.com/deytt/seniorease-web.git
 cd seniorease-web
 
 # Se já clonou sem submódulo:
@@ -36,27 +81,17 @@ cp .env.example .env.local
 # Preencha .env.local com as chaves do Firebase (nunca commitar .env.local)
 ```
 
-### Branch de trabalho
-
-O fluxo do time usa **`develop`** como integração e **`master`** para deploy (Vercel).
-
-```bash
-git checkout develop
-git pull origin develop
-```
-
 ---
 
 ## Scripts
 
 | Comando | Descrição |
-|---|---|
-| `npm run dev` | Servidor de desenvolvimento (Webpack) |
+|---------|-----------|
+| `npm run dev` | Servidor de desenvolvimento |
 | `npm run build` | Build de produção |
-| `npm run start` | Serve o build |
 | `npm run lint` | ESLint |
 | `npm run type-check` | TypeScript (`tsc --noEmit`) |
-| `npm test` | Vitest (unitários) |
+| `npm test` | Vitest — testes unitários |
 | `npm run storybook` | Storybook em http://localhost:6006 |
 
 ---
@@ -66,40 +101,91 @@ git pull origin develop
 Veja `.env.example`. Todas as chaves públicas do Firebase usam o prefixo `NEXT_PUBLIC_`.
 
 | Variável | Uso |
-|---|---|
+|----------|-----|
 | `NEXT_PUBLIC_FIREBASE_API_KEY` | Firebase Web SDK |
 | `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Auth |
 | `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Projeto |
 | `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` | Storage (foto de perfil) |
 | `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | FCM |
 | `NEXT_PUBLIC_FIREBASE_APP_ID` | App Web |
-| `NEXT_PUBLIC_FIREBASE_VAPID_KEY` | Push Web (FCM) — obrigatória para registrar token |
+| `NEXT_PUBLIC_FIREBASE_VAPID_KEY` | Push Web (FCM) — obrigatória para notificações |
 
-O Service Worker de messaging (`public/firebase-messaging-sw.js`) recebe a config via query string montada em runtime a partir dessas variáveis.
+---
+
+## Cobertura de Testes
+
+- **120 testes Vitest** cobrindo Domain, Infrastructure, Presentation e utilitários:
+  - Domain: `CreateTaskUseCase`, `CompleteTaskUseCase`, `CreateReminderUseCase`, `SavePreferencesUseCase`, `SaveUserProfileUseCase`, `profileNameValidation`, `computeHistoryStats`, `CountTodayNotificationsUseCase`
+  - Infrastructure: `FirebaseTaskRepository`
+  - Presentation: `dashboardUtils`, `taskFilter`, `reminderFilter`, `taskListUtils`, `historyUtils`, `taskNavigationFeedback`, `feedbackToast`
+  - Tours: 12 arquivos de tour steps + `tourStorage`, `tourCatalog`, `resolveTourRoute`
+
+```bash
+npm test          # rodar todos os testes
+npm test -- --coverage  # com relatório de cobertura
+```
+
+---
+
+## Design System (Storybook)
+
+19 stories documentando os componentes base e features:
+
+- **UI:** Avatar, Badge, Button, Card, Checkbox, Dialog, DropdownMenu, Input, Label, Separator, Sheet, Switch, Toast, Tooltip, Sooner
+- **Features:** ReminderCard, ReminderFilterChips, TaskCard, ReminderListIntegration
+
+```bash
+npm run storybook  # abre em http://localhost:6006
+```
+
+---
+
+## CI/CD
+
+**GitHub Actions** (`.github/workflows/web.yml`):
+
+- **CI** (push/PR em `develop` e `master`): lint + type-check + build + testes Vitest
+- **CD** (push em `master`): deploy automático no Vercel via `--prebuilt`
+
+Secrets necessários: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` + variáveis Firebase.
+
+---
+
+## Estrutura de pastas
+
+```
+src/
+├── domain/               # Entidades, casos de uso, contratos (sem dependência de framework)
+│   ├── entities/         # Task, Reminder, UserPreferences, HistoryEvent…
+│   ├── usecases/         # CreateTaskUseCase, SavePreferencesUseCase…
+│   └── repositories/     # ITaskRepository, IPreferencesRepository… (interfaces)
+├── infrastructure/       # Implementações Firebase, cache
+│   └── firebase/         # FirebaseTaskRepository, FirebaseAuthRepository…
+├── presentation/         # UI, componentes, providers, hooks, tours
+│   ├── components/       # Por domínio: tasks/, reminders/, profile/, dashboard/…
+│   ├── providers/        # AuthProvider, PreferencesProvider, FCMProvider
+│   └── tour/             # Infra de tour guiado (driver.js)
+├── lib/                  # DI, feedback, utils compartilhados
+└── app/                  # Rotas Next.js App Router
+    ├── (auth)/           # login/, register/, forgot-password/
+    └── (app)/            # dashboard/, tasks/, reminders/, profile/, history/…
+memory-bank/              # Submódulo: brief, schema Firestore, ADRs, progresso
+```
 
 ---
 
 ## Dados de demonstração
 
-O dashboard **não** grava tarefas/lembretes de exemplo automaticamente.
-
-Com a lista vazia, use o botão **“Carregar exemplos”** no dashboard para popular dados de demo no Firestore (ação explícita do usuário).
-
----
-
-## Estrutura (visão rápida)
-
-```
-src/
-  domain/           # Entidades e casos de uso
-  infrastructure/   # Firebase, repositórios
-  presentation/     # UI, hooks, providers, tours
-  app/              # Rotas Next.js (App Router)
-memory-bank/        # Submódulo: brief, schema, progresso
-```
+O dashboard não grava exemplos automaticamente.
+Com a lista vazia, use o botão **"Carregar exemplos"** para popular dados de demonstração no Firestore.
 
 ---
 
 ## Memory Bank
 
-Antes de implementar features, leia os arquivos em `memory-bank/` (project brief, padrões, schema Firebase, progresso). Após mudanças de schema/rules, atualize o submódulo e faça bump do pin neste repositório.
+Antes de implementar features, leia os arquivos em `memory-bank/`.
+Após mudanças de schema/rules, atualize o submódulo:
+
+```bash
+git submodule update --remote
+```
