@@ -26,7 +26,7 @@ import {
   getDashboardGreetingEmoji,
   getTaskActionHref,
   getTaskActionLabel,
-  getNextPendingTask,
+  getNextPendingTasks,
   getTodayReminders,
 } from "@/presentation/components/dashboard/dashboardUtils";
 import { NotificationBell } from "@/presentation/components/notifications/notificationBell";
@@ -211,7 +211,7 @@ export function DashboardScreen({
 }: DashboardScreenProps) {
   const firstName = userName.split(" ")[0] || "Usuário";
   const stats = computeDashboardTaskStats(tasks);
-  const nextTask = getNextPendingTask(tasks);
+  const nextTasks = getNextPendingTasks(tasks);
   const todayReminders = getTodayReminders(reminders);
   const accessibility = getAccessibilityPreviewSummary(preferences);
   const { showOfferDialog, beginTour, dismissOffer, offerTitle, offerDescription } =
@@ -284,7 +284,7 @@ export function DashboardScreen({
         <DashboardCard className="p-[25px]" data-tour="dashboard-today-tasks">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="card-title">
-              Próxima atividade
+              Próximas atividades
             </h2>
             <Button
               asChild
@@ -300,7 +300,7 @@ export function DashboardScreen({
 
           {loading ? (
             <p className="mt-5 text-base text-muted-foreground">Carregando tarefas...</p>
-          ) : !nextTask ? (
+          ) : nextTasks.length === 0 ? (
             <div className="mt-5 rounded-[14px] border border-dashed border-border p-8 text-center">
               <p className="text-base font-medium text-foreground">
                 Nenhuma atividade agendada
@@ -311,7 +311,9 @@ export function DashboardScreen({
             </div>
           ) : (
             <div className="mt-5 flex flex-col gap-3">
-              <DashboardTaskRow task={nextTask} />
+              {nextTasks.map((task) => (
+                <DashboardTaskRow key={task.id} task={task} />
+              ))}
             </div>
           )}
 

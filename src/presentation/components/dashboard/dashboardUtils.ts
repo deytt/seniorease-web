@@ -1,6 +1,7 @@
 import type { Task } from "@/domain/entities/Task";
 import type { Reminder } from "@/domain/entities/Reminder";
 import { isGuidedTaskCandidate } from "@/presentation/components/tasks/guidedTaskUtils";
+import { sortTasksByDueDateDescending } from "@/presentation/components/tasks/taskListUtils";
 
 export interface DashboardTaskStats {
   completedYesterday: number;
@@ -80,6 +81,19 @@ export function getNextPendingTask(
   return pending[0] ?? null;
 }
 
+/**
+ * Próximas tarefas pendentes para o preview do Dashboard:
+ * filtra concluídas e aplica a mesma ordenação da lista de tarefas
+ * (dueDate DESC, sem data no fim). Limitado a `limit` itens.
+ */
+export function getNextPendingTasks(
+  tasks: Task[],
+  limit = 8,
+): Task[] {
+  const pending = tasks.filter((task) => task.status !== "completed");
+  return sortTasksByDueDateDescending(pending).slice(0, limit);
+}
+
 export function computeDashboardTaskStats(
   tasks: Task[],
   now: Date = new Date(),
@@ -142,7 +156,8 @@ export function formatTaskTime(
 
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
-  return `${time} · ${day}/${month}`;
+  const year = date.getFullYear();
+  return `${time} · ${day}/${month}/${year}`;
 }
 
 export function getTaskActionHref(task: Task): string {
