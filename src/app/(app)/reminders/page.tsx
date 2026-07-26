@@ -284,6 +284,12 @@ function RemindersPageContent() {
           backLabel="Voltar ao Dashboard"
           className="mb-2"
           dataTour="reminders-header"
+          tourAction={
+            <TourHelpButton
+              onClick={beginTour}
+              label="Abrir tour guiado dos lembretes"
+            />
+          }
           actions={
             <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
               <Button
@@ -318,10 +324,6 @@ function RemindersPageContent() {
                   Novo Lembrete
                 </Link>
               </Button>
-              <TourHelpButton
-                onClick={beginTour}
-                label="Abrir tour guiado dos lembretes"
-              />
             </div>
           }
         />

@@ -16,17 +16,9 @@ import { cn } from "@/lib/utils";
 import { ProfileAvatar } from "@/presentation/components/profile/profileAvatar";
 import { ProfileHelpCard } from "@/presentation/components/profile/profileHelpCard";
 import { useProfileTour } from "@/presentation/hooks/useProfileTour";
-import { TourHelpButton } from "@/presentation/tour/TourChrome";
+import { TourHelpButton, TourOfferDialog } from "@/presentation/tour/TourChrome";
 import { Button } from "@/presentation/components/ui/button";
 import { PageHeader } from "@/presentation/components/ui/pageHeader";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/presentation/components/ui/dialog";
 import {
   formatAddressDisplay,
   formatBirthDateDisplay,
@@ -183,10 +175,11 @@ export function ProfileScreen({
   onPhotoClick,
 }: ProfileScreenProps) {
   const notifications = getNotificationSummary(preferences);
-  const { showOfferDialog, beginTour, dismissOffer } = useProfileTour({
-    userId: user.id,
-    interfaceMode: preferences.interfaceMode,
-  });
+  const { showOfferDialog, beginTour, dismissOffer, offerTitle, offerDescription } =
+    useProfileTour({
+      userId: user.id,
+      interfaceMode: preferences.interfaceMode,
+    });
 
   return (
     <div className="mx-auto w-full max-w-6xl pb-16">
@@ -195,10 +188,12 @@ export function ProfileScreen({
         backHref="/dashboard"
         backLabel="Voltar ao Dashboard"
         dataTour="profile-header"
-        actions={<TourHelpButton
-          onClick={beginTour}
-          label="Abrir tour guiado do perfil"
-        />}
+        tourAction={
+          <TourHelpButton
+            onClick={beginTour}
+            label="Abrir tour guiado do perfil"
+          />
+        }
       />
 
       <div className="mt-8 grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,328px)_minmax(0,1fr)] xl:gap-6">
@@ -350,34 +345,13 @@ export function ProfileScreen({
         </div>
       </div>
 
-      <Dialog open={showOfferDialog} onOpenChange={(open) => !open && dismissOffer()}>
-        <DialogContent className="rounded-2xl">
-          <DialogHeader>
-            <DialogTitle>Quer um tour guiado do perfil?</DialogTitle>
-            <DialogDescription>
-              Em poucos passos, mostramos cada área do perfil — foto, dados,
-              notificações, segurança e onde pedir ajuda.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button
-              type="button"
-              variant="outline"
-              className="cursor-pointer rounded-[14px]"
-              onClick={dismissOffer}
-            >
-              Agora não
-            </Button>
-            <Button
-              type="button"
-              className="cursor-pointer rounded-[14px]"
-              onClick={beginTour}
-            >
-              Começar tour
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <TourOfferDialog
+        open={showOfferDialog}
+        title={offerTitle}
+        description={offerDescription}
+        onDismiss={dismissOffer}
+        onStart={beginTour}
+      />
     </div>
   );
 }
