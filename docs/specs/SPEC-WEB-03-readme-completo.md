@@ -2,8 +2,8 @@
 
 **Prioridade:** 🟡 Médio  
 **Estimativa:** 30 minutos  
-**Status:** Pendente  
-**Responsável:** _a definir_
+**Status:** Concluído (2026-07-26)  
+**Responsável:** David
 
 ---
 
@@ -228,14 +228,14 @@ git submodule update --remote
 
 ## Critérios de Aceitação
 
-- [ ] README contém seção de proposta / público-alvo
-- [ ] README lista as 13 telas com rotas
-- [ ] README tem tabela de links (Vercel, Mobile, Figma, Protótipo, Kanban)
-- [ ] README menciona 81 testes e comando `npm test`
-- [ ] README menciona Storybook com 19 stories e comando `npm run storybook`
-- [ ] README tem seção CI/CD
-- [ ] README tem estrutura de pastas anotada com responsabilidade de cada camada
-- [ ] Nenhum dado sensível (token, chave) no README
+- [x] README contém seção de proposta / público-alvo
+- [x] README lista as 13 telas com rotas
+- [x] README tem tabela de links (Vercel, Mobile, Figma, Protótipo, Kanban)
+- [x] README menciona testes Vitest (120 após SPEC-WEB-04) e comando `npm test`
+- [x] README menciona Storybook com 19 stories e comando `npm run storybook`
+- [x] README tem seção CI/CD
+- [x] README tem estrutura de pastas anotada com responsabilidade de cada camada
+- [x] Nenhum dado sensível (token, chave) no README
 
 ---
 
