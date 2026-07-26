@@ -10,6 +10,12 @@ import { Button } from "@/presentation/components/ui/button";
 import { Card, CardContent } from "@/presentation/components/ui/card";
 import { findNextGuidedTask } from "@/presentation/components/tasks/guidedTaskUtils";
 
+/**
+ * Hub do Modo Guiado — encontra a próxima tarefa com passos pendentes
+ * e redireciona para /tasks/[id]/guided.
+ * Acessado pelo Dashboard e pela lista de tarefas quando o utilizador
+ * não especifica uma tarefa.
+ */
 export default function GuidedTaskHubPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuthContext();
