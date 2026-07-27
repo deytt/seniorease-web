@@ -22,11 +22,27 @@ import { Label } from "@/presentation/components/ui/label";
  * cor sozinha (azul vs. cinza) pode não ser suficiente para todo mundo.
  */
 const meta = {
-  title: "Components/Switch",
+  title: "Formulários/Switch",
   component: Switch,
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: `
+Alterna uma configuração binária com efeito imediato, como modo escuro ou feedback de áudio.
+
+### Quando usar
+Use para ligar/desligar preferências. Para confirmação antes de salvar ou seleção de múltiplos itens, prefira checkbox.
+
+### Estados e comportamento
+O estado deve ser controlado por \`checked\` e \`onCheckedChange\`. A interface precisa refletir a mudança imediatamente ou informar que está salvando.
+
+### Acessibilidade
+Associe um rótulo textual, mantenha alvo combinado de pelo menos 44px e não use somente posição ou cor para explicar o estado.
+        `,
+      },
+    },
   },
   argTypes: {
     size: {

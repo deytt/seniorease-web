@@ -8,8 +8,7 @@ import { Badge } from "@/presentation/components/ui/badge";
  *
  * - **Status** (`default`, `success`, `warning`, `destructive`, `secondary`,
  *   `purple`, `outline`): pill com fundo colorido claro e texto na cor
- *   correspondente mais saturada, para manter contraste suficiente (ex.:
- *   fundo `#f0fdf4` + texto `#22c55e` em `success`).
+ *   correspondente mais saturada, sempre por tokens semânticos do tema.
  * - **Counter** (`counter`, `counter-danger`, `counter-success`,
  *   `counter-secondary`): círculo sólido de 24px usado para contagens
  *   numéricas (ex.: número de tarefas, alertas).
@@ -25,11 +24,27 @@ import { Badge } from "@/presentation/components/ui/badge";
  *   status que precisem de destaque de cor).
  */
 const meta = {
-  title: "Components/Badge",
+  title: "Design System/Badge",
   component: Badge,
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: `
+Rótulo compacto para status, prioridade, categoria ou contagem.
+
+### Escolha da variante
+Use variantes semânticas para estados e \`counter-*\` apenas para contagens curtas. O texto deve permanecer compreensível sem depender da cor.
+
+### Quando evitar
+Badge não é botão, filtro ou campo. Para seleção interativa, use o controle específico do fluxo.
+
+### Acessibilidade
+Mantenha textos com pelo menos 14px, contraste compatível com todos os temas e um rótulo explícito para contadores quando o contexto não for evidente.
+        `,
+      },
+    },
   },
   argTypes: {
     variant: {
@@ -72,13 +87,13 @@ export const Default: Story = {};
 export const StatusVariants: Story = {
   render: () => (
     <div className="flex flex-wrap items-center gap-2">
-      <Badge variant="success">Completed</Badge>
-      <Badge variant="warning">In Progress</Badge>
-      <Badge variant="destructive">High Priority</Badge>
-      <Badge variant="secondary">Health</Badge>
+      <Badge variant="success">Concluída</Badge>
+      <Badge variant="warning">Em andamento</Badge>
+      <Badge variant="destructive">Prioridade alta</Badge>
+      <Badge variant="secondary">Saúde</Badge>
       <Badge variant="default">Social</Badge>
-      <Badge variant="purple">Scheduled</Badge>
-      <Badge variant="outline">Category</Badge>
+      <Badge variant="purple">Agendada</Badge>
+      <Badge variant="outline">Categoria</Badge>
     </div>
   ),
 };
@@ -88,19 +103,19 @@ export const CounterVariants: Story = {
   render: () => (
     <div className="flex flex-wrap items-center gap-6">
       <div className="flex items-center gap-2">
-        <span className="text-sm text-foreground">Tasks</span>
+        <span className="text-sm text-foreground">Tarefas</span>
         <Badge variant="counter">5</Badge>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-sm text-foreground">Alerts</span>
+        <span className="text-sm text-foreground">Alertas</span>
         <Badge variant="counter-danger">2</Badge>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-sm text-foreground">Achievements</span>
+        <span className="text-sm text-foreground">Conquistas</span>
         <Badge variant="counter-success">12</Badge>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-sm text-foreground">Messages</span>
+        <span className="text-sm text-foreground">Mensagens</span>
         <Badge variant="counter-secondary">3</Badge>
       </div>
     </div>

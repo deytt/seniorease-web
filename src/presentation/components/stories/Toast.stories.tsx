@@ -22,11 +22,20 @@ import { Button } from "@/presentation/components/ui/button";
  *   mesmo sem ver a tela.
  */
 const meta = {
-  title: "Components/Toast",
+  title: "Feedback/Toast",
   component: Toaster,
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
+    docs: { description: { component: `
+Mensagem temporária para confirmar resultados sem interromper o fluxo.
+
+### Quando usar
+Sucesso, informação, aviso ou erro após uma ação. Não use para decisões, conteúdo extenso ou erros que precisam permanecer junto ao campo.
+
+### Implementação e acessibilidade
+Renderize \`Toaster\` uma vez e use a fachada \`feedbackToast\`. Escreva mensagens específicas e compreensíveis fora do contexto visual; não dependa apenas de ícone ou cor.
+    ` } },
   },
 } satisfies Meta<typeof Toaster>;
 
@@ -38,32 +47,32 @@ export const Variants: Story = {
   render: () => (
     <div className="flex flex-wrap gap-3">
       <Toaster />
-      <Button onClick={() => toast.success("Task marked as done")}>
-        Success
+      <Button onClick={() => toast.success("Tarefa marcada como concluída") }>
+        Sucesso
       </Button>
       <Button
         variant="destructive"
-        onClick={() => toast.error("Could not save changes")}
+        onClick={() => toast.error("Não foi possível salvar as alterações")}
       >
-        Error
+        Erro
       </Button>
       <Button
         variant="outline"
-        onClick={() => toast.info("Your appointment is tomorrow at 10 AM")}
+        onClick={() => toast.info("Sua consulta é amanhã às 10:00")}
       >
         Info
       </Button>
       <Button
         variant="secondary"
-        onClick={() => toast.warning("Low battery on your device")}
+        onClick={() => toast.warning("Verifique a bateria do dispositivo")}
       >
-        Warning
+        Aviso
       </Button>
       <Button
         variant="ghost"
-        onClick={() => toast.loading("Saving your task...")}
+        onClick={() => toast.loading("Salvando sua tarefa...")}
       >
-        Loading
+        Carregando
       </Button>
     </div>
   ),

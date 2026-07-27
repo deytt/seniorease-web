@@ -25,11 +25,24 @@ import {
  * - `AvatarImage` deve ter `alt` descritivo (nome da pessoa).
  */
 const meta = {
-  title: "Components/Avatar",
+  title: "Design System/Avatar",
   component: Avatar,
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: `
+Representa visualmente uma pessoa por foto ou iniciais.
+
+### Uso e composição
+Sempre combine \`AvatarImage\` com \`AvatarFallback\`. Grupos usam \`AvatarGroup\` e \`AvatarGroupCount\`; o badge é reservado a estados que também possuam significado textual no contexto.
+
+### Acessibilidade
+A imagem deve ter \`alt\` com o nome da pessoa. As iniciais precisam continuar legíveis quando a foto falhar. Não comunique presença, favorito ou outro estado somente por cor.
+        `,
+      },
+    },
   },
   argTypes: {
     size: {

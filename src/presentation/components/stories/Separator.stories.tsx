@@ -16,11 +16,20 @@ import { Separator } from "@/presentation/components/ui/separator";
  *   ocupa 100% da altura do container.
  */
 const meta = {
-  title: "Components/Separator",
+  title: "Design System/Separator",
   component: Separator,
   tags: ["autodocs"],
   parameters: {
     layout: "padded",
+    docs: { description: { component: `
+Divisor visual ou semântico entre grupos de conteúdo.
+
+### Uso
+Use apenas quando espaçamento e hierarquia não forem suficientes. O modo decorativo não é anunciado; o modo semântico representa uma separação relevante.
+
+### Acessibilidade
+Defina orientação coerente e evite excesso de linhas, que aumenta o ruído visual.
+    ` } },
   },
   argTypes: {
     orientation: {

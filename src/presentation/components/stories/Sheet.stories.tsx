@@ -24,11 +24,20 @@ import { Button } from "@/presentation/components/ui/button";
  * - Assim como o `Dialog`, `SheetTitle` é obrigatório para acessibilidade.
  */
 const meta = {
-  title: "Components/Sheet",
+  title: "Feedback/Sheet",
   component: Sheet,
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
+    docs: { description: { component: `
+Painel modal usado para filtros e para o menu móvel.
+
+### Quando usar
+Conteúdo complementar que precisa de mais espaço que um popover. Use \`Dialog\` para decisões centrais e críticas.
+
+### Composição e acessibilidade
+Inclua título, descrição, conteúdo rolável e ações previsíveis. O painel contém e restaura o foco, fecha com Escape e overlay; o controle de fechar precisa de nome acessível e alvo mínimo de 44px.
+    ` } },
   },
 } satisfies Meta<typeof Sheet>;
 

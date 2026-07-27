@@ -26,11 +26,27 @@ import { Button } from "@/presentation/components/ui/button";
  *   deixar a ação clara (ex.: "Excluir", não apenas um ícone de lixeira).
  */
 const meta = {
-  title: "Components/Button",
+  title: "Design System/Button",
   component: Button,
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: `
+Componente único para ações interativas do SeniorEase.
+
+### Uso
+Use **default** para a ação principal, **outline/ghost** para ações secundárias, **success** para conclusão e **destructive** para operações irreversíveis. Links com aparência de botão devem usar \`asChild\`.
+
+### Tamanhos
+\`sm\` tem 44px, \`default\` 56px e \`lg\` 64px. Ações somente com ícone usam \`icon-sm\` ou \`icon\` e exigem nome acessível.
+
+### Estados e acessibilidade
+\`loading\` impede cliques repetidos e expõe \`aria-busy\`. O texto deve descrever a ação; não dependa apenas de cor ou ícone. Preserve foco visível e não reduza manualmente a altura abaixo de 44px.
+        `,
+      },
+    },
   },
   argTypes: {
     variant: {
@@ -90,13 +106,13 @@ export const Default: Story = {};
 export const Variants: Story = {
   render: () => (
     <div className="flex flex-wrap items-center gap-3">
-      <Button variant="default">Primary</Button>
-      <Button variant="secondary">Secondary</Button>
-      <Button variant="success">Success</Button>
-      <Button variant="destructive">Danger</Button>
-      <Button variant="outline">Outline</Button>
-      <Button variant="ghost">Ghost</Button>
-      <Button variant="link">Link</Button>
+      <Button variant="default">Salvar</Button>
+      <Button variant="secondary">Continuar</Button>
+      <Button variant="success">Concluir</Button>
+      <Button variant="destructive">Excluir</Button>
+      <Button variant="outline">Cancelar</Button>
+      <Button variant="ghost">Voltar</Button>
+      <Button variant="link">Saiba mais</Button>
     </div>
   ),
   parameters: {
@@ -113,9 +129,9 @@ export const Variants: Story = {
 export const Sizes: Story = {
   render: () => (
     <div className="flex flex-wrap items-center gap-3">
-      <Button size="sm">Small (44px)</Button>
-      <Button size="default">Medium (56px)</Button>
-      <Button size="lg">Large (64px)</Button>
+      <Button size="sm">Compacto (44px)</Button>
+      <Button size="default">Padrão (56px)</Button>
+      <Button size="lg">Destaque (64px)</Button>
     </div>
   ),
 };
@@ -125,13 +141,13 @@ export const WithIcon: Story = {
   render: () => (
     <div className="flex flex-wrap items-center gap-3">
       <Button>
-        <Plus /> Add Task
+        <Plus /> Nova tarefa
       </Button>
       <Button variant="success">
-        <Bell /> Notify
+        <Bell /> Ativar aviso
       </Button>
       <Button variant="destructive">
-        <Trash2 /> Delete
+        <Trash2 /> Excluir
       </Button>
     </div>
   ),
@@ -150,9 +166,9 @@ export const IconOnly: Story = {
 export const FullWidth: Story = {
   render: () => (
     <div className="flex w-96 flex-col gap-2">
-      <Button className="w-full">Primary Full Width</Button>
+      <Button className="w-full">Salvar alterações</Button>
       <Button variant="outline" className="w-full">
-        Secondary Full Width
+        Cancelar
       </Button>
     </div>
   ),
@@ -160,7 +176,7 @@ export const FullWidth: Story = {
 
 /** Estado desabilitado. */
 export const Disabled: Story = {
-  args: { disabled: true, children: "Disabled" },
+  args: { disabled: true, children: "Indisponível" },
 };
 
 /** Estado de uma ação assíncrona, sem alterar o tamanho do alvo de toque. */
