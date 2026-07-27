@@ -24,11 +24,20 @@ import { Button } from "@/presentation/components/ui/button";
  *   um `Dialog` ou texto visível na tela.
  */
 const meta = {
-  title: "Components/Tooltip",
+  title: "Feedback/Tooltip",
   component: Tooltip,
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
+    docs: { description: { component: `
+Explicação curta exibida por foco ou ponteiro para complementar um controle.
+
+### Quando usar
+Para esclarecer ícones ou termos breves. Informações necessárias para concluir uma tarefa devem permanecer visíveis.
+
+### Acessibilidade
+Use uma frase curta, sem ações internas. O disparador precisa funcionar por teclado e possuir nome acessível mesmo sem a tooltip.
+    ` } },
   },
   decorators: [
     (Story) => (

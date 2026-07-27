@@ -17,11 +17,27 @@ import { Label } from "@/presentation/components/ui/label";
  * mudam automaticamente para a cor de destructive.
  */
 const meta = {
-  title: "Components/Input",
+  title: "Formulários/Input",
   component: Input,
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: `
+Campo textual padrão do SeniorEase, com 56px de altura, fonte de 16px e foco de alto contraste.
+
+### Uso
+Combine com \`Label\` e, quando necessário, texto de ajuda e mensagem de erro. Escolha o \`type\`, \`inputMode\` e \`autoComplete\` coerentes com o dado.
+
+### Estados
+Use \`disabled\` somente quando a ação realmente não estiver disponível. Para erro, aplique \`aria-invalid\` e relacione a mensagem usando \`aria-describedby\`.
+
+### Acessibilidade
+Placeholder é exemplo, não rótulo. Não reduza a fonte abaixo de 16px e preserve o foco visível em todos os temas.
+        `,
+      },
+    },
   },
   argTypes: {
     type: {

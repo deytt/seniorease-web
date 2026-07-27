@@ -15,15 +15,22 @@ import { Button } from "@/presentation/components/ui/button";
  * Filtros da lista de lembretes — modal + chips ativos (paridade mobile).
  */
 const meta = {
-  title: "Features/ReminderFilters",
+  title: "Domínio/Lembretes/Filtros",
   component: ReminderActiveFilterBar,
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
     docs: {
       description: {
-        component:
-          "Botão Filtrar abre o modal (Hoje + categorias). Chips ativos removem filtros individualmente.",
+        component: `
+Composição real dos filtros da lista de lembretes: botão disparador, diálogo de seleção e barra de filtros ativos.
+
+### Comportamento
+O diálogo permite combinar o recorte **Hoje** com uma categoria. A seleção só altera a lista depois de **Aplicar filtros**, e cada chip remove apenas o próprio critério.
+
+### Acessibilidade
+O contador informa quantos filtros estão ativos. Chips possuem nomes de remoção específicos e o diálogo mantém foco e operação por teclado.
+        `,
       },
     },
   },
@@ -46,7 +53,8 @@ function FiltersDemo({
       <Button
         type="button"
         variant="outline"
-        className="relative min-h-11 cursor-pointer rounded-[14px]"
+        size="sm"
+        className="relative"
         onClick={() => setOpen(true)}
       >
         <Filter className="size-4" aria-hidden />

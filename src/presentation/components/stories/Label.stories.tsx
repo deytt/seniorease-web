@@ -18,11 +18,24 @@ import { Checkbox } from "@/presentation/components/ui/checkbox";
  * desabilitado, o rótulo também fica visualmente esmaecido automaticamente.
  */
 const meta = {
-  title: "Components/Label",
+  title: "Formulários/Label",
   component: Label,
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: `
+Rótulo persistente que identifica um campo ou controle de formulário.
+
+### Uso
+O \`htmlFor\` deve apontar para um \`id\` único. Indique obrigatoriedade no texto e mantenha instruções adicionais fora do rótulo, associadas por \`aria-describedby\`.
+
+### Acessibilidade
+Não substitua o Label por placeholder. Em checkbox e switch, o rótulo também deve ampliar a área de interação e permitir ativação por clique.
+        `,
+      },
+    },
   },
 } satisfies Meta<typeof Label>;
 

@@ -1,0 +1,36 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Documentação/Introdução" />
+
+# Design system SeniorEase
+
+Este catálogo documenta os componentes **reais** utilizados pela aplicação web. Uma story não deve copiar a marcação de uma tela nem manter uma versão visual paralela do componente.
+
+## Como usar esta documentação
+
+Cada componente deve explicar:
+
+1. **Finalidade:** qual problema de interface ele resolve.
+2. **Quando usar:** contextos adequados dentro do produto.
+3. **Quando evitar:** casos em que outro componente é mais apropriado.
+4. **Variantes e estados:** tamanhos, aparência, carregamento, erro e desabilitado.
+5. **Acessibilidade:** nome acessível, teclado, foco, contraste e alvo de toque.
+6. **Exemplos reais:** textos, ícones e composições existentes no SeniorEase.
+
+## Regras de fidelidade
+
+- A story deve importar o componente de produção.
+- Tokens devem vir de `globals.css`; não use cores ou fontes paralelas.
+- Os temas **Claro**, **Escuro**, **Alto contraste** e **Contraste máximo** estão disponíveis na barra superior.
+- Use os viewports Mobile, Tablet e Desktop para conferir o comportamento responsivo.
+- Se uma estrutura existe apenas dentro de uma página e não é exportada, ela não deve ser apresentada como componente reutilizável.
+
+## Escala de interação
+
+| Uso | Tamanho |
+| --- | --- |
+| Ação compacta ou somente ícone | 44px |
+| Ação principal padrão | 56px |
+| CTA de destaque | 64px |
+
+O público-alvo do SeniorEase exige textos legíveis, foco evidente e áreas de toque generosas. Esses requisitos fazem parte do componente, não apenas do exemplo.
