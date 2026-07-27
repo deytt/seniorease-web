@@ -29,11 +29,20 @@ import { Button } from "@/presentation/components/ui/button";
  *   (`showCloseButton`, default `true`).
  */
 const meta = {
-  title: "Components/Dialog",
+  title: "Feedback/Dialog",
   component: Dialog,
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
+    docs: { description: { component: `
+Modal para decisões ou informações que interrompem o fluxo atual.
+
+### Quando usar
+Confirmações destrutivas, decisões obrigatórias e formulários curtos. Para conteúdo complementar ou navegação móvel, use \`Sheet\`.
+
+### Composição e acessibilidade
+Inclua título, descrição contextual e rodapé de ações. O Radix contém o foco, fecha com Escape e o restaura ao disparador. Nunca omita o título acessível nem abra um segundo diálogo sobre o primeiro.
+    ` } },
   },
 } satisfies Meta<typeof Dialog>;
 

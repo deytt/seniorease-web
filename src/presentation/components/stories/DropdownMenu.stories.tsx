@@ -30,11 +30,20 @@ import { Button } from "@/presentation/components/ui/button";
  * possível, pois exigem maior precisão motora para navegar.
  */
 const meta = {
-  title: "Components/DropdownMenu",
+  title: "Navegação/DropdownMenu",
   component: DropdownMenu,
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
+    docs: { description: { component: `
+Menu de ações contextuais acionado por um botão.
+
+### Quando usar
+Para ações secundárias relacionadas a um item ou conta. Ações frequentes devem permanecer visíveis, e campos de escolha devem usar controles de formulário.
+
+### Acessibilidade
+O disparador deve informar sua finalidade. O menu suporta teclado, foco gerenciado e Escape; use rótulos diretos e não dependa apenas de ícones.
+    ` } },
   },
 } satisfies Meta<typeof DropdownMenu>;
 

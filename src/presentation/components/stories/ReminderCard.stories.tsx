@@ -33,21 +33,31 @@ import type { Reminder } from "@/domain/entities/Reminder";
  * com filtros combináveis (hoje, categoria) e ações inline.
  */
 const meta = {
-  title: "Features/ReminderCard",
+  title: "Domínio/Lembretes/ReminderCard",
   component: ReminderCard,
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
     docs: {
       description: {
-        component:
-          "Card responsivo para exibir um lembrete com ações inline (marcar concluído, editar, deletar). Adapta-se a mobile, tablet e desktop.",
+        component: `
+Card de domínio usado diretamente na listagem real de lembretes.
+
+### Conteúdo e estados
+Apresenta categoria, título, mensagem e horário. No estado pendente oferece conclusão, edição e exclusão; quando concluído, troca as ações pelo indicador correspondente.
+
+### Responsividade
+Conteúdo e ações se reorganizam conforme a largura sem criar uma versão paralela do componente. Use a barra de viewport para validar mobile, tablet e desktop.
+
+### Acessibilidade
+Ações somente com ícone possuem nomes específicos com o título do lembrete. Ícones decorativos ficam ocultos, textos preservam pelo menos 14px e os alvos de toque têm no mínimo 44px.
+        `,
       },
     },
   },
   decorators: [
     (Story) => (
-      <div style={{ width: "100%", maxWidth: "800px", padding: "20px" }}>
+      <div className="w-full max-w-4xl p-5">
         <Story />
       </div>
     ),

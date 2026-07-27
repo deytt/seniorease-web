@@ -23,11 +23,24 @@ import { Label } from "@/presentation/components/ui/label";
  * ```
  */
 const meta = {
-  title: "Components/Checkbox",
+  title: "Formulários/Checkbox",
   component: Checkbox,
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: `
+Controle para uma escolha independente de sim/não, como aceitar termos ou ativar uma opção complementar.
+
+### Quando usar
+Use checkbox quando várias opções puderem ser selecionadas ao mesmo tempo. Para uma configuração com efeito imediato, prefira \`Switch\`; para escolha exclusiva, use radio/segmentado.
+
+### Acessibilidade
+Associe sempre um \`Label\`. O indicador visual tem 24px, mas o rótulo deve ampliar a área clicável para no mínimo 44px. Estados \`checked\`, \`disabled\` e foco precisam ser perceptíveis sem depender apenas da cor.
+        `,
+      },
+    },
   },
   argTypes: {
     checked: {
